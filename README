@@ -1,0 +1,6 @@
+To compile the PolyMesh plugin using ant, unpack this archive in ArtOfIllusion folder.
+
+Open a terminal and cd into ArtOfIllusion/PolyMesh/src. The following commands will:
+-ant: build the polymesh plugin in AoI Plugins directory
+-ant docs: generate the PolyMesh API documentation
+-ant clean: clean the build and docs directories

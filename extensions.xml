@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+
+<extension name="PolyMesh" version="1.63">
+	<plugin class="artofillusion.polymesh.PolyMeshPlugin"/>
+	<plugin class="artofillusion.polymesh.PMOBJTranslator"/>
+	<author>Francois Guillet</author>
+	<beta>18</beta>
+	<date>2011/11/24</date>
+    <description>
+A plugin which provides polygonal mesh modelling for AoI.
+    </description>
+    <history>
+    	<log version="1.63b18" date="24 August 2011" author="Francois Guillet">
+    	Implemented rendered view for AoI 2.9. 
+        </log>
+    	<log version="1.63b17" date="27 January 2010" author="Francois Guillet">
+    	Fixed flatten command. 
+        </log>
+    	<log version="1.63b16" date="22 January 2010" author="Francois Guillet">
+    	Spanish translation added, provided by Guillermo Perez Farquharson. 
+        </log>
+    	<log version="1.63b15" date="13 December 2009" author="Francois Guillet">
+    	Updated for 2.8. German translation added, thanks to Iris Ahrendt.
+    	Point, Edge and Face buttons icons also thanks to Iris Ahrendt. 
+        </log>
+    	<log version="1.63b14" date="28 April 2009" author="Francois Guillet">
+    	 bug fixes on mesh smoothing when edge smoothness less than 1.0 
+        </log>
+    	<log version="1.63b13" date="14 January 2009" author="Francois Guillet">
+    	 mesh copy/paste works on selection 
+        </log>
+    	<log version="1.63b12" date="11 January 2009" author="Francois Guillet">
+    	 updated for 2.7
+        </log>
+    	<log version="1.63b11" date="16 may 2008" author="Francois Guillet">
+    	 updated for 2.6
+    	 Unfold speed up, now relies on linear ABF.
+         Bug fixes.
+        </log>
+        <log version="1.62" date="20 august 2007" author="Francois Guillet">
+         Edge strip selection can be every 2n, 3rd, etc. edge rather than all edge strip.
+         Center Mesh command added.
+         Convertion of smoothed polymesh to trimesh for a given surface tolerance.
+         Automatic (and faster) quad mesh smoothing for rendering, semi-auto for interactive view
+	     Bug fixes
+        </log>
+        <log version="1.6" date="27 march 2007" author="Francois Guillet">
+	     Display properties
+	     Mesh Unfolding implemented (some features still to implement).
+	     Extrude Region bug corrected.
+	     Remove Edge bug corrected.					
+	     Seams added for mesh unfolding.
+	     Extrude several edge regions bug corrected.
+	     Scale mesh bug corrected.
+	     Bevel bug corrected.
+	     2.4 compatibility.
+        </log>
+        <log version="1.51" date="13 august 2006" author="Francois Guillet">
+	     Bug fix.
+        </log>
+        <log version="1.5" date="27 july 2006" author="Francois Guillet">
+	      Edge extrusion.
+          Extrusion along curve.
+          Keystrokes.
+          Bug fixes.
+        </log>
+        <log version="1.41" date="25 june 2006" author="Francois Guillet">
+	      Bugfix release.
+          A mirrored mesh can now be smoothed without loosing mirror.
+        </log>
+        <log version="1.4" date="27 may 2006" author="Francois Guillet">
+	      Manipulators!
+          Subdivision levels can be changed in the object properties panel
+          Tension distance can be changed within window (bottom right).
+          Experimental extract curve in edge selection mode (edge menu).
+          Better Catmull-Clark with corners. New UI.
+          Bugfix : closed meshes were never considered closed.
+          Bugfix for crease edges in catmull-clark.
+          Other bugfixes
+        </log>
+        <log version="1.3" date="31 Jan 2006" author="Francois Guillet">
+	      -Catmull-Clark smoothing with edge smoothness control.
+          -Sew edge tool.
+          -Create Face tool.
+       </log>
+    </history>
+    <comments>
+    </comments>
+	<resource type="TranslateBundle" id="polymesh" name="polymesh"/>
+	<resource type="UITheme" id="polymesh" name="polymesh/theme.xml"/>
+</extension>

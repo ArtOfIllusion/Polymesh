@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.5.0_03" class="java.beans.XMLDecoder"> 
+ <object class="buoy.widget.ColumnContainer"> 
+  <void property="defaultLayout"> 
+   <void property="fill"> 
+    <object class="buoy.widget.LayoutInfo" field="BOTH"/> 
+   </void> 
+   <void property="padding"> 
+    <object class="java.awt.Dimension"> 
+     <int>0</int> 
+     <int>0</int> 
+    </object> 
+   </void> 
+  </void> 
+  <void property="name"> 
+   <string>ColumnContainer1</string> 
+  </void> 
+  <void method="add"> 
+   <object class="buoy.widget.BLabel"> 
+    <void property="name"> 
+     <string>controlledSmoothing</string> 
+    </void> 
+    <void property="text"> 
+     <string>controlledSmoothing</string> 
+    </void> 
+   </object> 
+   <null/> 
+  </void> 
+  <void method="add"> 
+   <object class="buoy.widget.BCheckBox"> 
+    <void property="name"> 
+     <string>applyCB</string> 
+    </void> 
+    <void property="text"> 
+     <string>applyCB</string> 
+    </void> 
+   </object> 
+   <object class="buoy.widget.LayoutInfo"> 
+    <void property="alignment"> 
+     <object class="buoy.widget.LayoutInfo" field="WEST"/> 
+    </void> 
+    <void property="insets"> 
+     <object class="java.awt.Insets"> 
+      <int>2</int> 
+      <int>2</int> 
+      <int>2</int> 
+      <int>2</int> 
+     </object> 
+    </void> 
+    <void property="padding"> 
+     <object class="java.awt.Dimension"> 
+      <int>0</int> 
+      <int>0</int> 
+     </object> 
+    </void> 
+   </object> 
+  </void> 
+  <void id="FontUIResource0" property="font"/> 
+  <void id="ColorUIResource0" property="background"/> 
+  <void method="add"> 
+   <object class="buoy.widget.BOutline"> 
+    <void property="border"> 
+     <object class="javax.swing.border.TitledBorder"> 
+      <null/> 
+      <string>Smoothing parameters</string> 
+      <int>4</int> 
+      <int>2</int> 
+      <object idref="FontUIResource0"/> 
+      <null/> 
+     </object> 
+    </void> 
+    <void property="content"> 
+     <object class="buoy.widget.FormContainer"> 
+      <int>3</int> 
+      <int>10</int> 
+      <void property="defaultLayout"> 
+       <void property="insets"> 
+        <object class="java.awt.Insets"> 
+         <int>2</int> 
+         <int>2</int> 
+         <int>2</int> 
+         <int>2</int> 
+        </object> 
+       </void> 
+       <void property="padding"> 
+        <object class="java.awt.Dimension"> 
+         <int>0</int> 
+         <int>0</int> 
+        </object> 
+       </void> 
+      </void> 
+      <void property="name"> 
+       <string>FormContainer1</string> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BTextField"> 
+        <string>0.0</string> 
+        <void property="background"> 
+         <object idref="ColorUIResource0"/> 
+        </void> 
+        <void property="columns"> 
+         <int>5</int> 
+        </void> 
+        <void property="name"> 
+         <string>minAngleValue</string> 
+        </void> 
+       </object> 
+       <int>1</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BLabel"> 
+        <void property="name"> 
+         <string>minAngle</string> 
+        </void> 
+        <void property="text"> 
+         <string>minAngle</string> 
+        </void> 
+       </object> 
+       <int>0</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <object class="buoy.widget.LayoutInfo"> 
+        <void property="alignment"> 
+         <object class="buoy.widget.LayoutInfo" field="EAST"/> 
+        </void> 
+        <void property="insets"> 
+         <object class="java.awt.Insets"> 
+          <int>2</int> 
+          <int>2</int> 
+          <int>2</int> 
+          <int>2</int> 
+         </object> 
+        </void> 
+        <void property="padding"> 
+         <object class="java.awt.Dimension"> 
+          <int>0</int> 
+          <int>0</int> 
+         </object> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BLabel"> 
+        <void property="name"> 
+         <string>angleRange</string> 
+        </void> 
+        <void property="text"> 
+         <string>angleRange</string> 
+        </void> 
+       </object> 
+       <int>0</int> 
+       <int>0</int> 
+       <int>2</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BLabel"> 
+        <void property="name"> 
+         <string>maxSmoothness</string> 
+        </void> 
+        <void property="text"> 
+         <string>maxSmoothness</string> 
+        </void> 
+       </object> 
+       <int>0</int> 
+       <int>8</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BTextField"> 
+        <string>1.0</string> 
+        <void property="background"> 
+         <object idref="ColorUIResource0"/> 
+        </void> 
+        <void property="columns"> 
+         <int>5</int> 
+        </void> 
+        <void property="name"> 
+         <string>maxSmoothnessValue</string> 
+        </void> 
+       </object> 
+       <int>1</int> 
+       <int>8</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BLabel"> 
+        <void property="name"> 
+         <string>minSmoothness</string> 
+        </void> 
+        <void property="text"> 
+         <string>minSmoothness</string> 
+        </void> 
+       </object> 
+       <int>0</int> 
+       <int>6</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BTextField"> 
+        <string>0.0</string> 
+        <void property="background"> 
+         <object idref="ColorUIResource0"/> 
+        </void> 
+        <void property="columns"> 
+         <int>5</int> 
+        </void> 
+        <void property="name"> 
+         <string>minSmoothnessValue</string> 
+        </void> 
+       </object> 
+       <int>1</int> 
+       <int>6</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BLabel"> 
+        <void property="name"> 
+         <string>smoothnessRange</string> 
+        </void> 
+        <void property="text"> 
+         <string>smoothnessRange</string> 
+        </void> 
+       </object> 
+       <int>0</int> 
+       <int>5</int> 
+       <int>2</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BLabel"> 
+        <void property="name"> 
+         <string>maxAngle</string> 
+        </void> 
+        <void property="text"> 
+         <string>maxAngle</string> 
+        </void> 
+       </object> 
+       <int>0</int> 
+       <int>3</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BTextField"> 
+        <string>1.0</string> 
+        <void property="background"> 
+         <object idref="ColorUIResource0"/> 
+        </void> 
+        <void property="columns"> 
+         <int>5</int> 
+        </void> 
+        <void property="name"> 
+         <string>maxAngleValue</string> 
+        </void> 
+       </object> 
+       <int>1</int> 
+       <int>3</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BSlider"> 
+        <void property="name"> 
+         <string>minAngleSlider</string> 
+        </void> 
+        <void property="orientation"> 
+         <object class="buoy.widget.BSlider" field="HORIZONTAL"/> 
+        </void> 
+       </object> 
+       <int>0</int> 
+       <int>2</int> 
+       <int>2</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BSlider"> 
+        <void property="name"> 
+         <string>maxAngleSlider</string> 
+        </void> 
+        <void property="orientation"> 
+         <object class="buoy.widget.BSlider" field="HORIZONTAL"/> 
+        </void> 
+       </object> 
+       <int>0</int> 
+       <int>4</int> 
+       <int>2</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BSlider"> 
+        <void property="name"> 
+         <string>minSmoothnessSlider</string> 
+        </void> 
+        <void property="orientation"> 
+         <object class="buoy.widget.BSlider" field="HORIZONTAL"/> 
+        </void> 
+       </object> 
+       <int>0</int> 
+       <int>7</int> 
+       <int>2</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BSlider"> 
+        <void property="name"> 
+         <string>maxSmoothnessSlider</string> 
+        </void> 
+        <void property="orientation"> 
+         <object class="buoy.widget.BSlider" field="HORIZONTAL"/> 
+        </void> 
+       </object> 
+       <int>0</int> 
+       <int>9</int> 
+       <int>2</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+     </object> 
+    </void> 
+    <void property="name"> 
+     <string>Outline1</string> 
+    </void> 
+   </object> 
+   <null/> 
+  </void> 
+  <void method="add"> 
+   <object class="buoy.widget.GridContainer"> 
+    <int>2</int> 
+    <int>1</int> 
+    <void property="defaultLayout"> 
+     <void property="padding"> 
+      <object class="java.awt.Dimension"> 
+       <int>0</int> 
+       <int>0</int> 
+      </object> 
+     </void> 
+    </void> 
+    <void property="name"> 
+     <string>OkCancelGrid</string> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.BButton"> 
+      <void property="actionCommand"> 
+       <string>OK</string> 
+      </void> 
+      <void property="name"> 
+       <string>okButton</string> 
+      </void> 
+      <void property="text"> 
+       <string>OK</string> 
+      </void> 
+     </object> 
+     <int>0</int> 
+     <int>0</int> 
+     <null/> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.BButton"> 
+      <void property="actionCommand"> 
+       <string>Cancel</string> 
+      </void> 
+      <void property="name"> 
+       <string>cancelButton</string> 
+      </void> 
+      <void property="text"> 
+       <string>Cancel</string> 
+      </void> 
+     </object> 
+     <int>1</int> 
+     <int>0</int> 
+     <null/> 
+    </void> 
+   </object> 
+   <null/> 
+  </void> 
+ </object> 
+</java> 

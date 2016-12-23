@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.5.0" class="java.beans.XMLDecoder"> 
+ <object class="buoy.widget.BorderContainer"> 
+  <void property="defaultLayout"> 
+   <void property="fill"> 
+    <object class="buoy.widget.LayoutInfo" field="NONE"/> 
+   </void> 
+   <void property="insets"> 
+    <object class="java.awt.Insets"> 
+     <int>5</int> 
+     <int>5</int> 
+     <int>5</int> 
+     <int>5</int> 
+    </object> 
+   </void> 
+   <void property="padding"> 
+    <object class="java.awt.Dimension"> 
+     <int>0</int> 
+     <int>0</int> 
+    </object> 
+   </void> 
+  </void> 
+  <void property="name"> 
+   <string>BorderContainer1</string> 
+  </void> 
+  <void method="add"> 
+   <object class="buoy.widget.BScrollPane"> 
+    <void property="content"> 
+     <object class="buoy.widget.BTextArea"> 
+      <string></string> 
+      <void property="columns"> 
+       <int>80</int> 
+      </void> 
+      <void property="name"> 
+       <string>TextArea</string> 
+      </void> 
+      <void property="rows"> 
+       <int>20</int> 
+      </void> 
+     </object> 
+    </void> 
+    <void property="name"> 
+     <string>ScrollPane1</string> 
+    </void> 
+   </object> 
+   <object class="buoy.widget.BorderContainer" field="CENTER"/> 
+   <null/> 
+  </void> 
+  <void method="add"> 
+   <object class="buoy.widget.BButton"> 
+    <void property="actionCommand"> 
+     <string>dismiss</string> 
+    </void> 
+    <void property="name"> 
+     <string>dismiss</string> 
+    </void> 
+    <void property="text"> 
+     <string>dismiss</string> 
+    </void> 
+   </object> 
+   <object class="buoy.widget.BorderContainer" field="SOUTH"/> 
+   <object class="buoy.widget.LayoutInfo"> 
+    <void property="insets"> 
+     <object class="java.awt.Insets"> 
+      <int>5</int> 
+      <int>5</int> 
+      <int>5</int> 
+      <int>5</int> 
+     </object> 
+    </void> 
+    <void property="padding"> 
+     <object class="java.awt.Dimension"> 
+      <int>0</int> 
+      <int>0</int> 
+     </object> 
+    </void> 
+   </object> 
+  </void> 
+ </object> 
+</java> 

@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+
+<project name="PolyMesh" default="dist" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property name="aoilocation" value=".." />
+  <property name="src" value="." />
+  <property name="build" value="${src}/build" />
+  <property name="docs" value="${src}/docs" />
+  <property name="dist" value="${aoilocation}/Plugins" />
+  <property name="aoijar" value="${aoilocation}/ArtOfIllusion.jar" />
+  <property name="mtjjar" value="${src}/mtj.jar" />
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}" />
+    <!-- Create the docs directory structure used by documentation -->
+    <mkdir dir="${docs}" />
+  </target>
+
+  <target name="compile" depends="init">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac source="1.5" target="1.5" srcdir="${src}" destdir="${build}" classpath="${aoijar}:${mtjjar}" debug="on" extdirs="" />
+  </target>
+
+  <target name="dist" depends="compile">
+    <!-- Copy all necessary files into ${build}, then create the jar file -->
+  	<unjar src="${mtjjar}" dest="${build}" />
+    <copy file="${src}/PMkeystrokes.xml" todir="${build}" />
+    <copy file="${src}/extensions.xml" todir="${build}" />
+    <copy todir="${build}">
+      <fileset dir="${src}" includes="*.properties" />
+    </copy>
+  	<copy todir="${build}/polymesh">
+      <fileset dir="${src}/artofillusion/polymesh/Icons" />
+    </copy>
+    <copy todir="${build}/artofillusion/polymesh/interfaces">
+      <fileset dir="${src}/artofillusion/polymesh/interfaces" />
+    </copy>
+    <jar jarfile="${dist}/PolyMesh.jar" basedir="${build}" />
+  </target>
+
+  <target name="docs" depends="init">
+    <javadoc packagenames="artofillusion.*"
+        sourcepath="${src}"
+        classpath="${aoijar}"
+        defaultexcludes="yes"
+        destdir="${docs}"
+        author="true"
+        version="true"
+        use="true"
+        windowtitle="Polygonal Mesh Documentation"
+	public="true">
+      <doctitle><![CDATA[<h1>Polygonal Mesh</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &#169; 2004-2006 by Francois Guillet.</i>]]></bottom>
+    </javadoc>
+  </target>
+  
+  <target name="clean">
+    <!-- Delete the ${build} and ${docs} directory trees -->
+    <delete dir="${build}" />
+    <delete dir="${docs}" />
+  </target>
+</project>
+

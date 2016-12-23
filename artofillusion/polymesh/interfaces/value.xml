@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.5.0_03" class="java.beans.XMLDecoder"> 
+ <object class="buoy.widget.BorderContainer"> 
+  <void property="defaultLayout"> 
+   <void property="insets"> 
+    <object class="java.awt.Insets"> 
+     <int>5</int> 
+     <int>5</int> 
+     <int>5</int> 
+     <int>5</int> 
+    </object> 
+   </void> 
+   <void property="padding"> 
+    <object class="java.awt.Dimension"> 
+     <int>0</int> 
+     <int>0</int> 
+    </object> 
+   </void> 
+  </void> 
+  <void property="name"> 
+   <string>BorderContainer1</string> 
+  </void> 
+  <void id="FontUIResource0" property="font"/> 
+  <void method="add"> 
+   <object class="buoy.widget.FormContainer"> 
+    <int>1</int> 
+    <int>4</int> 
+    <void property="defaultLayout"> 
+     <void property="insets"> 
+      <object class="java.awt.Insets"> 
+       <int>4</int> 
+       <int>2</int> 
+       <int>4</int> 
+       <int>2</int> 
+      </object> 
+     </void> 
+     <void property="padding"> 
+      <object class="java.awt.Dimension"> 
+       <int>0</int> 
+       <int>0</int> 
+      </object> 
+     </void> 
+    </void> 
+    <void property="name"> 
+     <string>FormContainer1</string> 
+    </void> 
+    <void method="setRowWeight"> 
+     <int>0</int> 
+     <double>0.0</double> 
+    </void> 
+    <void method="setRowWeight"> 
+     <int>1</int> 
+     <double>0.0</double> 
+    </void> 
+    <void method="setRowWeight"> 
+     <int>3</int> 
+     <double>0.0</double> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.ColumnContainer"> 
+      <void property="defaultLayout"> 
+       <void property="padding"> 
+        <object class="java.awt.Dimension"> 
+         <int>0</int> 
+         <int>0</int> 
+        </object> 
+       </void> 
+      </void> 
+      <void property="name"> 
+       <string>ColumnContainer1</string> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BLabel"> 
+        <void property="name"> 
+         <string>minLabel</string> 
+        </void> 
+        <void property="text"> 
+         <string>min</string> 
+        </void> 
+       </object> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BSpinner"> 
+        <void property="model"> 
+         <void property="maximum"> 
+          <double>1000.0</double> 
+         </void> 
+         <void property="minimum"> 
+          <double>-1000.0</double> 
+         </void> 
+         <void property="stepSize"> 
+          <double>0.1</double> 
+         </void> 
+         <void property="value"> 
+          <double>0.0</double> 
+         </void> 
+        </void> 
+        <void property="name"> 
+         <string>minSpinner</string> 
+        </void> 
+       </object> 
+       <null/> 
+      </void> 
+     </object> 
+     <int>0</int> 
+     <int>3</int> 
+     <int>1</int> 
+     <int>1</int> 
+     <null/> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.BSlider"> 
+      <void property="font"> 
+       <object idref="FontUIResource0"/> 
+      </void> 
+      <void property="maximum"> 
+       <int>1000</int> 
+      </void> 
+      <void property="name"> 
+       <string>valueSlider</string> 
+      </void> 
+      <void property="showTicks"> 
+       <boolean>true</boolean> 
+      </void> 
+      <void property="value"> 
+       <int>1</int> 
+      </void> 
+     </object> 
+     <int>0</int> 
+     <int>2</int> 
+     <int>1</int> 
+     <int>1</int> 
+     <object class="buoy.widget.LayoutInfo"> 
+      <void property="fill"> 
+       <object class="buoy.widget.LayoutInfo" field="VERTICAL"/> 
+      </void> 
+      <void property="insets"> 
+       <object class="java.awt.Insets"> 
+        <int>0</int> 
+        <int>0</int> 
+        <int>0</int> 
+        <int>0</int> 
+       </object> 
+      </void> 
+      <void property="padding"> 
+       <object class="java.awt.Dimension"> 
+        <int>0</int> 
+        <int>0</int> 
+       </object> 
+      </void> 
+     </object> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.ColumnContainer"> 
+      <void property="defaultLayout"> 
+       <void property="padding"> 
+        <object class="java.awt.Dimension"> 
+         <int>0</int> 
+         <int>0</int> 
+        </object> 
+       </void> 
+      </void> 
+      <void property="name"> 
+       <string>ColumnContainer3</string> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BLabel"> 
+        <void property="name"> 
+         <string>maxLabel</string> 
+        </void> 
+        <void property="text"> 
+         <string>max</string> 
+        </void> 
+       </object> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BSpinner"> 
+        <void property="model"> 
+         <void property="maximum"> 
+          <double>1000.0</double> 
+         </void> 
+         <void property="minimum"> 
+          <double>-1000.0</double> 
+         </void> 
+         <void property="stepSize"> 
+          <double>0.1</double> 
+         </void> 
+         <void property="value"> 
+          <double>1.0</double> 
+         </void> 
+        </void> 
+        <void property="name"> 
+         <string>maxSpinner</string> 
+        </void> 
+       </object> 
+       <null/> 
+      </void> 
+     </object> 
+     <int>0</int> 
+     <int>1</int> 
+     <int>1</int> 
+     <int>1</int> 
+     <null/> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.ColumnContainer"> 
+      <void property="defaultLayout"> 
+       <void property="padding"> 
+        <object class="java.awt.Dimension"> 
+         <int>0</int> 
+         <int>0</int> 
+        </object> 
+       </void> 
+      </void> 
+      <void property="name"> 
+       <string>ColumnContainer4</string> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BTextField"> 
+        <string>123456</string> 
+        <void property="name"> 
+         <string>valueField</string> 
+        </void> 
+       </object> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BCheckBox"> 
+        <void property="name"> 
+         <string>retainValueCB</string> 
+        </void> 
+        <void property="text"> 
+         <string>retainValue</string> 
+        </void> 
+       </object> 
+       <null/> 
+      </void> 
+     </object> 
+     <int>0</int> 
+     <int>0</int> 
+     <int>1</int> 
+     <int>1</int> 
+     <null/> 
+    </void> 
+   </object> 
+   <object class="buoy.widget.BorderContainer" field="CENTER"/> 
+   <object class="buoy.widget.LayoutInfo"> 
+    <void property="fill"> 
+     <object class="buoy.widget.LayoutInfo" field="VERTICAL"/> 
+    </void> 
+    <void property="insets"> 
+     <object class="java.awt.Insets"> 
+      <int>0</int> 
+      <int>0</int> 
+      <int>0</int> 
+      <int>0</int> 
+     </object> 
+    </void> 
+    <void property="padding"> 
+     <object class="java.awt.Dimension"> 
+      <int>0</int> 
+      <int>0</int> 
+     </object> 
+    </void> 
+   </object> 
+  </void> 
+  <void method="add"> 
+   <object class="buoy.widget.GridContainer"> 
+    <int>1</int> 
+    <int>2</int> 
+    <void property="defaultLayout"> 
+     <void property="fill"> 
+      <object class="buoy.widget.LayoutInfo" field="HORIZONTAL"/> 
+     </void> 
+     <void property="padding"> 
+      <object class="java.awt.Dimension"> 
+       <int>0</int> 
+       <int>0</int> 
+      </object> 
+     </void> 
+    </void> 
+    <void property="name"> 
+     <string>GridContainer1</string> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.BButton"> 
+      <void property="actionCommand"> 
+       <string>validate</string> 
+      </void> 
+      <void property="name"> 
+       <string>validateButton</string> 
+      </void> 
+      <void property="text"> 
+       <string>validate</string> 
+      </void> 
+     </object> 
+     <int>0</int> 
+     <int>0</int> 
+     <null/> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.BButton"> 
+      <void property="actionCommand"> 
+       <string>abort</string> 
+      </void> 
+      <void property="name"> 
+       <string>abortButton</string> 
+      </void> 
+      <void property="text"> 
+       <string>abort</string> 
+      </void> 
+     </object> 
+     <int>0</int> 
+     <int>1</int> 
+     <null/> 
+    </void> 
+   </object> 
+   <object class="buoy.widget.BorderContainer" field="SOUTH"/> 
+   <null/> 
+  </void> 
+ </object> 
+</java> 

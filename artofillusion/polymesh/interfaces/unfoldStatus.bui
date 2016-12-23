@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<baliseinterface>
+<projectfile>polymesh.bpr</projectfile>
+<saveasexport>true</saveasexport>
+<widgetproperties>
+<widget name="BorderContainer1">
+<prototyped>true</prototyped>
+</widget>
+<widget name="unfoldStatusLabel">
+<prototyped>false</prototyped>
+</widget>
+<widget name="progressBar">
+<prototyped>true</prototyped>
+</widget>
+<widget name="TextArea">
+<prototyped>true</prototyped>
+</widget>
+<widget name="ScrollPane1">
+<prototyped>true</prototyped>
+</widget>
+<widget name="ColumnContainer1">
+<prototyped>true</prototyped>
+</widget>
+<widget name="proceedButton">
+<prototyped>true</prototyped>
+</widget>
+<widget name="residualLabel">
+<prototyped>true</prototyped>
+</widget>
+<widget name="residualTF">
+<prototyped>true</prototyped>
+</widget>
+<widget name="RowContainer1">
+<prototyped>true</prototyped>
+</widget>
+<widget name="advancedButton">
+<prototyped>true</prototyped>
+</widget>
+<widget name="BorderContainer1">
+<prototyped>true</prototyped>
+</widget>
+<widget name="BorderContainer1">
+<prototyped>true</prototyped>
+</widget>
+<widget name="RowContainer1">
+<prototyped>true</prototyped>
+</widget>
+</widgetproperties>
+<gui>
+<java class="java.beans.XMLDecoder" version="1.6.0"> 
+ <object class="buoy.widget.BFrame"> 
+  <void property="bounds"> 
+   <object class="java.awt.Rectangle"> 
+    <int>24</int> 
+    <int>376</int> 
+    <int>458</int> 
+    <int>276</int> 
+   </object> 
+  </void> 
+  <void property="content"> 
+   <object class="buoy.widget.BorderContainer"> 
+    <void property="defaultLayout"> 
+     <void property="insets"> 
+      <object class="java.awt.Insets"> 
+       <int>0</int> 
+       <int>0</int> 
+       <int>0</int> 
+       <int>0</int> 
+      </object> 
+     </void> 
+     <void property="padding"> 
+      <object class="java.awt.Dimension"> 
+       <int>0</int> 
+       <int>0</int> 
+      </object> 
+     </void> 
+    </void> 
+    <void property="name"> 
+     <string>BorderContainer1</string> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.ColumnContainer"> 
+      <void method="add"> 
+       <object class="buoy.widget.BLabel"> 
+        <void property="name"> 
+         <string>unfoldStatusLabel</string> 
+        </void> 
+        <void property="text"> 
+         <object class="buoy.xml.WidgetLocalization" method="getLocalizedString"> 
+          <string>unfoldStatus</string> 
+         </object> 
+        </void> 
+       </object> 
+       <object class="buoy.widget.LayoutInfo"> 
+        <void property="alignment"> 
+         <object class="buoy.widget.LayoutInfo" field="WEST"/> 
+        </void> 
+        <void property="insets"> 
+         <object class="java.awt.Insets"> 
+          <int>10</int> 
+          <int>2</int> 
+          <int>5</int> 
+          <int>2</int> 
+         </object> 
+        </void> 
+        <void property="padding"> 
+         <object class="java.awt.Dimension"> 
+          <int>0</int> 
+          <int>0</int> 
+         </object> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BProgressBar"> 
+        <void property="indeterminate"> 
+         <boolean>true</boolean> 
+        </void> 
+        <void property="name"> 
+         <string>progressBar</string> 
+        </void> 
+        <void property="progressText"> 
+         <string>iterating</string> 
+        </void> 
+        <void property="showProgressText"> 
+         <boolean>true</boolean> 
+        </void> 
+       </object> 
+       <object class="buoy.widget.LayoutInfo"> 
+        <void property="fill"> 
+         <object class="buoy.widget.LayoutInfo" field="HORIZONTAL"/> 
+        </void> 
+        <void property="insets"> 
+         <object class="java.awt.Insets"> 
+          <int>2</int> 
+          <int>2</int> 
+          <int>2</int> 
+          <int>2</int> 
+         </object> 
+        </void> 
+        <void property="padding"> 
+         <object class="java.awt.Dimension"> 
+          <int>0</int> 
+          <int>0</int> 
+         </object> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BScrollPane"> 
+        <void property="content"> 
+         <object class="buoy.widget.BTextArea"> 
+          <string/> 
+          <void property="columns"> 
+           <int>40</int> 
+          </void> 
+          <void property="name"> 
+           <string>TextArea</string> 
+          </void> 
+          <void property="rows"> 
+           <int>8</int> 
+          </void> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>ScrollPane1</string> 
+        </void> 
+       </object> 
+       <object class="buoy.widget.LayoutInfo"> 
+        <void property="insets"> 
+         <object class="java.awt.Insets"> 
+          <int>5</int> 
+          <int>2</int> 
+          <int>5</int> 
+          <int>2</int> 
+         </object> 
+        </void> 
+        <void property="padding"> 
+         <object class="java.awt.Dimension"> 
+          <int>0</int> 
+          <int>0</int> 
+         </object> 
+        </void> 
+       </object> 
+      </void> 
+      <void property="defaultLayout"> 
+       <void property="padding"> 
+        <object class="java.awt.Dimension"> 
+         <int>0</int> 
+         <int>0</int> 
+        </object> 
+       </void> 
+      </void> 
+      <void property="name"> 
+       <string>ColumnContainer1</string> 
+      </void> 
+     </object> 
+     <object class="buoy.widget.BorderContainer" field="NORTH"/> 
+     <object class="buoy.widget.LayoutInfo"> 
+      <void property="insets"> 
+       <object class="java.awt.Insets"> 
+        <int>2</int> 
+        <int>2</int> 
+        <int>2</int> 
+        <int>2</int> 
+       </object> 
+      </void> 
+      <void property="padding"> 
+       <object class="java.awt.Dimension"> 
+        <int>0</int> 
+        <int>0</int> 
+       </object> 
+      </void> 
+     </object> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.BButton"> 
+      <void property="actionCommand"> 
+       <object class="buoy.xml.WidgetLocalization" id="String0" method="getLocalizedString"> 
+        <string>proceed</string> 
+       </object> 
+      </void> 
+      <void property="name"> 
+       <string>proceedButton</string> 
+      </void> 
+      <void property="text"> 
+       <object idref="String0"/> 
+      </void> 
+     </object> 
+     <object class="buoy.widget.BorderContainer" field="SOUTH"/> 
+     <object class="buoy.widget.LayoutInfo"> 
+      <void property="insets"> 
+       <object class="java.awt.Insets"> 
+        <int>3</int> 
+        <int>0</int> 
+        <int>2</int> 
+        <int>0</int> 
+       </object> 
+      </void> 
+      <void property="padding"> 
+       <object class="java.awt.Dimension"> 
+        <int>0</int> 
+        <int>0</int> 
+       </object> 
+      </void> 
+     </object> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.RowContainer"> 
+      <void method="add"> 
+       <object class="buoy.widget.BButton"> 
+        <void property="actionCommand"> 
+         <object class="buoy.xml.WidgetLocalization" id="String1" method="getLocalizedString"> 
+          <string>advanced</string> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>advancedButton</string> 
+        </void> 
+        <void property="text"> 
+         <object idref="String1"/> 
+        </void> 
+       </object> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BLabel"> 
+        <void property="name"> 
+         <string>residualLabel</string> 
+        </void> 
+        <void property="text"> 
+         <object class="buoy.xml.WidgetLocalization" method="getLocalizedString"> 
+          <string>residualLabel</string> 
+         </object> 
+        </void> 
+       </object> 
+       <object class="buoy.widget.LayoutInfo"> 
+        <void property="insets"> 
+         <object class="java.awt.Insets"> 
+          <int>2</int> 
+          <int>5</int> 
+          <int>2</int> 
+          <int>5</int> 
+         </object> 
+        </void> 
+        <void property="padding"> 
+         <object class="java.awt.Dimension"> 
+          <int>0</int> 
+          <int>0</int> 
+         </object> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BTextField"> 
+        <string>residualTF</string> 
+        <void property="name"> 
+         <string>residualTF</string> 
+        </void> 
+       </object> 
+       <object class="buoy.widget.LayoutInfo"> 
+        <void property="insets"> 
+         <object class="java.awt.Insets"> 
+          <int>2</int> 
+          <int>2</int> 
+          <int>2</int> 
+          <int>2</int> 
+         </object> 
+        </void> 
+        <void property="padding"> 
+         <object class="java.awt.Dimension"> 
+          <int>0</int> 
+          <int>0</int> 
+         </object> 
+        </void> 
+       </object> 
+      </void> 
+      <void property="defaultLayout"> 
+       <void property="padding"> 
+        <object class="java.awt.Dimension"> 
+         <int>0</int> 
+         <int>0</int> 
+        </object> 
+       </void> 
+      </void> 
+      <void property="name"> 
+       <string>RowContainer1</string> 
+      </void> 
+     </object> 
+     <object class="buoy.widget.BorderContainer" field="WEST"/> 
+     <null/> 
+    </void> 
+   </object> 
+  </void> 
+  <void property="font"> 
+   <object class="java.awt.Font"> 
+    <string>Dialog</string> 
+    <int>0</int> 
+    <int>12</int> 
+   </object> 
+  </void> 
+  <void property="name"> 
+   <string>frame0</string> 
+  </void> 
+  <void property="title"> 
+   <string>New Frame</string> 
+  </void> 
+ </object> 
+</java>
+</gui>
+</baliseinterface>
