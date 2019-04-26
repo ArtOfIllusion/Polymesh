@@ -96,12 +96,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
 	private Skeleton skeleton;
 
-	private Vector v1; //vectors used to store triangulation information
+	private Vector<Integer> v1; //vectors used to store triangulation information
 	//persistent data, must de declared as fields
 
-	private Vector v2;
+	private Vector<Integer> v2;
 
-	private Vector v3;
+	private Vector<Integer> v3;
 
 	private Vector vert;
 
@@ -3191,13 +3191,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 							int vertex = -1;
 							switch (k) {
 							case 0:
-								vertex = ((Integer) v1.elementAt(j)).intValue();
+								vertex = v1.get(j);
 								break;
 							case 1:
-								vertex = ((Integer) v1.elementAt(j)).intValue();
+								vertex = v2.get(j);
 								break;
 							case 2:
-								vertex = ((Integer) v1.elementAt(j)).intValue();
+								vertex = v3.get(j);
 								break;
 							}
 							int pmeFace = ((Integer) faceInfo.elementAt(j))
@@ -6193,7 +6193,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 									}
 								}
 								if (!found) {
-									System.out.println("Pas trouvŽ !!");
+									System.out.println("Pas trouvï¿½ !!");
 								}
 							} else {
 								newFaceVertFaceRef[j][k] = -1;
@@ -6256,7 +6256,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 										}
 									}
 									if (!found) {
-										System.out.println("Pas trouvŽ !!");
+										System.out.println("Pas trouvï¿½ !!");
 									}
 								}
 								newval[j][k] = val;
