@@ -1,5 +1,7 @@
 /*
  *  Copyright (C) 2005-2007 by Francois Guillet
+ *  Changes copyright 2019 by Maksim Khramov
+
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
  *  Foundation; either version 2 of the License, or (at your option) any later version.
@@ -15,7 +17,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.prefs.Preferences;
@@ -96,12 +97,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
 	private Skeleton skeleton;
 
-	private Vector v1; //vectors used to store triangulation information
+	private Vector<Integer> v1; //vectors used to store triangulation information
 	//persistent data, must de declared as fields
 
-	private Vector v2;
+	private Vector<Integer> v2;
 
-	private Vector v3;
+	private Vector<Integer> v3;
 
 	private Vector vert;
 
@@ -3191,13 +3192,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 							int vertex = -1;
 							switch (k) {
 							case 0:
-								vertex = ((Integer) v1.elementAt(j)).intValue();
+								vertex = v1.get(j);
 								break;
 							case 1:
-								vertex = ((Integer) v1.elementAt(j)).intValue();
+								vertex = v2.get(j);
 								break;
 							case 2:
-								vertex = ((Integer) v1.elementAt(j)).intValue();
+								vertex = v3.get(j);
 								break;
 							}
 							int pmeFace = ((Integer) faceInfo.elementAt(j))
@@ -6193,7 +6194,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 									}
 								}
 								if (!found) {
-									System.out.println("Pas trouvé !!");
+									System.out.println("Pas trouv√© !!");
 								}
 							} else {
 								newFaceVertFaceRef[j][k] = -1;
@@ -6256,7 +6257,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 										}
 									}
 									if (!found) {
-										System.out.println("Pas trouvé !!");
+										System.out.println("Pas trouv√© !!");
 									}
 								}
 								newval[j][k] = val;
