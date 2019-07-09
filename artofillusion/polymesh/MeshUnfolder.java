@@ -40,8 +40,6 @@ public class MeshUnfolder {
 
 	private double[] var; // variables, i.e. angles plus Lagrange multipliers
 
-	double[] lambdaStarInv; // diagonal of invers lambda matrix
-
 	private int[][] angleTable; // angle references for each interior vertex
 
 	private int[] interiorVertices; // interior vertices array
@@ -134,13 +132,12 @@ public class MeshUnfolder {
 		Vector interiorVerticesTable = new Vector();
 		int count = 0;
 		for (int i = 0; i < vertices.length; i++) {
-			if (edges[vertices[i].firstEdge].f1 != -1
-					&& edges[vertices[i].firstEdge].f2 != -1) {
-				// not a boundary edge
-				interiorVerticesTable.add(new Integer(i));
-				invInteriorTable[i] = count++;
+			if (edges[vertices[i].firstEdge].f1 != -1 && edges[vertices[i].firstEdge].f2 != -1) {
+                            // not a boundary edge
+                            interiorVerticesTable.add(new Integer(i));
+                            invInteriorTable[i] = count++;
 			} else
-				invInteriorTable[i] = -1;
+                            invInteriorTable[i] = -1;
 		}
 		nint = interiorVerticesTable.size();
 		interiorVertices = new int[nint];
@@ -441,11 +438,12 @@ public class MeshUnfolder {
 					}
 				}
 				try {
-					unfoldedMeshesList.add(computeUnfoldedMesh(vertList, edgeList, faceList, uverts, uedges, ufaces));
+                                    UnfoldedMesh um = computeUnfoldedMesh(vertList, edgeList, faceList, uverts, uedges, ufaces);
+                                    unfoldedMeshesList.add(um);
 				} catch (IterativeSolverNotConvergedException e) {
-					textArea.append("Failure : unfolding did not converge");
-					e.printStackTrace();
-					return false;
+                                    textArea.append("Failure : unfolding did not converge");
+                                    e.printStackTrace();
+                                    return false;
 				}
 				totaltime = new Date().getTime() - totaltime;
 				textArea.append("reconstruction done in "
@@ -469,13 +467,13 @@ public class MeshUnfolder {
 		int interiorVertV3 = invInteriorTable[v3];
 		constraints[f] -= alpha1;
 		if (interiorVertV1 != -1) {
-			constraints[ntri+interiorVertV1] -= alpha1;
+                    constraints[ntri+interiorVertV1] -= alpha1;
 		}
 		if (interiorVertV2 != -1) {
-			constraints[ntri+nint+interiorVertV2] += lsana1;
+                    constraints[ntri+nint+interiorVertV2] += lsana1;
 		}
 		if (interiorVertV3 != -1) {
-			constraints[ntri+nint+interiorVertV3] -= lsana1;
+                    constraints[ntri+nint+interiorVertV3] -= lsana1;
 		}
 	}
 	
@@ -488,34 +486,34 @@ public class MeshUnfolder {
 		mat.add(f, a1, alpha1);
 		matTmat.add(f, f, alpha1*alpha1 );
 		if (interiorVertV1 != -1) {
-			mat.add(ntri+interiorVertV1, a1, alpha1);
-			matTmat.add(ntri+interiorVertV1, ntri+interiorVertV1, alpha1*alpha1);
-			matTmat.add(ntri+interiorVertV1, f, alpha1*alpha1);
-			matTmat.add(f, ntri+interiorVertV1, alpha1*alpha1);
+                    mat.add(ntri + interiorVertV1, a1, alpha1);
+                    matTmat.add(ntri + interiorVertV1, ntri + interiorVertV1, alpha1 * alpha1);
+                    matTmat.add(ntri + interiorVertV1, f, alpha1 * alpha1);
+                    matTmat.add(f, ntri + interiorVertV1, alpha1 * alpha1);
 		}
 		if (interiorVertV2 != -1) {
-			mat.add(ntri+nint+interiorVertV2, a1, -tana1);
-			matTmat.add(ntri+nint+interiorVertV2, ntri+nint+interiorVertV2, tana1*tana1);
-			matTmat.add(ntri+nint+interiorVertV2, f, -alpha1*tana1);
-			matTmat.add(f, ntri+nint+interiorVertV2, -alpha1*tana1);
+                    mat.add(ntri + nint + interiorVertV2, a1, -tana1);
+                    matTmat.add(ntri + nint + interiorVertV2, ntri + nint + interiorVertV2, tana1 * tana1);
+                    matTmat.add(ntri + nint + interiorVertV2, f, -alpha1 * tana1);
+                    matTmat.add(f, ntri + nint + interiorVertV2, -alpha1 * tana1);
 		}
 		if (interiorVertV3 != -1) {
-			mat.add(ntri+nint+interiorVertV3, a1, tana1);
-			matTmat.add(ntri+nint+interiorVertV3, ntri+nint+interiorVertV3, tana1*tana1);
-			matTmat.add(ntri+nint+interiorVertV3, f, alpha1*tana1);
-			matTmat.add(f, ntri+nint+interiorVertV3, alpha1*tana1);
+                    mat.add(ntri + nint + interiorVertV3, a1, tana1);
+                    matTmat.add(ntri + nint + interiorVertV3, ntri + nint + interiorVertV3, tana1 * tana1);
+                    matTmat.add(ntri + nint + interiorVertV3, f, alpha1 * tana1);
+                    matTmat.add(f, ntri + nint + interiorVertV3, alpha1 * tana1);
 		}
 		if (interiorVertV1 != -1 && interiorVertV2 != -1) {
-			matTmat.add(ntri+interiorVertV1, ntri+nint+interiorVertV2, -alpha1*tana1);
-			matTmat.add(ntri+nint+interiorVertV2, ntri+interiorVertV1, -alpha1*tana1);
+                    matTmat.add(ntri + interiorVertV1, ntri + nint + interiorVertV2, -alpha1 * tana1);
+                    matTmat.add(ntri + nint + interiorVertV2, ntri + interiorVertV1, -alpha1 * tana1);
 		}
 		if (interiorVertV1 != -1 && interiorVertV3 != -1) {
-			matTmat.add(ntri+interiorVertV1, ntri+nint+interiorVertV3, alpha1*tana1);
-			matTmat.add(ntri+nint+interiorVertV3, ntri+interiorVertV1, alpha1*tana1);
+                    matTmat.add(ntri + interiorVertV1, ntri + nint + interiorVertV3, alpha1 * tana1);
+                    matTmat.add(ntri + nint + interiorVertV3, ntri + interiorVertV1, alpha1 * tana1);
 		}
 		if (interiorVertV2 != -1 && interiorVertV3 != -1) {
-			matTmat.add(ntri+nint+interiorVertV2, ntri+nint+interiorVertV3, -tana1*tana1);
-			matTmat.add(ntri+nint+interiorVertV3, ntri+nint+interiorVertV2, -tana1*tana1);
+                    matTmat.add(ntri + nint + interiorVertV2, ntri + nint + interiorVertV3, -tana1 * tana1);
+                    matTmat.add(ntri + nint + interiorVertV3, ntri + nint + interiorVertV2, -tana1 * tana1);
 		}
 	}
 
@@ -753,24 +751,17 @@ public class MeshUnfolder {
 				}
 			}
 			if (v3 == 0 || v3 == 1) {
-				b
-						.add(6 * i + j, -m3xx * vertices[v3].r.x - m3xy
-								* vertices[v3].r.y);
-				b.add(6 * i + j + 3, -m3yx * vertices[v3].r.x - m3yy
-						* vertices[v3].r.y);
+                            b.add(6 * i + j, -m3xx * vertices[v3].r.x - m3xy * vertices[v3].r.y);
+                            b.add(6 * i + j + 3, -m3yx * vertices[v3].r.x - m3yy * vertices[v3].r.y);
 			} else {
-				mat.set(i * 6 + j, 2 * (v3 - 2), m3xx);
-				mat.set(i * 6 + j, 2 * (v3 - 2) + 1, m3xy);
-				mat.set(i * 6 + j + 3, 2 * (v3 - 2), m3yx);
-				mat.set(i * 6 + j + 3, 2 * (v3 - 2) + 1, m3yy);
-				matTmat.add(2 * (v3 - 2), 2 * (v3 - 2), m3xx * m3xx + m3yx
-						* m3yx);
-				matTmat.add(2 * (v3 - 2), 2 * (v3 - 2) + 1, m3xx * m3xy + m3yx
-						* m3yy);
-				matTmat.add(2 * (v3 - 2) + 1, 2 * (v3 - 2), m3xx * m3xy + m3yx
-						* m3yy);
-				matTmat.add(2 * (v3 - 2) + 1, 2 * (v3 - 2) + 1, m3xy * m3xy
-						+ m3yy * m3yy);
+                            mat.set(i * 6 + j, 2 * (v3 - 2), m3xx);
+                            mat.set(i * 6 + j, 2 * (v3 - 2) + 1, m3xy);
+                            mat.set(i * 6 + j + 3, 2 * (v3 - 2), m3yx);
+                            mat.set(i * 6 + j + 3, 2 * (v3 - 2) + 1, m3yy);
+                            matTmat.add(2 * (v3 - 2), 2 * (v3 - 2), m3xx * m3xx + m3yx * m3yx);
+                            matTmat.add(2 * (v3 - 2), 2 * (v3 - 2) + 1, m3xx * m3xy + m3yx * m3yy);
+                            matTmat.add(2 * (v3 - 2) + 1, 2 * (v3 - 2), m3xx * m3xy + m3yx * m3yy);
+                            matTmat.add(2 * (v3 - 2) + 1, 2 * (v3 - 2) + 1, m3xy * m3xy + m3yy * m3yy);
 			}
 		}
 		DenseVector vsol = new DenseVector(nvars);
