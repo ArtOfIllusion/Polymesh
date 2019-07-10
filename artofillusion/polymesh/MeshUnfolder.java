@@ -15,7 +15,6 @@ package artofillusion.polymesh;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Stack;
-import java.util.Vector;
 
 import buoy.widget.BTextArea;
 import artofillusion.math.Vec2;
@@ -27,6 +26,7 @@ import artofillusion.polymesh.UnfoldedMesh.UnfoldedEdge;
 import artofillusion.polymesh.UnfoldedMesh.UnfoldedFace;
 import artofillusion.polymesh.UnfoldedMesh.UnfoldedVertex;
 import artofillusion.ui.Translate;
+import java.util.List;
 import no.uib.cipr.matrix.*;
 import no.uib.cipr.matrix.sparse.*;
 
@@ -50,10 +50,11 @@ public class MeshUnfolder {
 
 	private int nangles; // number of angles
 
-	private int[] invInteriorTable; // inverse table : given an interior
+        /*
+         * inverse table : given an interior vertex, yields the index to vertex in the mesh
+        */
+	private int[] invInteriorTable; // 
 
-	// vertex, yields the index to vertex in
-	// the mesh
 	private UnfoldedMesh[] unfoldedMeshes; // the unfolded meshes resulting from unfolding process
 
 	private int[] vertexTable; // vertex table correspondance between original mesh vertices and opened mesh vertices
@@ -64,7 +65,7 @@ public class MeshUnfolder {
 	 * Creates a new unfolder instance. This class unfolds triangle meshes.
 	 * 
 	 * @param mesh
-	 *                The mesh to unfold (any kind of facetted mesh)
+	 *                The mesh to unfold (any kind of faceted mesh)
 	 * @param trimesh
 	 *                The triangle mesh version of original mesh (maybe
 	 *                equal to mesh if mesh is a triangle mesh).
@@ -80,7 +81,7 @@ public class MeshUnfolder {
 	 * @param faceTable
 	 *                Table to face indices. If this array is not null, then
 	 *                unfoldedFaces will be given an id corresponding to
-	 *                this array. This allows to identify which facetted
+	 *                this array. This allows to identify which faceted
 	 *                face yielded a given trimesh face. This array may be
 	 *                null if the mesh to unfold is already a triangle mesh.
 	 *                Correct vertex index will be placed in UnfoldedVertex
@@ -129,12 +130,12 @@ public class MeshUnfolder {
 		}
 		// setup interior vertices table
 		invInteriorTable = new int[vertices.length];
-		Vector interiorVerticesTable = new Vector();
+		List<Integer> interiorVerticesTable = new ArrayList<>();
 		int count = 0;
 		for (int i = 0; i < vertices.length; i++) {
 			if (edges[vertices[i].firstEdge].f1 != -1 && edges[vertices[i].firstEdge].f2 != -1) {
                             // not a boundary edge
-                            interiorVerticesTable.add(new Integer(i));
+                            interiorVerticesTable.add(i);
                             invInteriorTable[i] = count++;
 			} else
                             invInteriorTable[i] = -1;
@@ -142,7 +143,7 @@ public class MeshUnfolder {
 		nint = interiorVerticesTable.size();
 		interiorVertices = new int[nint];
 		for (int i = 0; i < nint; i++) {
-			interiorVertices[i] = ((Integer) interiorVerticesTable.get(i)).intValue();
+                    interiorVertices[i] = interiorVerticesTable.get(i);
 		}
 		interiorVerticesTable = null;
 		angleTable = new int[nint][];
@@ -190,8 +191,7 @@ public class MeshUnfolder {
 				} else if (v == faces[tri].v3) {
 					angleTable[i][j] = 3 * tri + 2;
 				} else {
-					System.out
-							.println("pb setting angle tables: vertex not in face");
+					System.out.println("pb setting angle tables: vertex not in face");
 				}
 			}
 		}
@@ -223,12 +223,14 @@ public class MeshUnfolder {
 			newConstraints[i]  = 2*Math.PI;
 		}
 		for (int i = 0; i < faces.length; i++) {
-			addToConstraints(newConstraints, i, faces[i].v1, faces[i].v2, faces[i].v3, 3*i,ntri, nint);
-			addToConstraints(newConstraints, i, faces[i].v2, faces[i].v3, faces[i].v1, 3*i+1, ntri, nint);
-			addToConstraints(newConstraints, i, faces[i].v3, faces[i].v1, faces[i].v2, 3*i+2, ntri, nint);
-			addToMatTMat(newMat, newMatTMat, i, faces[i].v1, faces[i].v2, faces[i].v3, 3*i,ntri, nint);
-			addToMatTMat(newMat, newMatTMat, i, faces[i].v2, faces[i].v3, faces[i].v1, 3*i+1, ntri, nint);
-			addToMatTMat(newMat, newMatTMat, i, faces[i].v3, faces[i].v1, faces[i].v2, 3*i+2, ntri, nint);
+                    TriangleMesh.Face face = faces[i];
+                    addToConstraints(newConstraints, i, face.v1, face.v2, face.v3, 3 * i, ntri, nint);
+                    addToConstraints(newConstraints, i, face.v2, face.v3, face.v1, 3 * i + 1, ntri, nint);
+                    addToConstraints(newConstraints, i, face.v3, face.v1, face.v2, 3 * i + 2, ntri, nint);
+                    
+                    addToMatTMat(newMat, newMatTMat, i, face.v1, face.v2, face.v3, 3 * i, ntri, nint);
+                    addToMatTMat(newMat, newMatTMat, i, face.v2, face.v3, face.v1, 3 * i + 1, ntri, nint);
+                    addToMatTMat(newMat, newMatTMat, i, face.v3, face.v1, face.v2, 3 * i + 2, ntri, nint);
 		}
 		/*for (int i = 0; i < ntri + 2*nint; i++) {
 			System.out.println("c " + i + " : " + newConstraints[i]);
@@ -239,15 +241,17 @@ public class MeshUnfolder {
 			}
 			System.out.println(" ");
 		}*/
-		DenseVector sol = new DenseVector(ntri + 2*nint);
+                DenseVector sol = new DenseVector(ntri + 2 * nint);
+                
+                // Conjugate Gradients solver. CG solves the symmetric positive definite linear system Ax=b using the Conjugate Gradient method.
 		CG cg = new CG(sol);
 		DenseVector newcons = new DenseVector(newConstraints);
 		try {
-			cg.solve(newMatTMat, newcons, sol);
+                    cg.solve(newMatTMat, newcons, sol);
 		} catch (IterativeSolverNotConvergedException e) {
-			textArea.append("Failure : unfolding did not converge");
-			e.printStackTrace();
-			return false;
+                    textArea.append("Failure : unfolding did not converge");
+                    e.printStackTrace();
+                    return false;
 		}
 		double[] soldata = sol.getData();
 		/*for (int i = 0; i < ntri + 2*nint; i++) {
@@ -276,8 +280,7 @@ public class MeshUnfolder {
 		}
 		//System.out.println(" ");	
 		totaltime = new Date().getTime() - totaltime;
-		textArea.append("Mesh unfolded : "
-				+ Math.round(totaltime / 1000.0) + "s\n");
+		textArea.append("Mesh unfolded : " + Math.round(totaltime / 1000.0) + "s\n");
 		totaltime = new Date().getTime();
 		// now let's build the unfolded meshes
 		textArea.append("Rebuilding 2D mesh.\n");
@@ -355,12 +358,12 @@ public class MeshUnfolder {
 		// use it to keep track of orignal, non triangulated
 		// faces
 		for (int i = 0; i < ufaces.length; i++) {
-			ufaces[i] = new UnfoldedFace(faces[i]);
-			if (faceTable != null) {
-				ufaces[i].id = faceTable[i];
-			} else {
-				ufaces[i].id = i;
-			}
+                    ufaces[i] = new UnfoldedFace(faces[i]);
+                    if (faceTable == null) {
+                        ufaces[i].id = i;
+                    } else {
+                        ufaces[i].id = faceTable[i];
+                    }
 		}
 		// 2D mesh reconstruction per se
 		// first follow edges to isolate separate mesh pieces
@@ -392,8 +395,7 @@ public class MeshUnfolder {
 				textArea.append("Building piece #" + pieceCount + "...\n");
 				totaltime = new Date().getTime();
 				edgeStack.push(ufaces[index].e1);
-				double dist = verts[ufaces[index].v1].r
-						.distance(verts[ufaces[index].v2].r);
+				double dist = verts[ufaces[index].v1].r.distance(verts[ufaces[index].v2].r);
 				uverts[ufaces[index].v1].r = new Vec2(0, 0);
 				uverts[ufaces[index].v2].r = new Vec2(dist, 0);
 				unfoldedVerts[ufaces[index].v1] = true;
@@ -407,7 +409,7 @@ public class MeshUnfolder {
 					f1 = uedges[ed].f1;
 					f2 = uedges[ed].f2;
 					if (f1 != -1 && !unfoldedFace[f1]) {
-						computeFace(ed, f1, uverts, uedges, ufaces, unfoldedFace, unfoldedVerts, vertList, edgeList, faceList);
+						computeFace(ed, f1, uedges, ufaces, unfoldedFace, unfoldedVerts, vertList, faceList);
 						if (ufaces[f1].e1 != ed) {
 							edgeList.add(ufaces[f1].e1);
 							edgeStack.push(ufaces[f1].e1);
@@ -422,7 +424,7 @@ public class MeshUnfolder {
 						}
 					}
 					if (f2 != -1 && !unfoldedFace[f2]) {
-						computeFace(ed, f2, uverts, uedges, ufaces, unfoldedFace, unfoldedVerts, vertList, edgeList, faceList);
+						computeFace(ed, f2, uedges, ufaces, unfoldedFace, unfoldedVerts, vertList, faceList);
 						if (ufaces[f2].e1 != ed) {
 							edgeList.add(ufaces[f2].e1);
 							edgeStack.push(ufaces[f2].e1);
@@ -446,15 +448,16 @@ public class MeshUnfolder {
                                     return false;
 				}
 				totaltime = new Date().getTime() - totaltime;
-				textArea.append("reconstruction done in "
-						+ Math.round(totaltime / 1000) + "s\n");
+				textArea.append("reconstruction done in " + Math.round(totaltime / 1000) + "s\n");
 				++pieceCount;
 			}
 		}
+                
 		unfoldedMeshes = new UnfoldedMesh[unfoldedMeshesList.size()];
+                String meshName = Translate.text("polymesh:piece");
 		for (int i = 0; i < unfoldedMeshes.length; i++) {
                     unfoldedMeshes[i] = unfoldedMeshesList.get(i);
-                    unfoldedMeshes[i].setName(Translate.text("polymesh:piece" + (i + 1)));
+                    unfoldedMeshes[i].setName(meshName + (i + 1));
 		}
 		return true;
 	}
@@ -476,7 +479,11 @@ public class MeshUnfolder {
                     constraints[ntri+nint+interiorVertV3] -= lsana1;
 		}
 	}
-	
+        
+	/*
+            FlexCompRowMatrix mat: Matrix stored row-wise into sparse vectors
+            FlexCompRowMatrix matTmat: Matrix stored row-wise into sparse vectors
+        */
 	private void addToMatTMat(FlexCompRowMatrix mat, FlexCompRowMatrix matTmat, int f, int v1, int v2, int v3, int a1, int ntri, int nint) {
 		double alpha1 = angles[a1];
 		double tana1 = alpha1/Math.tan(alpha1);
@@ -811,11 +818,10 @@ public class MeshUnfolder {
 	 * Given an edge and a face, this method checks the 3rd vertex as being
 	 * unfolded if's not already checked
 	 */
-	private void computeFace(int e, int f, UnfoldedVertex[] uverts,
+	private static void computeFace(int e, int f,
 			UnfoldedEdge[] uedges, UnfoldedFace[] ufaces,
 			boolean[] unfoldedFace, boolean[] unfoldedVerts,
-			ArrayList<Integer> vertList, ArrayList<Integer> edgeList,
-			ArrayList<Integer> faceList) {
+			List<Integer> vertList, List<Integer> faceList) {
 		int v1, v2, v3;
 		v1 = ufaces[f].v1;
 		v2 = ufaces[f].v2;
