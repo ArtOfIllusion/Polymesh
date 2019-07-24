@@ -27,8 +27,13 @@ import artofillusion.polymesh.UnfoldedMesh.UnfoldedFace;
 import artofillusion.polymesh.UnfoldedMesh.UnfoldedVertex;
 import artofillusion.ui.Translate;
 import java.util.List;
-import no.uib.cipr.matrix.*;
-import no.uib.cipr.matrix.sparse.*;
+import no.uib.cipr.matrix.DenseVector;
+import no.uib.cipr.matrix.sparse.CG;
+import no.uib.cipr.matrix.sparse.FlexCompColMatrix;
+import no.uib.cipr.matrix.sparse.FlexCompRowMatrix;
+import no.uib.cipr.matrix.sparse.IterativeSolverNotConvergedException;
+import no.uib.cipr.matrix.sparse.SparseVector;
+
 
 public class MeshUnfolder {
     
@@ -91,13 +96,17 @@ public class MeshUnfolder {
 	 *                assigned a vertex index of -1. They won't be displayed
 	 *                by the UVMappingCanvas widget.
 	 */
-	public MeshUnfolder(FacetedMesh mesh, TriangleMesh trimesh, int[] vertexTable, int[] faceTable) {
+	private MeshUnfolder(FacetedMesh mesh, TriangleMesh trimesh, int[] vertexTable, int[] faceTable) {
             this.mesh = mesh;
             this.trimesh = trimesh;
             this.vertexTable = vertexTable;
             this.faceTable = faceTable;
 	}
 	
+        public MeshUnfolder(FacetedMesh mesh, TriangleMesh trimesh, int[] vertexTable) {
+            this(mesh, trimesh, vertexTable, ((PolyMesh)mesh).getTriangleFaceIndex());
+        }
+        
 	public boolean unfold(BTextArea textArea, double res) {
             return unfoldLinearAbf(textArea);
 	}
@@ -490,6 +499,7 @@ public class MeshUnfolder {
 		int interiorVertV1 = invInteriorTable[v1];
 		int interiorVertV2 = invInteriorTable[v2];
 		int interiorVertV3 = invInteriorTable[v3];
+                // Matrix add: row, column, value;
 		mat.add(f, a1, alpha1);
 		matTmat.add(f, f, alpha1*alpha1 );
 		if (interiorVertV1 != -1) {
