@@ -1,5 +1,7 @@
 /*
  *  Copyright (C) 2006-2007 by Francois Guillet
+ *  Changes copyright 2019 by Maksim Khramov
+
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
  *  Foundation; either version 2 of the License, or (at your option) any later version.
@@ -9,10 +11,6 @@
  */
 package artofillusion.polymesh;
 
-import artofillusion.polymesh.ui.*;
-
-import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Point;
@@ -47,7 +45,7 @@ import artofillusion.SkewMeshTool;
 import artofillusion.TaperMeshTool;
 import artofillusion.TextureParameter;
 import artofillusion.ThickenMeshTool;
-import artofillusion.TriMeshBeveler;
+
 import artofillusion.UndoRecord;
 import artofillusion.ViewerCanvas;
 import artofillusion.animation.Joint;
@@ -127,8 +125,7 @@ import buoy.xml.WidgetDecoder;
  * @author Francois Guillet
  */
 
-public class PolyMeshEditorWindow extends MeshEditorWindow implements
-		EditingWindow, PopupMenuManager, ValueWidgetOwner {
+public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWindow, PopupMenuManager, ValueWidgetOwner {
 	private Scene scene;
 
 	private ToolPalette modes;
@@ -4591,12 +4588,11 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	@SuppressWarnings("unused")
 	private void doUnfold(UnfoldStatusDialog dlg) {
-		PolyMesh theMesh = (PolyMesh) objInfo.object;
-		PolyMesh mesh = (PolyMesh) ((PolyMesh) objInfo.object).duplicate();
-		ObjectInfo info = objInfo.duplicate();
-		info.coords = new CoordinateSystem();
-		int[] vertTable;
-		vertTable = mesh.openSeams();
+		PolyMesh source = (PolyMesh) objInfo.getObject();
+		PolyMesh mesh = source.duplicate();
+
+		int[] vertTable = mesh.openSeams();
+
 		int vertCount = mesh.getVertices().length;
 		try {
 			mesh.setSmoothingMethod(Mesh.NO_SMOOTHING);
@@ -4620,16 +4616,12 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 				}
 				vertTable = nVertTable;
 			}
-			int[] faceTable = mesh.getTriangleFaceIndex();
-			MeshUnfolder unfolder = new MeshUnfolder(mesh, triMesh, vertTable,
-					faceTable);
+			MeshUnfolder unfolder = new MeshUnfolder(mesh, triMesh, vertTable);
 			if (unfolder.unfold(dlg.textArea, dlg.residual)) {
-				UVMappingData data = new UVMappingData(unfolder
-						.getUnfoldedMeshes());
-				theMesh.setMappingData(data);
-				dlg.unfoldFinished(true);
+                            source.setMappingData(new UVMappingData(unfolder.getUnfoldedMeshes()));
+                            dlg.unfoldFinished(true);
 			} else {
-				dlg.unfoldFinished(false);
+                            dlg.unfoldFinished(false);
 			}
 		} catch (Exception e) {
 			dlg.unfoldFinished(false);
@@ -4647,8 +4639,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		if (data == null) {
 			return;
 		}
-		UVMappingEditorDialog window = new UVMappingEditorDialog(Translate
-				.text("uvCoordsTitle"), info, true, this);
+		UVMappingEditorDialog window = new UVMappingEditorDialog(Translate.text("uvCoordsTitle"), info, true, this);
 		//	if (window.isClickedOk()) {
 		//	    theMesh.setMappingData(window.getMappingData());
 		//	}
@@ -5665,13 +5656,12 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		private Thread unfoldThread;
 
 		public UnfoldStatusDialog() {
-			super(PolyMeshEditorWindow.this, Translate.text("polymesh:meshUnfolding"),
-					true);
+			super(PolyMeshEditorWindow.this, Translate.text("polymesh:meshUnfolding"), true);
 			int nverts = ((PolyMesh) objInfo.object).getVertices().length;
 			if (nverts < 1000) {
-				residual = 0.001;
+                            residual = 0.001;
 			} else {
-				residual = 1;
+                            residual = 1;
 			}
 			InputStream inputStream = null;
 			try {
