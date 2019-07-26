@@ -1,5 +1,7 @@
 /*
  *  Copyright (C) 2005-2007 by Francois Guillet
+ *  Changes copyright 2019 by Maksim Khramov
+
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
  *  Foundation; either version 2 of the License, or (at your option) any later version.
@@ -15,7 +17,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.prefs.Preferences;
@@ -1299,10 +1300,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * @return A duplicate of the winged mesh object
 	 */
 
-	public Object3D duplicate() {
-		PolyMesh mesh = new PolyMesh();
-		mesh.copyObject(this);
-		return mesh;
+        @Override
+	public PolyMesh duplicate() {
+            PolyMesh mesh = new PolyMesh();
+            mesh.copyObject(this);
+            return mesh;
 	}
 
 	/**
@@ -3254,7 +3256,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
 	/**
 	 * Call this method after a call to convertToTriangleMesh() to know how the
-	 * new vertices are defined relative to the orignal polymesh vertices.
+	 * new vertices are defined relative to the original polymesh vertices.
 	 * 
 	 * @return The vertex parameter information that defines each vertex
 	 *         relative to original vertices. For each vertex, a value is
@@ -6193,7 +6195,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 									}
 								}
 								if (!found) {
-									System.out.println("Pas trouvŽ !!");
+                                                                    System.out.println("Not found!!!");
 								}
 							} else {
 								newFaceVertFaceRef[j][k] = -1;
@@ -6256,7 +6258,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 										}
 									}
 									if (!found) {
-										System.out.println("Pas trouvŽ !!");
+										System.out.println("Pas trouvï¿½ !!");
 									}
 								}
 								newval[j][k] = val;
