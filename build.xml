@@ -22,18 +22,18 @@
 
   <target name="compile" depends="init">
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac source="1.5" target="1.5" srcdir="${src}" destdir="${build}" classpath="${aoijar}:${mtjjar}" debug="on" extdirs="" />
+    <javac source="1.6" target="1.6" srcdir="${src}" destdir="${build}" classpath="${aoijar}:${mtjjar}" debug="on" extdirs="" />
   </target>
 
   <target name="dist" depends="compile">
     <!-- Copy all necessary files into ${build}, then create the jar file -->
-  	<unjar src="${mtjjar}" dest="${build}" />
+    <unjar src="${mtjjar}" dest="${build}" />
     <copy file="${src}/PMkeystrokes.xml" todir="${build}" />
     <copy file="${src}/extensions.xml" todir="${build}" />
     <copy todir="${build}">
       <fileset dir="${src}" includes="*.properties" />
     </copy>
-  	<copy todir="${build}/polymesh">
+    <copy todir="${build}/polymesh">
       <fileset dir="${src}/artofillusion/polymesh/Icons" />
     </copy>
     <copy todir="${build}/artofillusion/polymesh/interfaces">
@@ -52,7 +52,7 @@
         version="true"
         use="true"
         windowtitle="Polygonal Mesh Documentation"
-	public="true">
+        public="true">
       <doctitle><![CDATA[<h1>Polygonal Mesh</h1>]]></doctitle>
       <bottom><![CDATA[<i>Copyright &#169; 2004-2006 by Francois Guillet.</i>]]></bottom>
     </javadoc>
