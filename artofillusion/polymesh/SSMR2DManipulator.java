@@ -20,6 +20,9 @@ import artofillusion.math.Vec3;
 import artofillusion.ui.MeshEditController;
 import artofillusion.ui.ThemeManager;
 import artofillusion.ui.Translate;
+
+import static artofillusion.ui.UIUtilities.*;
+
 import buoy.event.KeyPressedEvent;
 import buoy.event.ToolTipEvent;
 import buoy.event.WidgetMouseEvent;
@@ -842,7 +845,7 @@ extends SSMRManipulator
             return false;
         if (baseClick.x == e.getPoint().x && baseClick.y == e.getPoint().y && handle != TOOL_HANDLE)
         {
-            if (e.getButton() == MouseEvent.BUTTON2 && handle != CENTER)
+            if (mouseButtonTwo(e) && handle != CENTER)
             {
                 if (valueWidget != null)
                 {

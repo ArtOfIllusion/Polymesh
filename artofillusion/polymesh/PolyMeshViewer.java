@@ -1,6 +1,7 @@
 /*
  *  Copyright (C) 1999-2004 by Peter Eastman (TriMeshViewer.java),
  *  Modifications for Winged Edge Mesh Copyright (C) 2004-2005 by François Guillet
+ *  Modifications for mouse buttons Copyright (C) 2019 by Petri Ihalainen
  *
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
@@ -39,6 +40,9 @@ import artofillusion.polymesh.QuadMesh.QuadVertex;
 import artofillusion.texture.FaceParameterValue;
 import artofillusion.ui.EditingTool;
 import artofillusion.ui.MeshEditController;
+
+import static artofillusion.ui.UIUtilities.*;
+
 import artofillusion.view.ConstantVertexShader;
 import artofillusion.view.FlatVertexShader;
 import artofillusion.view.ParameterVertexShader;
@@ -345,6 +349,7 @@ public class PolyMeshViewer extends MeshViewer
         }
         else
             sv = (MeshVertex[]) viewMesh.getVertices();
+
         for (int i = 0; i < screenVert.length; i++)
         {
             if (mirror)
@@ -747,12 +752,6 @@ public class PolyMeshViewer extends MeshViewer
 
     protected void mousePressed(WidgetMouseEvent e)
     {
-        if (e.isAltDown() && e.getButton() == MouseEvent.BUTTON3)
-        {
-            ((PolyMeshEditorWindow) getController()).triggerPopupEvent(e);
-            return;
-        }
-
         PolyMesh mesh = (PolyMesh) getController().getObject().getObject();
         MeshVertex v[] = (MeshVertex[]) mesh.getVertices();
         Wedge ed[] = mesh.getEdges();
@@ -771,19 +770,32 @@ public class PolyMeshViewer extends MeshViewer
         if (mesh.getMirrorState() != PolyMesh.NO_MIRROR)
             mirror = true;
 
+        // Let's first detect the right and middle-buttons
+
+        if (metaTool != null && mouseButtonThree(e))
+        {
+            activeTool = metaTool;
+            activeTool.mousePressed(e, this);
+            dragging = true;
+            return;
+        }
+        if (altTool != null && mouseButtonTwo(e))
+        {
+            activeTool = altTool;
+            activeTool.mousePressed(e, this);
+            dragging = true;
+            return;
+        }
+
+        // Left button actions
+
         activeTool = currentTool;
         if (!(activeTool instanceof AdvancedEditingTool))
         {
-            // Determine which tool is active.
+            // If the current tool wants all clicks, just forward the event and return.
 
-            if (metaTool != null && e.isMetaDown())
-                activeTool = metaTool;
-            else if (altTool != null && e.isAltDown())
-                activeTool = altTool;
-
-            // If the current tool wants all clicks, just forward the event and
-            // return.
-            if (activeTool.whichClicks() == EditingTool.ALL_CLICKS) {
+            if (activeTool.whichClicks() == EditingTool.ALL_CLICKS)
+            {
                 activeTool.mousePressed(e, this);
                 dragging = true;
                 return;
@@ -792,27 +804,11 @@ public class PolyMeshViewer extends MeshViewer
         else
         {
             for (i = 0; i < manipulatorArray.length; i++)
-            {
                 if (manipulatorArray[i].mousePressed(e))
                 {
                     dragging = true;
                     return;
                 }
-            }
-            // forward to alternate tools
-            // Determine which tool is active.
-            if (metaTool != null && e.isMetaDown())
-                activeTool = metaTool;
-            else if (altTool != null && e.isAltDown())
-                activeTool = altTool;
-            // If the current tool wants all clicks, just forward the event and
-            // return.
-            if (activeTool != currentTool && activeTool.whichClicks() == EditingTool.ALL_CLICKS)
-            {
-                activeTool.mousePressed(e, this);
-                dragging = true;
-                return;
-            }
         }
 
         // Determine what the click was on.
@@ -956,6 +952,7 @@ public class PolyMeshViewer extends MeshViewer
      * @param e
      *            Description of the Parameter
      */
+    @Override
     protected void mouseDragged(WidgetMouseEvent e)
     {
         if (!dragging && clickPoint == null)
@@ -963,12 +960,6 @@ public class PolyMeshViewer extends MeshViewer
         for (int i = 0; i < manipulatorArray.length; i++)
             if (manipulatorArray[i].mouseDragged(e))
                 return;
-        if (!dragging) 
-        {
-            Point p = e.getPoint();
-            if (Math.abs(p.x - clickPoint.x) < 2 && Math.abs(p.y - clickPoint.y) < 2)
-                return;
-        }
         dragging = true;
         deselect = -1;
         super.mouseDragged(e);
@@ -980,9 +971,10 @@ public class PolyMeshViewer extends MeshViewer
      * @param e
      *            Description of the Parameter
      */
+    @Override
     protected void mouseReleased(WidgetMouseEvent e)
     {
-        if (e.isAltDown() && e.getButton() == MouseEvent.BUTTON3)
+        if (mouseButtonThree(e) && ! dragging) 
         {
             ((PolyMeshEditorWindow) getController()).triggerPopupEvent(e);
             return;
@@ -1153,7 +1145,8 @@ public class PolyMeshViewer extends MeshViewer
                 controller.setSelection(selected);
                 break;
             }
-        currentTool.getWindow().updateMenus();
+            dragging = false; // Apparently this is not needed, but it felt illogical to leave it as is.
+            currentTool.getWindow().updateMenus();
     }
 
     /** Set the currently selected tool. */

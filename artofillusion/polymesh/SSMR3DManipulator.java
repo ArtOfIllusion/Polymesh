@@ -23,6 +23,9 @@ import artofillusion.object.MeshVertex;
 import artofillusion.ui.MeshEditController;
 import artofillusion.ui.ThemeManager;
 import artofillusion.ui.Translate;
+
+import static artofillusion.ui.UIUtilities.*;
+
 import buoy.event.KeyPressedEvent;
 import buoy.event.ToolTipEvent;
 import buoy.event.WidgetMouseEvent;
@@ -43,7 +46,6 @@ extends SSMRManipulator
     private Point baseClick;
     private Runnable valueWidgetCallback, validateWidgetValue, abortWidgetValue;
     private boolean isCtrlDown, isShiftDown;
-    private int button;
     private Vec3 rotateCenter;
     private Vec3 xaxis, yaxis, zaxis;
     private Vec2 x2Daxis, y2Daxis, z2Daxis;
@@ -468,9 +470,9 @@ extends SSMRManipulator
         //a valid selection
         if (bounds == null)
             return false;
-        button = e.getButton();
+
         //ignore MMB events
-        if (e.getButton() == MouseEvent.BUTTON2 ) // && ( e.getModifiers() & ActionEvent.CTRL_MASK) == 0)
+        if (mouseButtonTwo(e))
         {
             Camera cam = view.getCamera();
             baseClick = e.getPoint();
@@ -707,7 +709,7 @@ extends SSMRManipulator
             return false;
         if (!dragging)
             return false;
-        if (button == MouseEvent.BUTTON2)
+        if (mouseButtonTwo(e))
             viewDragged(e);
         else
             switch (handle)
@@ -1015,7 +1017,7 @@ extends SSMRManipulator
                     handle = ROTATE;
                 }
             }
-            if (e.getButton() == MouseEvent.BUTTON2 && handle != CENTER && e.isControlDown())
+            if (mouseButtonTwo(e) && handle != CENTER && e.isControlDown())
             {
                 if (valueWidget != null)
                 {
@@ -1040,7 +1042,7 @@ extends SSMRManipulator
                     return true;
                 }
             }
-            else if (e.getButton() == MouseEvent.BUTTON1 && ( handle == X_MOVE || handle == Y_MOVE || handle == Z_MOVE ||
+            else if (mouseButtonOne(e) && ( handle == X_MOVE || handle == Y_MOVE || handle == Z_MOVE ||
                     handle == X_SCALE || handle == Y_SCALE || handle == Z_SCALE) )
             {
                 if ( ( e.getModifiers() & ActionEvent.CTRL_MASK ) != 0 )
@@ -1161,7 +1163,7 @@ extends SSMRManipulator
                 }
             }
         }
-        else if (e.getButton() == MouseEvent.BUTTON2)
+        else if (mouseButtonTwo(e))
         {
             view.setOrientation(ViewerCanvas.VIEW_OTHER);
             view.updateImage();

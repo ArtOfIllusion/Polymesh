@@ -1,4 +1,6 @@
-/* Copyright (C) 1999-2005 by Peter Eastman, 2007 by Francois Guillet
+/* 
+ Copyright (C) 1999-2005 by Peter Eastman, 2007 by Francois Guillet
+ Modification Copyright (C) 2019 by Petri Ihalainen (mouse button detection)
 
  This program is free software; you can redistribute it and/or modify it under the 
  terms of the GNU General Public License as published by the Free Software 
@@ -23,6 +25,7 @@ import artofillusion.object.*;
 import artofillusion.polymesh.AdvancedEditingTool.SelectionProperties;
 import artofillusion.texture.*;
 import artofillusion.ui.*;
+import static artofillusion.ui.UIUtilities.*;
 import buoy.event.*;
 import buoy.widget.*;
 import java.awt.*;
@@ -332,7 +335,7 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
         Point dragPoint = e.getPoint();
         if (!clickPoint.equals(dragPoint))
         {
-            if (e.isMetaDown())
+            if (mouseButtonThree(e))
             {
                 if (e.isControlDown())
                     dragTransform = Mat4.translation(0.0, 0.0,(dragPoint.y - clickPoint.y) * 0.01);
@@ -361,7 +364,7 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
             return;
         Graphics g = getComponent().getGraphics();
         Point dragPoint = e.getPoint();
-        if (e.isMetaDown()) 
+        if (mouseButtonThree(e)) 
         {
             if (e.isControlDown())
                 dragTransform = Mat4.translation(0.0, 0.0, (dragPoint.y - clickPoint.y) * 0.01);
