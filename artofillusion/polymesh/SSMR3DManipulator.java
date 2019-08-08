@@ -114,10 +114,6 @@ extends SSMRManipulator
             specificHandleImages[Y_SCALE] = ThemeManager.getIcon( "polymesh:yscale" ).getImage();
             specificHandleImages[Z_MOVE] = ThemeManager.getIcon( "polymesh:nhandle" ).getImage();
             specificHandleImages[Z_SCALE] = ThemeManager.getIcon( "polymesh:zscale" ).getImage();
-            /*moveToolTip = PMToolTip.areaToolTip(Translate.text("polymesh:moveToolTip3d.tipText"),40);
-            scaleToolTip = PMToolTip.areaToolTip(Translate.text("polymesh:scaleToolTip3d.tipText"),40);
-            rotateToolTip = PMToolTip.areaToolTip(Translate.text("polymesh:rotateToolTip3d.tipText"),40);
-            centerToolTip = PMToolTip.areaToolTip(Translate.text("polymesh:centerToolTip3d.tipText"),40);*/
             moveToolTip = new BToolTip(Translate.text("polymesh:moveToolTip3d.tipText"));
             scaleToolTip = new BToolTip(Translate.text("polymesh:scaleToolTip3d.tipText"));
             rotateToolTip = new BToolTip(Translate.text("polymesh:rotateToolTip3d.tipText"));
@@ -422,15 +418,6 @@ extends SSMRManipulator
             extraUVBox.x = (int) screenHandle.x - HANDLE_SIZE/2;
             extraUVBox.y = (int) screenHandle.y - HANDLE_SIZE/2;
             view.drawImage(handles[X_SCALE], extraUVBox.x, extraUVBox.y);
-            /*extraUVBoxes[UV_TOPRIGHT_BOX].x = udeltax + vdeltax + centerPoint.x - HANDLE_SIZE/2;
-            extraUVBoxes[UV_TOPRIGHT_BOX].y = udeltay + vdeltay + centerPoint.y - HANDLE_SIZE/2;
-            view.drawImage(handles[X_SCALE], boxes[UV_TOPRIGHT_BOX].x, boxes[UV_TOPRIGHT_BOX].y);
-            extraUVBoxes[UV_BOTTOMRIGHT_BOX].x = udeltax - vdeltax + centerPoint.x - HANDLE_SIZE/2;
-            extraUVBoxes[UV_BOTTOMRIGHT_BOX].y = udeltay - vdeltay + centerPoint.y - HANDLE_SIZE/2;
-            view.drawImage(handles[X_SCALE], boxes[UV_BOTTOMRIGHT_BOX].x, boxes[UV_BOTTOMRIGHT_BOX].y);
-            extraUVBoxes[UV_BOTTOMLEFT_BOX].x = -udeltax - vdeltax + centerPoint.x - HANDLE_SIZE/2;
-            extraUVBoxes[UV_BOTTOMLEFT_BOX].y = -udeltay - vdeltay + centerPoint.y - HANDLE_SIZE/2;
-            view.drawImage(handles[X_SCALE], boxes[UV_BOTTOMLEFT_BOX].x, boxes[UV_BOTTOMLEFT_BOX].y);*/
         }
 
         //draw the rotation handles
@@ -500,41 +487,32 @@ extends SSMRManipulator
                 continue;
             if (boxes[i].contains(p))
             {
-                /*
-                if (e.getButton() == MouseEvent.BUTTON3)
+                if (i == CENTER)
                 {
-                    ((PolyMeshEditorWindow)((PolyMeshViewer)view).getController()).triggerPopupEvent(e);
-                    return true;
-                }
-                else
-                {*/
-                    if (i == CENTER)
+                    if ( ( e.getModifiers() & ActionEvent.CTRL_MASK) != 0 )
                     {
-                        if ( ( e.getModifiers() & ActionEvent.CTRL_MASK) != 0 )
-                        {
-                            //center drag on feature points
-                            AdvancedEditingTool.SelectionProperties props =  tool.findSelectionProperties(view.getCamera());
-                            featurePoints2d = new Vec2[props.featurePoints.length];
-                            for (int j = 0; j < featurePoints2d.length; j++)
-                                featurePoints2d[j] = camera.getObjectToScreen().timesXY(props.featurePoints[j]);
-                            centerLocation = baseClick;
-                            handle = i;
-                        }
-                        else
-                        {
-                            //selection drag
-                            handle = TOOL_HANDLE;
-                            toolHandePos = center;
-                        }
+                        //center drag on feature points
+                        AdvancedEditingTool.SelectionProperties props =  tool.findSelectionProperties(view.getCamera());
+                        featurePoints2d = new Vec2[props.featurePoints.length];
+                        for (int j = 0; j < featurePoints2d.length; j++)
+                            featurePoints2d[j] = camera.getObjectToScreen().timesXY(props.featurePoints[j]);
+                        centerLocation = baseClick;
+                        handle = i;
                     }
                     else
-                        handle = i;
-                    orAxisLength = axisLength;
-                    dragging = true;
-                    baseClick = new Point(e.getPoint());
-                    dispatchEvent(new ManipulatorPrepareChangingEvent(this, view) );
-                    return true;
-                //}
+                    {
+                        //selection drag
+                        handle = TOOL_HANDLE;
+                        toolHandePos = center;
+                    }
+                }
+                else
+                    handle = i;
+                orAxisLength = axisLength;
+                dragging = true;
+                baseClick = new Point(e.getPoint());
+                dispatchEvent(new ManipulatorPrepareChangingEvent(this, view) );
+                return true;
             }
         }
         //select proper rotation handles
@@ -643,7 +621,7 @@ extends SSMRManipulator
 
     public void doValueWidgetCallback()
     {
-	double value = valueWidget.getValue();
+        double value = valueWidget.getValue();
         if ( handle == X_MOVE || handle == Y_MOVE || handle == Z_MOVE)
             moveDragged(value);
         else if ( handle == X_SCALE || handle == Y_SCALE || handle == Z_SCALE)
@@ -991,8 +969,6 @@ extends SSMRManipulator
         Mat4 mat = Mat4.translation(-center.x, -center.y, -center.z);
         mat = m.times(mat);
         mat = Mat4.translation(center.x, center.y, center.z).times(mat);
-        //System.out.println("center: " + rotateCenter);
-        //System.out.println("angle: " + ( rotAngle * 180 / Math.PI) );
         dispatchEvent(new ManipulatorRotatingEvent(this, mat, view) );
         ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:rotateBy", new String[] { String.valueOf(Math.round(rotAngle*180*1e5/Math.PI)/1e5) } ));
         return true;
@@ -1143,7 +1119,6 @@ extends SSMRManipulator
                                 case Z_SCALE:
                                     view.setOrientation(ViewerCanvas.VIEW_FRONT);
                                     break;
-
                             }
                             CoordinateSystem coords = camera.getCameraCoordinates();
                             coords.setOrigin(center);
@@ -1188,14 +1163,9 @@ extends SSMRManipulator
         }
         else if (e.getButton() == MouseEvent.BUTTON2)
         {
-        	view.setOrientation(ViewerCanvas.VIEW_OTHER);
+            view.setOrientation(ViewerCanvas.VIEW_OTHER);
             view.updateImage();
         }
-        /*else if (e.getButton() == MouseEvent.BUTTON3)
-        {
-            if (!e.isControlDown() && !e.isShiftDown())
-                ((PolyMeshEditorWindow)((PolyMeshViewer)view).getController()).triggerPopupEvent(e);
-        }*/
         else
         {
             switch(handle)
