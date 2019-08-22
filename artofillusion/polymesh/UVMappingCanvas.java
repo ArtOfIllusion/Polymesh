@@ -48,222 +48,6 @@ import buoy.widget.CustomWidget;
  */
 public class UVMappingCanvas extends CustomWidget {
 
-    /**
-     * Undo/Redo command for whole set of mesh pieces vertices change
-     */
-    public class MappingPositionsCommand implements Command {
-        private Vec2[][] oldPos;
-        private Vec2[][] newPos;
-        private double oldUmin, oldUmax, oldVmin, oldVmax;
-        private double newUmin, newUmax, newVmin, newVmax;
-
-        public MappingPositionsCommand() {
-            oldPos = newPos = null;
-        }
-
-        public MappingPositionsCommand(Vec2[][] oldPos, Vec2[][] newPos) {
-            super();
-            this.oldPos = oldPos;
-            this.newPos = newPos;
-        }
-
-        public void setOldRange(double oldUmin, double oldUmax, double oldVmin, double oldVmax) {
-            this.oldUmin = oldUmin;
-            this.oldUmax = oldUmax;
-            this.oldVmin = oldVmin;
-            this.oldVmax = oldVmax;
-        }
-
-        public void setNewRange(double newUmin, double newUmax, double newVmin, double newVmax) {
-            this.newUmin = newUmin;
-            this.newUmax = newUmax;
-            this.newVmin = newVmin;
-            this.newVmax = newVmax;
-        }
-
-        /**
-         * @return the newPos
-         */
-        public Vec2[][] getNewPos() {
-            return newPos;
-        }
-
-        /**
-         * @param newPos the newPos to set
-         */
-        public void setNewPos(Vec2[][] newPos) {
-            this.newPos = new Vec2[newPos.length][];
-            for (int i = 0; i < newPos.length; i++) {
-                this.newPos[i] = new Vec2[newPos[i].length];
-                for (int j = 0; j < newPos[i].length; j++)
-                    this.newPos[i][j] = new Vec2(newPos[i][j]);
-            }
-        }
-
-        /**
-         * @return the oldPos
-         */
-        public Vec2[][] getOldPos() {
-            return oldPos;
-        }
-
-        /**
-         * @param oldPos the oldPos to set
-         */
-        public void setOldPos(Vec2[][] oldPos) {
-            this.oldPos = new Vec2[oldPos.length][];
-            for (int i = 0; i < oldPos.length; i++) {
-                this.oldPos[i] = new Vec2[oldPos[i].length];
-                for (int j = 0; j < oldPos[i].length; j++) 
-                    this.oldPos[i][j] = new Vec2(oldPos[i][j]);
-            }
-        }
-
-        public void execute() {
-            redo();
-        }
-
-        public void redo() {
-            for (int i = 0; i < mapping.v.length; i++)
-                for (int j = 0; j < mapping.v[i].length; j++)
-                    mapping.v[i][j] = new Vec2(newPos[i][j]);
-
-            setRange(newUmin, newUmax, newVmin, newVmax);
-            manipulator.selectionUpdated();
-            repaint();
-        }
-
-        public void undo() {
-            for (int i = 0; i < mapping.v.length; i++)
-                for (int j = 0; j < mapping.v[i].length; j++)
-                    mapping.v[i][j] = new Vec2(oldPos[i][j]);
-            setRange(oldUmin, oldUmax, oldVmin, oldVmax);
-            manipulator.selectionUpdated();
-            repaint();
-        }
-    }
-
-    /**
-     * Undo/Redo command for pinning vertices
-     */
-    public class PinCommand implements Command {
-
-        public int[] selection;
-
-        public PinCommand(int[] selection) {
-            super();
-            this.selection = selection;
-        }
-
-        public void execute() {
-            redo();
-        }
-
-        public void redo() {
-            for (int i = 0; i < selection.length; i++) {
-                mappingData.meshes[currentPiece].vertices[mappingData.verticesTable[currentPiece][selection[i]]].pinned = 
-                !mappingData.meshes[currentPiece].vertices[mappingData.verticesTable[currentPiece][selection[i]]].pinned;
-            }
-            repaint();
-        }
-
-        public void undo() {
-            redo();
-        }
-    }
-
-    /**
-     * Undo/Redo command for selected vertices
-     */
-    public class SelectionCommand implements Command {
-
-        private int[] selection;
-
-        public SelectionCommand(int[] selection) {
-            super();
-            this.selection = selection;
-        }
-
-        public void execute() {
-            redo();
-        }
-
-        public void redo() {
-            for (int i = 0; i < selection.length; i++)
-                selected[selection[i]] = !selected[selection[i]];
-            manipulator.selectionUpdated();
-            repaint();
-        }
-
-        public void undo() {
-            redo();
-        }
-    }
-
-    /**
-     * Undo/Redo command for dragged vertices
-     * 
-     * @author François Guillet
-     */
-    public class DragMappingVerticesCommand implements Command {
-
-        private int[] vertIndices;
-        private Vec2[] undoPositions;
-        private Vec2[] redoPositions;
-        private UVMeshMapping mapping;
-        private int piece;
-
-        /**
-         * Creates a DragMappingVerticesCommand
-         * 
-         * @param vertIndexes    The indexes of vertices to move
-         * @param undoPositions  The original positions
-         * @param redoPositions  The positions to move to
-         */
-
-        public DragMappingVerticesCommand(int[] vertIndexes, 
-                                          Vec2[] undoPositions, 
-                                          Vec2[] redoPositions, 
-                                          UVMeshMapping mapping, 
-                                          int piece) {
-            super();
-            this.vertIndices = vertIndexes;
-            this.undoPositions = undoPositions;
-            this.redoPositions = redoPositions;
-            this.mapping = mapping;
-            this.piece = piece;
-        }
-
-        public void execute() {
-            redo();
-        }
-
-        public void redo() {
-            Vec2[] v = mapping.v[piece];
-            for (int i = 0; i < vertIndices.length; i++)
-                v[vertIndices[i]] = new Vec2(redoPositions[i]);
-            refreshVerticesPoints();
-            manipulator.selectionUpdated();
-            repaint();
-        }
-
-        public void undo() {
-            Vec2[] v = mapping.v[piece];
-            for (int i = 0; i < vertIndices.length; i++)
-                v[vertIndices[i]] = new Vec2(undoPositions[i]);
-            refreshVerticesPoints();
-            manipulator.selectionUpdated();
-            repaint();
-        }
-    }
-
-    public class Range {
-        public double umin;
-        public double umax;
-        public double vmin;
-        public double vmax;
-    }
-
     private Dimension size; // widget size
     private Dimension oldSize; // old widget size used to track size change
     private UnfoldedMesh[] meshes; // the mesh pieces to display
@@ -297,11 +81,16 @@ public class UVMappingCanvas extends CustomWidget {
     private final static Color pinnedColor = new Color(182, 0, 185);
     private final static Color pinnedSelectedColor = new Color(255, 142, 255);
 
+    /** 
+     *  Construct a new UVMappingCanvas
+     */
+
     public UVMappingCanvas(UVMappingEditorDialog window,
                            UVMappingData mappingData, 
                            MeshPreviewer preview, 
                            Texture texture,
                            UVMapping texMapping) {
+
         super();
         parent = window;
         this.preview = preview;
@@ -1242,5 +1031,221 @@ public class UVMappingCanvas extends CustomWidget {
 
     public int[] getSelectionDistance() {
         return selectionDistance;
+    }
+
+    /**
+     * Undo/Redo command for whole set of mesh pieces vertices change
+     */
+    public class MappingPositionsCommand implements Command {
+        private Vec2[][] oldPos;
+        private Vec2[][] newPos;
+        private double oldUmin, oldUmax, oldVmin, oldVmax;
+        private double newUmin, newUmax, newVmin, newVmax;
+
+        public MappingPositionsCommand() {
+            oldPos = newPos = null;
+        }
+
+        public MappingPositionsCommand(Vec2[][] oldPos, Vec2[][] newPos) {
+            super();
+            this.oldPos = oldPos;
+            this.newPos = newPos;
+        }
+
+        public void setOldRange(double oldUmin, double oldUmax, double oldVmin, double oldVmax) {
+            this.oldUmin = oldUmin;
+            this.oldUmax = oldUmax;
+            this.oldVmin = oldVmin;
+            this.oldVmax = oldVmax;
+        }
+
+        public void setNewRange(double newUmin, double newUmax, double newVmin, double newVmax) {
+            this.newUmin = newUmin;
+            this.newUmax = newUmax;
+            this.newVmin = newVmin;
+            this.newVmax = newVmax;
+        }
+
+        /**
+         * @return the newPos
+         */
+        public Vec2[][] getNewPos() {
+            return newPos;
+        }
+
+        /**
+         * @param newPos the newPos to set
+         */
+        public void setNewPos(Vec2[][] newPos) {
+            this.newPos = new Vec2[newPos.length][];
+            for (int i = 0; i < newPos.length; i++) {
+                this.newPos[i] = new Vec2[newPos[i].length];
+                for (int j = 0; j < newPos[i].length; j++)
+                    this.newPos[i][j] = new Vec2(newPos[i][j]);
+            }
+        }
+
+        /**
+         * @return the oldPos
+         */
+        public Vec2[][] getOldPos() {
+            return oldPos;
+        }
+
+        /**
+         * @param oldPos the oldPos to set
+         */
+        public void setOldPos(Vec2[][] oldPos) {
+            this.oldPos = new Vec2[oldPos.length][];
+            for (int i = 0; i < oldPos.length; i++) {
+                this.oldPos[i] = new Vec2[oldPos[i].length];
+                for (int j = 0; j < oldPos[i].length; j++) 
+                    this.oldPos[i][j] = new Vec2(oldPos[i][j]);
+            }
+        }
+
+        public void execute() {
+            redo();
+        }
+
+        public void redo() {
+            for (int i = 0; i < mapping.v.length; i++)
+                for (int j = 0; j < mapping.v[i].length; j++)
+                    mapping.v[i][j] = new Vec2(newPos[i][j]);
+
+            setRange(newUmin, newUmax, newVmin, newVmax);
+            manipulator.selectionUpdated();
+            repaint();
+        }
+
+        public void undo() {
+            for (int i = 0; i < mapping.v.length; i++)
+                for (int j = 0; j < mapping.v[i].length; j++)
+                    mapping.v[i][j] = new Vec2(oldPos[i][j]);
+            setRange(oldUmin, oldUmax, oldVmin, oldVmax);
+            manipulator.selectionUpdated();
+            repaint();
+        }
+    }
+
+    /**
+     * Undo/Redo command for pinning vertices
+     */
+    public class PinCommand implements Command {
+
+        public int[] selection;
+
+        public PinCommand(int[] selection) {
+            super();
+            this.selection = selection;
+        }
+
+        public void execute() {
+            redo();
+        }
+
+        public void redo() {
+            for (int i = 0; i < selection.length; i++) {
+                mappingData.meshes[currentPiece].vertices[mappingData.verticesTable[currentPiece][selection[i]]].pinned = 
+                !mappingData.meshes[currentPiece].vertices[mappingData.verticesTable[currentPiece][selection[i]]].pinned;
+            }
+            repaint();
+        }
+
+        public void undo() {
+            redo();
+        }
+    }
+
+    /**
+     * Undo/Redo command for selected vertices
+     */
+    public class SelectionCommand implements Command {
+
+        private int[] selection;
+
+        public SelectionCommand(int[] selection) {
+            super();
+            this.selection = selection;
+        }
+
+        public void execute() {
+            redo();
+        }
+
+        public void redo() {
+            for (int i = 0; i < selection.length; i++)
+                selected[selection[i]] = !selected[selection[i]];
+            manipulator.selectionUpdated();
+            repaint();
+        }
+
+        public void undo() {
+            redo();
+        }
+    }
+
+    /**
+     * Undo/Redo command for dragged vertices
+     * 
+     * @author François Guillet
+     */
+    public class DragMappingVerticesCommand implements Command {
+
+        private int[] vertIndices;
+        private Vec2[] undoPositions;
+        private Vec2[] redoPositions;
+        private UVMeshMapping mapping;
+        private int piece;
+
+        /**
+         * Creates a DragMappingVerticesCommand
+         * 
+         * @param vertIndexes    The indexes of vertices to move
+         * @param undoPositions  The original positions
+         * @param redoPositions  The positions to move to
+         */
+
+        public DragMappingVerticesCommand(int[] vertIndexes, 
+                                          Vec2[] undoPositions, 
+                                          Vec2[] redoPositions, 
+                                          UVMeshMapping mapping, 
+                                          int piece) {
+            super();
+            this.vertIndices = vertIndexes;
+            this.undoPositions = undoPositions;
+            this.redoPositions = redoPositions;
+            this.mapping = mapping;
+            this.piece = piece;
+        }
+
+        public void execute() {
+            redo();
+        }
+
+        public void redo() {
+            Vec2[] v = mapping.v[piece];
+            for (int i = 0; i < vertIndices.length; i++)
+                v[vertIndices[i]] = new Vec2(redoPositions[i]);
+            refreshVerticesPoints();
+            manipulator.selectionUpdated();
+            repaint();
+        }
+
+        public void undo() {
+            Vec2[] v = mapping.v[piece];
+            for (int i = 0; i < vertIndices.length; i++)
+                v[vertIndices[i]] = new Vec2(undoPositions[i]);
+            refreshVerticesPoints();
+            manipulator.selectionUpdated();
+            repaint();
+        }
+    }
+
+    public class Range {
+        public double umin;
+        public double umax;
+        public double vmin;
+        public double vmax;
     }
 }

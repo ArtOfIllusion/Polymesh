@@ -85,367 +85,6 @@ import buoy.xml.WidgetDecoder;
  */
 public class UVMappingEditorDialog extends BDialog {
 
-    /**
-     * Undo/Redo command for sending texture to mapping
-     */
-    public class ChangeTextureCommand implements Command {
-
-        int oldTexture, newTexture;
-
-        public ChangeTextureCommand(int oldTexture, int newTexture) {
-            super();
-            this.oldTexture = oldTexture;
-            this.newTexture = newTexture;
-        }
-
-        public void execute() {
-            redo();
-        }
-
-        public void redo() {
-            textureCB.setSelectedIndex(newTexture);
-            doTextureChanged();
-        }
-
-        public void undo() {
-            textureCB.setSelectedIndex(oldTexture);
-            doTextureChanged();
-        }
-    }
-
-    /**
-     * Undo/Redo command for sending texture to mapping
-     */
-    public class SendTextureToMappingCommand implements Command {
-
-        int texture, oldMapping, newMapping;
-
-        public SendTextureToMappingCommand(int texture, int oldMapping, int newMapping)
-        {
-            this.texture = texture;
-            this.oldMapping = oldMapping;
-            this.newMapping = newMapping;
-        }
-
-        public void execute() {
-            redo();
-        }
-
-        public void redo() {
-            sendToMapping(oldMapping, newMapping);
-        }
-
-        public void undo() {
-            sendToMapping(newMapping, oldMapping);
-        }
-
-        public void sendToMapping(int from, int to) {
-            UVMeshMapping fromMapping = mappingData.mappings.get(from);
-            UVMeshMapping toMapping = mappingData.mappings.get(to);
-            for (int j = 0; j < fromMapping.textures.size(); j++)
-                if (texture == fromMapping.textures.get(j).intValue()) {
-                    fromMapping.textures.remove(j);
-                    break;
-                }
-
-            mappingMenuItems[from].setState(false);
-            toMapping.textures.add(new Integer(texture));
-            mappingMenuItems[from].setState(false);
-            mappingMenuItems[to].setState(true);
-            changeMapping(to);
-            mappingCB.setSelectedIndex(to);
-            updateState();
-        }
-    }
-
-    /**
-     * Undo/Redo command for changing selected mapping
-     */
-    public class ChangeMappingCommand implements Command {
-
-        int oldMapping, newMapping;
-
-        public ChangeMappingCommand(int oldMapping, int newMapping) {
-            this.oldMapping = oldMapping;
-            this.newMapping = newMapping;
-        }
-
-        public void execute() {
-            redo();
-        }
-
-        public void redo() {
-            changeMapping(newMapping);
-        }
-
-        public void undo() {
-            changeMapping(oldMapping);
-        }
-    }
-
-    /**
-     * Undo/Redo command for adding a mapping
-     */
-    public class RemoveMappingCommand implements Command {
-
-        UVMeshMapping mapping;
-        int index;
-
-        public RemoveMappingCommand(UVMeshMapping mapping, int index) {
-            super();
-            this.mapping = mapping.duplicate();
-            this.index = index;
-        }
-
-        public void execute() {
-            redo();
-        }
-
-        public void redo() 
-        {
-            ArrayList<UVMeshMapping> mappings = mappingData.getMappings();
-            mappingCB.remove(index);
-            mappings.remove(index);
-            UVMeshMapping firstMapping = mappings.get(0);
-            for (int j = 0; j < currentMapping.textures.size(); j++)
-                firstMapping.textures.add(currentMapping.textures.get(j));
-            if (firstMapping.textures.size() > 0) {
-                currentTexture = getTextureFromID(firstMapping.textures.get(0));
-                mappingCanvas.setTexture(texList.get(currentTexture), mappingList.get(currentTexture));
-            } else {
-                currentTexture = -1;
-                mappingCanvas.setTexture(null, null);
-            }
-            mappingCanvas.setMapping(firstMapping);
-            currentMapping = firstMapping;
-            updateMappingMenu();
-            setTexturesForMapping(currentMapping);
-            if (currentTexture != -1)
-                textureCB.setSelectedIndex(currentTexture);
-            updateState();
-            mappingCanvas.repaint();
-        }
-
-        public void undo() {
-            ArrayList<UVMeshMapping> mappings = mappingData.getMappings();
-            UVMeshMapping newMapping = mapping.duplicate();
-            mappingCB.add(index, newMapping.name);
-            mappings.add(index, newMapping);
-            UVMeshMapping firstMapping = mappings.get(0);
-            for (int j = 0; j < mapping.textures.size(); j++)
-                firstMapping.textures.remove(mapping.textures.get(j));
-            currentMapping = newMapping;
-            if (currentMapping.textures.size() > 0) {
-                currentTexture = getTextureFromID(currentMapping.textures.get(0));
-                mappingCanvas.setTexture(texList.get(currentTexture), mappingList.get(currentTexture));
-            } else {
-                currentTexture = -1;
-                mappingCanvas.setTexture(null, null);
-            }
-            mappingCanvas.setMapping(currentMapping);
-            updateMappingMenu();
-            setTexturesForMapping(currentMapping);
-            if (currentTexture != -1)
-                textureCB.setSelectedIndex(currentTexture);
-            updateState();
-            mappingCanvas.repaint();
-        }
-    }
-
-    /**
-     * Undo/Redo command for adding a mapping
-     */
-    public class AddMappingCommand implements Command {
-
-        UVMeshMapping mapping;
-        int selected;
-
-        public AddMappingCommand(UVMeshMapping mapping, int selected){
-            super();
-            this.mapping = mapping.duplicate();
-            this.selected = selected;
-        }
-
-        public void execute() {
-            redo();
-        }
-
-        public void redo() {
-            UVMeshMapping newMapping = mapping.duplicate();
-            mappingData.mappings.add(newMapping);
-            mappingCB.add(newMapping.name);
-            mappingCB.setSelectedValue(newMapping.name);
-            currentTexture = -1;
-            currentMapping = newMapping;
-            mappingCanvas.setTexture(null, null);
-            mappingCanvas.setMapping(newMapping);
-            updateMappingMenu();
-            updateState();
-        }
-
-        public void undo() {
-            ArrayList<UVMeshMapping> mappings = mappingData.getMappings();
-            int index = mappings.size() - 1;
-            mappingCB.remove(index);
-            mappings.remove(index);
-            UVMeshMapping newMapping = mappings.get(selected);
-            mappingCanvas.setMapping(newMapping);
-            currentMapping = newMapping;
-            updateMappingMenu();
-            updateState();
-        }
-    }
-
-    /**
-     * Undo/Redo command for selecting a piece
-     */
-    public class SelectPieceCommand implements Command {
-
-        private int oldPiece;
-        private int newPiece;
-
-        public SelectPieceCommand(int oldPiece, int newPiece) {
-            super();
-            this.oldPiece = oldPiece;
-            this.newPiece = newPiece;
-        }
-
-        public void execute() {
-            redo();
-        }
-
-        public void redo() {
-            mappingCanvas.setSelectedPiece(newPiece);
-            pieceList.setSelected(newPiece, true);
-            repaint();
-        }
-
-        public void undo() {
-            mappingCanvas.setSelectedPiece(oldPiece);
-            pieceList.setSelected(oldPiece, true);
-            repaint();
-        }
-    }
-
-    /**
-     * Undo/Redo command for renaming a piece
-     */
-    public class RenamePieceCommand implements Command {
-
-        private int piece;
-        private String oldName;
-        private String newName;
-
-        public RenamePieceCommand(int piece, String oldName, String newName) {
-            super();
-            this.piece = piece;
-            this.oldName = oldName;
-            this.newName = newName;
-        }
-
-        public void execute() {
-            redo();
-        }
-
-        public void redo() {
-            setPieceName(piece, newName);
-            repaint();
-        }
-
-        public void undo() {
-            setPieceName(piece, oldName);
-        }
-    }
-
-    /**
-     * Implementation of ExportImage dialog as a subclass of UVMappingEditor
-     * Dialog.
-     * 
-     * @author François Guillet
-     */
-    private class ExportImageDialog extends BDialog {
-
-        private BorderContainer borderContainer1;
-        private BSpinner widthSpinner;
-        private BSpinner heightSpinner;
-        private BTextField fileTextField;
-        private BButton fileButton;
-        private BButton okButton;
-        private BButton cancelButton;
-        public int width;
-        public int height;
-        public boolean clickedOk;
-        public File file;
-
-        public ExportImageDialog(int width, int height) {
-            super(UVMappingEditorDialog.this, true);
-            this.width = width;
-            this.height = height;
-            setTitle(Translate.text("polymesh:exportImageFile"));
-            InputStream inputStream = null;
-            try {
-                WidgetDecoder decoder = new WidgetDecoder(inputStream = 
-                                                          getClass().getResource("interfaces/exportImage.xml").openStream(), 
-                                                          PolyMeshPlugin.resources);
-                borderContainer1 = (BorderContainer) decoder.getRootObject();
-                widthSpinner = ((BSpinner) decoder.getObject("widthSpinner"));
-                widthSpinner.setValue(new Integer(width));
-                heightSpinner = ((BSpinner) decoder.getObject("heightSpinner"));
-                heightSpinner.setValue(new Integer(height));
-                fileTextField = ((BTextField) decoder.getObject("fileTextField"));
-                fileButton = ((BButton) decoder.getObject("fileButton"));
-                okButton = ((BButton) decoder.getObject("okButton"));
-                cancelButton = ((BButton) decoder.getObject("cancelButton"));
-                okButton.addEventLink(CommandEvent.class, this, "doOK");
-                cancelButton.addEventLink(CommandEvent.class, this, "doCancel");
-                fileButton.addEventLink(CommandEvent.class, this, "doChooseFile");
-                fileTextField.addEventLink(ValueChangedEvent.class, this, "doFilePathChanged");
-                this.addEventLink(WindowClosingEvent.class, this, "doCancel");
-                setContent(borderContainer1);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } finally {
-                try {
-                    if (inputStream != null)
-                        inputStream.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-            file = null;
-            pack();
-            setVisible(true);
-        }
-
-        private void doOK() {
-            clickedOk = true;
-            width = ((Integer) widthSpinner.getValue()).intValue();
-            height = ((Integer) heightSpinner.getValue()).intValue();
-            dispose();
-        }
-
-        private void doCancel() {
-            clickedOk = false;
-            dispose();
-        }
-
-        private void doChooseFile() {
-            BFileChooser chooser = new BFileChooser(BFileChooser.SAVE_FILE, 
-                                   Translate.text("polymesh:chooseExportImageFile"));
-            if (file != null) {
-                chooser.setDirectory(file.getParentFile());
-            }
-            if (chooser.showDialog(UVMappingEditorDialog.this)) {
-                file = chooser.getSelectedFile();
-                fileTextField.setText(file.getAbsolutePath());
-            }
-        }
-
-        private void doFilePathChanged() {
-            file = new File(fileTextField.getText());
-        }
-    }
-
     private UVMappingCanvas mappingCanvas; // the mapping canvas displayed at window center
     private BList pieceList; // the list of mesh pieces
     private UVMappingData mappingData; // mapping data associated to the unfolded mesh
@@ -463,6 +102,9 @@ public class UVMappingEditorDialog extends BDialog {
     private boolean clickedOk; // true if the user clicked the ok button
     private boolean tension;
     private int tensionValue;
+
+     // This is not pretty. 3.0 --> 3.5 or maybe a geometric sequence
+
     protected static final double[] tensionArray = { 5.0, 3.0, 2.0, 1.0, 0.5 };
     private int tensionDistance;
     private int undoLevels;
@@ -491,6 +133,10 @@ public class UVMappingEditorDialog extends BDialog {
     private BMenu sendTexToMappingMenu;
     private BMenuItem removeMappingMenuItem;
     private BCheckBoxMenuItem[] mappingMenuItems;
+
+    /** 
+     *  Construct a new UVMappingEditorDialog
+     */
 
     public UVMappingEditorDialog(String title, ObjectInfo objInfo, boolean initialize, BFrame parent) {
 
@@ -1267,5 +913,368 @@ public class UVMappingEditorDialog extends BDialog {
     private void doAutoScale() {
         mappingCanvas.resetMeshLayout();
         mappingCanvas.repaint();
+    }
+
+    /**
+     * Undo/Redo command for sending texture to mapping
+     */
+    public class ChangeTextureCommand implements Command {
+
+        int oldTexture, newTexture;
+
+        public ChangeTextureCommand(int oldTexture, int newTexture) {
+            super();
+            this.oldTexture = oldTexture;
+            this.newTexture = newTexture;
+        }
+
+        public void execute() {
+            redo();
+        }
+
+        public void redo() {
+            textureCB.setSelectedIndex(newTexture);
+            doTextureChanged();
+        }
+
+        public void undo() {
+            textureCB.setSelectedIndex(oldTexture);
+            doTextureChanged();
+        }
+    }
+
+    /**
+     * Undo/Redo command for sending texture to mapping
+     */
+    public class SendTextureToMappingCommand implements Command {
+
+        int texture, oldMapping, newMapping;
+
+        public SendTextureToMappingCommand(int texture, int oldMapping, int newMapping)
+        {
+            this.texture = texture;
+            this.oldMapping = oldMapping;
+            this.newMapping = newMapping;
+        }
+
+        public void execute() {
+            redo();
+        }
+
+        public void redo() {
+            sendToMapping(oldMapping, newMapping);
+        }
+
+        public void undo() {
+            sendToMapping(newMapping, oldMapping);
+        }
+
+        public void sendToMapping(int from, int to) {
+            UVMeshMapping fromMapping = mappingData.mappings.get(from);
+            UVMeshMapping toMapping = mappingData.mappings.get(to);
+            for (int j = 0; j < fromMapping.textures.size(); j++)
+                if (texture == fromMapping.textures.get(j).intValue()) {
+                    fromMapping.textures.remove(j);
+                    break;
+                }
+
+            mappingMenuItems[from].setState(false);
+            toMapping.textures.add(new Integer(texture));
+            mappingMenuItems[from].setState(false);
+            mappingMenuItems[to].setState(true);
+            changeMapping(to);
+            mappingCB.setSelectedIndex(to);
+            updateState();
+        }
+    }
+
+    /**
+     * Undo/Redo command for changing selected mapping
+     */
+    public class ChangeMappingCommand implements Command {
+
+        int oldMapping, newMapping;
+
+        public ChangeMappingCommand(int oldMapping, int newMapping) {
+            this.oldMapping = oldMapping;
+            this.newMapping = newMapping;
+        }
+
+        public void execute() {
+            redo();
+        }
+
+        public void redo() {
+            changeMapping(newMapping);
+        }
+
+        public void undo() {
+            changeMapping(oldMapping);
+        }
+    }
+
+    /**
+     * Undo/Redo command for adding a mapping
+     */
+    public class RemoveMappingCommand implements Command {
+
+        UVMeshMapping mapping;
+        int index;
+
+        public RemoveMappingCommand(UVMeshMapping mapping, int index) {
+            super();
+            this.mapping = mapping.duplicate();
+            this.index = index;
+        }
+
+        public void execute() {
+            redo();
+        }
+
+        public void redo() 
+        {
+            ArrayList<UVMeshMapping> mappings = mappingData.getMappings();
+            mappingCB.remove(index);
+            mappings.remove(index);
+            UVMeshMapping firstMapping = mappings.get(0);
+            for (int j = 0; j < currentMapping.textures.size(); j++)
+                firstMapping.textures.add(currentMapping.textures.get(j));
+            if (firstMapping.textures.size() > 0) {
+                currentTexture = getTextureFromID(firstMapping.textures.get(0));
+                mappingCanvas.setTexture(texList.get(currentTexture), mappingList.get(currentTexture));
+            } else {
+                currentTexture = -1;
+                mappingCanvas.setTexture(null, null);
+            }
+            mappingCanvas.setMapping(firstMapping);
+            currentMapping = firstMapping;
+            updateMappingMenu();
+            setTexturesForMapping(currentMapping);
+            if (currentTexture != -1)
+                textureCB.setSelectedIndex(currentTexture);
+            updateState();
+            mappingCanvas.repaint();
+        }
+
+        public void undo() {
+            ArrayList<UVMeshMapping> mappings = mappingData.getMappings();
+            UVMeshMapping newMapping = mapping.duplicate();
+            mappingCB.add(index, newMapping.name);
+            mappings.add(index, newMapping);
+            UVMeshMapping firstMapping = mappings.get(0);
+            for (int j = 0; j < mapping.textures.size(); j++)
+                firstMapping.textures.remove(mapping.textures.get(j));
+            currentMapping = newMapping;
+            if (currentMapping.textures.size() > 0) {
+                currentTexture = getTextureFromID(currentMapping.textures.get(0));
+                mappingCanvas.setTexture(texList.get(currentTexture), mappingList.get(currentTexture));
+            } else {
+                currentTexture = -1;
+                mappingCanvas.setTexture(null, null);
+            }
+            mappingCanvas.setMapping(currentMapping);
+            updateMappingMenu();
+            setTexturesForMapping(currentMapping);
+            if (currentTexture != -1)
+                textureCB.setSelectedIndex(currentTexture);
+            updateState();
+            mappingCanvas.repaint();
+        }
+    }
+
+    /**
+     * Undo/Redo command for adding a mapping
+     */
+    public class AddMappingCommand implements Command {
+
+        UVMeshMapping mapping;
+        int selected;
+
+        public AddMappingCommand(UVMeshMapping mapping, int selected){
+            super();
+            this.mapping = mapping.duplicate();
+            this.selected = selected;
+        }
+
+        public void execute() {
+            redo();
+        }
+
+        public void redo() {
+            UVMeshMapping newMapping = mapping.duplicate();
+            mappingData.mappings.add(newMapping);
+            mappingCB.add(newMapping.name);
+            mappingCB.setSelectedValue(newMapping.name);
+            currentTexture = -1;
+            currentMapping = newMapping;
+            mappingCanvas.setTexture(null, null);
+            mappingCanvas.setMapping(newMapping);
+            updateMappingMenu();
+            updateState();
+        }
+
+        public void undo() {
+            ArrayList<UVMeshMapping> mappings = mappingData.getMappings();
+            int index = mappings.size() - 1;
+            mappingCB.remove(index);
+            mappings.remove(index);
+            UVMeshMapping newMapping = mappings.get(selected);
+            mappingCanvas.setMapping(newMapping);
+            currentMapping = newMapping;
+            updateMappingMenu();
+            updateState();
+        }
+    }
+
+    /**
+     * Undo/Redo command for selecting a piece
+     */
+    public class SelectPieceCommand implements Command {
+
+        private int oldPiece;
+        private int newPiece;
+
+        public SelectPieceCommand(int oldPiece, int newPiece) {
+            super();
+            this.oldPiece = oldPiece;
+            this.newPiece = newPiece;
+        }
+
+        public void execute() {
+            redo();
+        }
+
+        public void redo() {
+            mappingCanvas.setSelectedPiece(newPiece);
+            pieceList.setSelected(newPiece, true);
+            repaint();
+        }
+
+        public void undo() {
+            mappingCanvas.setSelectedPiece(oldPiece);
+            pieceList.setSelected(oldPiece, true);
+            repaint();
+        }
+
+    }
+
+    /**
+     * Undo/Redo command for renaming a piece
+     */
+    public class RenamePieceCommand implements Command {
+
+        private int piece;
+        private String oldName;
+        private String newName;
+
+        public RenamePieceCommand(int piece, String oldName, String newName) {
+            super();
+            this.piece = piece;
+            this.oldName = oldName;
+            this.newName = newName;
+        }
+
+        public void execute() {
+            redo();
+        }
+
+        public void redo() {
+            setPieceName(piece, newName);
+            repaint();
+        }
+
+        public void undo() {
+            setPieceName(piece, oldName);
+        }
+
+    }
+
+    /**
+     * Implementation of ExportImage dialog as a subclass of UVMappingEditor
+     * Dialog.
+     * 
+     * @author François Guillet
+     */
+    private class ExportImageDialog extends BDialog {
+
+        private BorderContainer borderContainer1;
+        private BSpinner widthSpinner;
+        private BSpinner heightSpinner;
+        private BTextField fileTextField;
+        private BButton fileButton;
+        private BButton okButton;
+        private BButton cancelButton;
+        public int width;
+        public int height;
+        public boolean clickedOk;
+        public File file;
+
+        public ExportImageDialog(int width, int height) {
+            super(UVMappingEditorDialog.this, true);
+            this.width = width;
+            this.height = height;
+            setTitle(Translate.text("polymesh:exportImageFile"));
+            InputStream inputStream = null;
+            try {
+                WidgetDecoder decoder = new WidgetDecoder(inputStream = 
+                                                          getClass().getResource("interfaces/exportImage.xml").openStream(), 
+                                                          PolyMeshPlugin.resources);
+                borderContainer1 = (BorderContainer) decoder.getRootObject();
+                widthSpinner = ((BSpinner) decoder.getObject("widthSpinner"));
+                widthSpinner.setValue(new Integer(width));
+                heightSpinner = ((BSpinner) decoder.getObject("heightSpinner"));
+                heightSpinner.setValue(new Integer(height));
+                fileTextField = ((BTextField) decoder.getObject("fileTextField"));
+                fileButton = ((BButton) decoder.getObject("fileButton"));
+                okButton = ((BButton) decoder.getObject("okButton"));
+                cancelButton = ((BButton) decoder.getObject("cancelButton"));
+                okButton.addEventLink(CommandEvent.class, this, "doOK");
+                cancelButton.addEventLink(CommandEvent.class, this, "doCancel");
+                fileButton.addEventLink(CommandEvent.class, this, "doChooseFile");
+                fileTextField.addEventLink(ValueChangedEvent.class, this, "doFilePathChanged");
+                this.addEventLink(WindowClosingEvent.class, this, "doCancel");
+                setContent(borderContainer1);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } finally {
+                try {
+                    if (inputStream != null)
+                        inputStream.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            file = null;
+            pack();
+            setVisible(true);
+        }
+
+        private void doOK() {
+            clickedOk = true;
+            width = ((Integer) widthSpinner.getValue()).intValue();
+            height = ((Integer) heightSpinner.getValue()).intValue();
+            dispose();
+        }
+
+        private void doCancel() {
+            clickedOk = false;
+            dispose();
+        }
+
+        private void doChooseFile() {
+            BFileChooser chooser = new BFileChooser(BFileChooser.SAVE_FILE, 
+                                   Translate.text("polymesh:chooseExportImageFile"));
+            if (file != null) {
+                chooser.setDirectory(file.getParentFile());
+            }
+            if (chooser.showDialog(UVMappingEditorDialog.this)) {
+                file = chooser.getSelectedFile();
+                fileTextField.setText(file.getAbsolutePath());
+            }
+        }
+
+        private void doFilePathChanged() {
+            file = new File(fileTextField.getText());
+        }
     }
 }
