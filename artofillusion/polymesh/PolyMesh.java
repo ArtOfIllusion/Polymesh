@@ -6193,7 +6193,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 									}
 								}
 								if (!found) {
-									System.out.println("Pas trouvé !!");
+									System.out.println("Pas trouv !!");
 								}
 							} else {
 								newFaceVertFaceRef[j][k] = -1;
@@ -6256,7 +6256,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 										}
 									}
 									if (!found) {
-										System.out.println("Pas trouvé !!");
+										System.out.println("Pas trouv !!");
 									}
 								}
 								newval[j][k] = val;
