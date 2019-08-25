@@ -868,6 +868,35 @@ public class UVMappingEditorDialog extends BDialog {
 
     private void openImageExportDialog()
     {
+        // First check is the mapping coordinates fit the texture image area
+        // UV-Coordinates must be within [0.0, 1.0], if they aren't, warn the user
+
+        double xmin =  Double.MAX_VALUE;
+        double xmax = -Double.MAX_VALUE;
+        double ymin =  Double.MAX_VALUE;
+        double ymax = -Double.MAX_VALUE;
+        for (int i = 0; i < currentMapping.v.length; i++) {
+            for (int j = 0; j < currentMapping.v[i].length; j++) {
+                if (mappingData.meshes[i].vertices[j].id == -1)
+                    continue;
+                xmin = Math.min(xmin, currentMapping.v[i][j].x);
+                xmax = Math.max(xmax, currentMapping.v[i][j].x);
+                ymin = Math.min(ymin, currentMapping.v[i][j].y);
+                ymax = Math.max(ymax, currentMapping.v[i][j].y);
+            }
+        }
+        if(xmin < 0.0 || ymin < 0.0 || xmax > 1.0 || ymax > 1.0)
+        {
+            BStandardDialog sizeWarning = new BStandardDialog();
+            sizeWarning.setStyle(BStandardDialog.WARNING);
+            sizeWarning.setMessage("Some vertices are outside the image area.");
+            int choice = sizeWarning.showOptionDialog(this, new String[] {"Continue", "Revert"}, "Revert");
+            if (choice == 1)
+                return;
+        }
+
+        // Good to go
+
         new ExportImageDialog();
     }
 
@@ -896,17 +925,19 @@ public class UVMappingEditorDialog extends BDialog {
             {
                 BStandardDialog extWarning = new BStandardDialog();
                 extWarning.setStyle(BStandardDialog.INFORMATION);
-                extWarning.setMessage("File extension changed: " + outputFile.getName());
+                extWarning.setMessage("File extension changed" + outputFile.getName());
                 extWarning.showMessageDialog(this);
             }
         }
         catch (FileNotFoundException e) 
         {
             e.printStackTrace();
+            new BStandardDialog("Save failed", e.getMessage(), BStandardDialog.ERROR).showMessageDialog(this);
         }
         catch (IOException e) 
         {
             e.printStackTrace();
+            new BStandardDialog("Save failed", e.getMessage(), BStandardDialog.ERROR).showMessageDialog(this);
         }
     }
     private BufferedImage mappingImage(int resolution, int background, boolean antialiased, boolean mappingColor) 
@@ -1223,7 +1254,6 @@ public class UVMappingEditorDialog extends BDialog {
             pieceList.setSelected(oldPiece, true);
             repaint();
         }
-
     }
 
     /**
@@ -1297,11 +1327,11 @@ public class UVMappingEditorDialog extends BDialog {
             optsContainer.add(leftBox   = new ColumnContainer(), boxLayout);
             optsContainer.add(rightBox  = new ColumnContainer(), boxLayout);
 
-            resoContainer.add(new BLabel("Image resolution:"), labelLayout);
+            resoContainer.add(new BLabel("Image resolution"), labelLayout);
             resoContainer.add(resolutionSpinner = new BSpinner(), valueLayout);
 
             bgButtons = new RadioButtonGroup();
-            leftBox.add(new BLabel("Background type:"), headerLayout);
+            leftBox.add(new BLabel("Backgroynd type"), headerLayout);
             leftBox.add(transparentButton = new BRadioButton("Transparent", true,  bgButtons), radioLayout);
             leftBox.add(whiteButton       = new BRadioButton("White",       false, bgButtons), radioLayout);
             leftBox.add(texturedButton    = new BRadioButton("Textured",    false, bgButtons), radioLayout);
@@ -1314,7 +1344,7 @@ public class UVMappingEditorDialog extends BDialog {
 
             actionContainer.add(exportButton = new BButton("Export"));
             actionContainer.add(cancelButton = new BButton("Cancel"));
-            
+
             cancelButton.addEventLink(CommandEvent.class, this, "close");
             exportButton.addEventLink(CommandEvent.class, new Object()
             {
@@ -1368,7 +1398,7 @@ public class UVMappingEditorDialog extends BDialog {
 
         private void openExportChooser(ExportImageDialog exportDialog)
         {
-            BFileChooser exportChooser = new BFileChooser(BFileChooser.SAVE_FILE, "Choose PNG file");
+            BFileChooser exportChooser = new BFileChooser(BFileChooser.SAVE_FILE,  "Choose PNG file");
             exportChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PNG file", "png"));
             exportChooser.setSelectedFile(new File(objInfo.getName() + ", " + currentMapping.name + ".png"));
             if (exportChooser.showDialog(this))
