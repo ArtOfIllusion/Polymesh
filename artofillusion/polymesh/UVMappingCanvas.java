@@ -1,5 +1,7 @@
 /*
  *  Copyright (C) 2007 by François Guillet
+ *  Modifications Copyright (C) 2019 by Petri Ihalainen
+ *
  *  This program is free software; you can redistribute it and/or modify it under the 
  *  terms of the GNU General Public License as published by the Free Software 
  *  Foundation; either version 2 of the License, or (at your option) any later version. 
@@ -104,7 +106,7 @@ public class UVMappingCanvas extends CustomWidget {
         this.mappingData = mappingData;
         meshes = mappingData.getMeshes();
         boldEdges = true;
-        addEventLink(RepaintEvent.class, this, "doRepaint");
+        addEventLink(RepaintEvent.class, this, "paintCanvas");
         if (meshes == null)
             return;
         currentPiece = 0;
@@ -174,6 +176,14 @@ public class UVMappingCanvas extends CustomWidget {
         update();
     }
 
+    /**
+     * Get the current texture image
+     */
+    public Image getTextureImage()
+    {
+        return textureImage;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -219,21 +229,13 @@ public class UVMappingCanvas extends CustomWidget {
         return maxSize;
     }
 
-    private void doRepaint(RepaintEvent evt) {
-        Graphics2D g = evt.getGraphics();
-        doPaint(g, false);
-    }
-
     /**
-     * Draws the mesh pieces, either in the current canvas or for export
-     * purposes
-     * 
-     * @param g      The graphics to draw on
-     * @param export True if it's for export purposes
+     * Draws the mesh pieces, on the current canvas
      */
-    private void doPaint(Graphics2D g, boolean export) {
+     private void paintCanvas(RepaintEvent evt) {
         if (meshes == null)
             return;
+
         if (oldSize.width != size.width || oldSize.height != size.height) {
             vmax = origin.y + (size.height ) / (2 * scale);
             vmin = origin.y - (size.height ) / (2 * scale);
@@ -244,6 +246,7 @@ public class UVMappingCanvas extends CustomWidget {
             refreshVerticesPoints();
             oldSize = new Dimension(size);
         }
+        Graphics2D g = evt.getGraphics();
         if (textureImage != null) {
             g.drawImage(textureImage, 0, 0, null);
         }
@@ -253,7 +256,7 @@ public class UVMappingCanvas extends CustomWidget {
             UnfoldedEdge[] e = mesh.getEdges();
             Point p1;
             Point p2;
-            if (export || currentPiece == i) {
+            if (currentPiece == i) {
                 g.setColor(mapping.edgeColor);
                 if (boldEdges)
                     g.setStroke(bold);
@@ -270,35 +273,6 @@ public class UVMappingCanvas extends CustomWidget {
                 p2 = VertexToLayout(v[e[j].v2]);
                 g.drawLine(p1.x, p1.y, p2.x, p2.y);
             }
-        }
-        g.setStroke(normal);
-        if (!export) {
-            for (int i = 0; i < verticesPoints.length; i++) {
-                if (selected[i]) {
-                    if (mappingData.meshes[currentPiece].vertices[mappingData.verticesTable[currentPiece][i]].pinned)
-                        g.setColor(pinnedSelectedColor);
-                    else
-                        g.setColor(selectedColor);
-
-                    g.drawOval(verticesPoints[i].x - 3,
-                            verticesPoints[i].y - 3, 6, 6);
-                } else {
-                    if (mappingData.meshes[currentPiece].vertices[mappingData.verticesTable[currentPiece][i]].pinned)
-                        g.setColor(pinnedColor);
-                    else
-                        g.setColor(unselectedColor);
-
-                    g.fillOval(verticesPoints[i].x - 3,
-                            verticesPoints[i].y - 3, 6, 6);
-                }
-            }
-            if (dragBoxRect != null) {
-                g.setColor(Color.black);
-                g.drawRect(dragBoxRect.x, dragBoxRect.y, dragBoxRect.width,
-                        dragBoxRect.height);
-            }
-            if (manipulator != null)
-                manipulator.paint(g);
         }
     }
 
@@ -856,53 +830,6 @@ public class UVMappingCanvas extends CustomWidget {
 
     public UnfoldedMesh[] getMeshes() {
         return meshes;
-    }
-
-    /**
-     * Offscreen drawing for exporting images
-     * 
-     * @param g      The graphics to draw onto
-     * @param width  Width of the image to draw
-     * @param height Height of the image to draw
-     */
-    public void drawOnto(Graphics2D g, int width, int height) {
-        g.setColor(Color.white);
-        g.fillRect(0, 0, width, height);
-        g.setColor(Color.black);
-        double oldScale = scale;
-        double oldUmin = umin;
-        double oldUmax = umax;
-        double oldVmin = vmin;
-        double oldVmax = vmax;
-        Vec2 oldOrigin = new Vec2(origin);
-        Dimension tmpSize = size;
-        Dimension tmpOldSize = oldSize;
-        oldSize = size = new Dimension(width, height);
-        Image oldTextureImage = textureImage;
-
-        textureImage = null;
-        scale = ((double) (width)) / (umax - umin);
-        double scaley = ((double) (height)) / (vmax - vmin);
-        if (scaley < scale)
-            scale = scaley;
-        origin.x = (umax + umin) / 2;
-        origin.y = (vmax + vmin) / 2;
-        vmax = origin.y + height / (2 * scale);
-        vmin = origin.y - height / (2 * scale);
-        umax = origin.x + width / (2 * scale);
-        umin = origin.x - width / (2 * scale);
-        refreshVerticesPoints();
-        doPaint(g, true);
-        textureImage = oldTextureImage;
-        scale = oldScale;
-        umin = oldUmin;
-        umax = oldUmax;
-        vmin = oldVmin;
-        vmax = oldVmax;
-        origin = new Vec2(oldOrigin);
-        size = tmpSize;
-        oldSize = tmpOldSize;
-        refreshVerticesPoints();
     }
 
     public void pinSelection(boolean state) {
