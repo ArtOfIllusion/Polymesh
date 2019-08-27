@@ -910,7 +910,8 @@ public class UVMappingEditorDialog extends BDialog {
         BufferedImage mappingImage = mappingImage(exportDialog.getResolution(), 
                                                   exportDialog.getSelectedBackground(),
                                                   exportDialog.useAntialias(),
-                                                  exportDialog.useMappingColor());
+                                                  exportDialog.useMappingColor(),
+                                                  exportDialog.textureOnly());
 
         // Let's make sure it is .png. This could be more sophisticated, 
         // but at least it eliminates mistakes
@@ -946,7 +947,7 @@ public class UVMappingEditorDialog extends BDialog {
         }
     }
 
-    private BufferedImage mappingImage(int resolution, int background, boolean antialiased, boolean mappingColor) 
+    private BufferedImage mappingImage(int resolution, int background, boolean antialiased, boolean mappingColor, boolean textureOnly) 
     {
         UnfoldedMesh[] meshes = mappingData.getMeshes();
         if (meshes == null)
@@ -995,25 +996,28 @@ public class UVMappingEditorDialog extends BDialog {
 
         // Draw the lines
 
-        AffineTransform at = new AffineTransform();
-        at.scale(resolution, -resolution);
-        at.translate(0.0, -1.0);
-        g.setStroke(new BasicStroke((float)(1.0/resolution)));
-        g.setTransform(at);
-        if (mappingColor)
-            g.setColor(currentMapping.edgeColor);
-        else
-            g.setColor(Color.black);
-        for (int i = 0; i < meshes.length; i++) 
+        if (!textureOnly)
         {
-            UnfoldedMesh mesh = meshes[i];
-            Vec2[] v = currentMapping.v[i];
-            UnfoldedEdge[] e = mesh.getEdges();
-            for (int j = 0; j < e.length; j++)
+            AffineTransform at = new AffineTransform();
+            at.scale(resolution, -resolution);
+            at.translate(0.0, -1.0);
+            g.setStroke(new BasicStroke((float)(1.0/resolution)));
+            g.setTransform(at);
+            if (mappingColor)
+                g.setColor(currentMapping.edgeColor);
+            else
+                g.setColor(Color.black);
+            for (int i = 0; i < meshes.length; i++) 
             {
-                if (e[j].hidden) // What is this? Need another user choice?
-                    continue;
-                g.draw(new Line2D.Double(v[e[j].v1].x, v[e[j].v1].y, v[e[j].v2].x, v[e[j].v2].y));
+                UnfoldedMesh mesh = meshes[i];
+                Vec2[] v = currentMapping.v[i];
+                UnfoldedEdge[] e = mesh.getEdges();
+                for (int j = 0; j < e.length; j++)
+                {
+                    if (e[j].hidden) // What is this? Need another user choice?
+                        continue;
+                    g.draw(new Line2D.Double(v[e[j].v1].x, v[e[j].v1].y, v[e[j].v2].x, v[e[j].v2].y));
+                }
             }
         }
         g.dispose();
@@ -1306,7 +1310,7 @@ public class UVMappingEditorDialog extends BDialog {
         BButton cancelButton;
         RadioButtonGroup bgButtons, colorButtons;
         BRadioButton transparentButton, whiteButton, texturedButton, useMappingButton, blackButton;
-        BCheckBox antialiasBox;
+        BCheckBox antialiasBox, textureOnlyBox;
         ColumnContainer content, leftBox, rightBox;
         RowContainer resoContainer, optsContainer, actionContainer;
 
@@ -1343,15 +1347,22 @@ public class UVMappingEditorDialog extends BDialog {
             leftBox.add(transparentButton = new BRadioButton(Translate.text("polymesh:transparent"), true,  bgButtons), radioLayout);
             leftBox.add(whiteButton       = new BRadioButton(Translate.text("polymesh:white"),       false, bgButtons), radioLayout);
             leftBox.add(texturedButton    = new BRadioButton(Translate.text("polymesh:textured"),    false, bgButtons), radioLayout);
+            leftBox.add(textureOnlyBox    = new BCheckBox   (Translate.text("polymesh:textureOnly"), false), radioLayout);
+            textureOnlyBox.setEnabled(false);
 
             colorButtons = new RadioButtonGroup();
             rightBox.add(new BLabel(Translate.text("polymesh:lineProperties")), headerLayout);
             rightBox.add(antialiasBox     = new BCheckBox   (Translate.text("polymesh:softLines"),       true), radioLayout);
             rightBox.add(useMappingButton = new BRadioButton(Translate.text("polymesh:useMappingColor"), true,  colorButtons), radioLayout);
-            rightBox.add(blackButton      = new BRadioButton(Translate.text("polymesh:useBlack"),           false, colorButtons), radioLayout);
+            rightBox.add(blackButton      = new BRadioButton(Translate.text("polymesh:useBlack"),        false, colorButtons), radioLayout);
 
             actionContainer.add(exportButton = new BButton(Translate.text("polymesh:exportImage")));
             actionContainer.add(cancelButton = new BButton(Translate.text("polymesh:cancel")));
+
+            transparentButton.addEventLink(ValueChangedEvent.class, this, "updateDialogState");
+            whiteButton.addEventLink      (ValueChangedEvent.class, this, "updateDialogState");
+            texturedButton.addEventLink   (ValueChangedEvent.class, this, "updateDialogState");
+            textureOnlyBox.addEventLink   (ValueChangedEvent.class, this, "updateDialogState");
 
             cancelButton.addEventLink(CommandEvent.class, this, "close");
             exportButton.addEventLink(CommandEvent.class, new Object()
@@ -1361,7 +1372,7 @@ public class UVMappingEditorDialog extends BDialog {
                     openExportChooser(ExportImageDialog.this); // Could move the method inline here?
                 }
             });
-            
+
             if (currentTexture == -1)
                 texturedButton.setEnabled(false);
             
@@ -1376,11 +1387,19 @@ public class UVMappingEditorDialog extends BDialog {
             setVisible(true);
         }
 
+        private void updateDialogState()
+        {
+            textureOnlyBox.setEnabled(texturedButton.getState());
+            antialiasBox.setEnabled(!textureOnlyBox.isEnabled() || !textureOnlyBox.getState());
+            useMappingButton.setEnabled(!textureOnlyBox.isEnabled() || !textureOnlyBox.getState());
+            blackButton.setEnabled(!textureOnlyBox.isEnabled() || !textureOnlyBox.getState());
+        }
+        
         int getSelectedBackground()
         {
             if (transparentButton.getState()) return TRANSPARENT;
-            if (whiteButton.getState()) return WHITE;
-            if (texturedButton.getState()) return TEXTURED;
+            if (whiteButton.getState())       return WHITE;
+            if (texturedButton.getState())    return TEXTURED;
             return -1;
         }
 
@@ -1397,6 +1416,11 @@ public class UVMappingEditorDialog extends BDialog {
         boolean useMappingColor()
         {
             return useMappingButton.getState();
+        }
+
+        boolean textureOnly()
+        {
+            return textureOnlyBox.getState();
         }
 
         void close()
