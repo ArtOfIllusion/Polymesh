@@ -1,5 +1,7 @@
 /*
  *  Copyright (C) 2007 by François Guillet
+ *  Modifications Copyright (C) 2019 by Petri Ihalainen
+ *
  *  This program is free software; you can redistribute it and/or modify it under the 
  *  terms of the GNU General Public License as published by the Free Software 
  *  Foundation; either version 2 of the License, or (at your option) any later version. 
@@ -14,7 +16,14 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Window;
+import java.awt.Color;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
+import java.awt.BasicStroke;
+
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -32,50 +41,15 @@ import artofillusion.object.ObjectInfo;
 import artofillusion.polymesh.UVMappingCanvas.MappingPositionsCommand;
 import artofillusion.polymesh.UVMappingCanvas.Range;
 import artofillusion.polymesh.UVMappingData.UVMeshMapping;
-import artofillusion.texture.LayeredMapping;
-import artofillusion.texture.LayeredTexture;
-import artofillusion.texture.Texture;
-import artofillusion.texture.TextureMapping;
-import artofillusion.texture.UVMapping;
-import artofillusion.ui.ActionProcessor;
-import artofillusion.ui.ComponentsDialog;
-import artofillusion.ui.Translate;
-import artofillusion.ui.UIUtilities;
-import artofillusion.ui.ValueField;
-import buoy.event.CommandEvent;
-import buoy.event.MouseDraggedEvent;
-import buoy.event.MouseMovedEvent;
-import buoy.event.MousePressedEvent;
-import buoy.event.MouseReleasedEvent;
-import buoy.event.MouseScrolledEvent;
-import buoy.event.SelectionChangedEvent;
-import buoy.event.ValueChangedEvent;
-import buoy.event.WidgetMouseEvent;
-import buoy.event.WindowClosingEvent;
-import buoy.widget.BButton;
-import buoy.widget.BCheckBox;
-import buoy.widget.BCheckBoxMenuItem;
-import buoy.widget.BColorChooser;
-import buoy.widget.BComboBox;
-import buoy.widget.BDialog;
-import buoy.widget.BFileChooser;
-import buoy.widget.BFrame;
-import buoy.widget.BLabel;
-import buoy.widget.BList;
-import buoy.widget.BMenu;
-import buoy.widget.BMenuBar;
-import buoy.widget.BMenuItem;
-import buoy.widget.BScrollPane;
-import buoy.widget.BSeparator;
-import buoy.widget.BSpinner;
-import buoy.widget.BSplitPane;
-import buoy.widget.BStandardDialog;
-import buoy.widget.BTextField;
-import buoy.widget.BorderContainer;
-import buoy.widget.LayoutInfo;
-import buoy.widget.RowContainer;
-import buoy.widget.Widget;
+import artofillusion.polymesh.UnfoldedMesh.UnfoldedEdge;
+
+import artofillusion.texture.*;
+import artofillusion.ui.*;
+
+import buoy.event.*;
+import buoy.widget.*;
 import buoy.xml.WidgetDecoder;
+
 
 /**
  * This window allows the user to edit UV mapping using unfolded pieces of mesh
@@ -730,9 +704,10 @@ public class UVMappingEditorDialog extends BDialog {
             return;
 
         File f = dlg.file;
-        BufferedImage offscreen = new BufferedImage(dlg.width, dlg.height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D offscreenGraphics = (Graphics2D) offscreen.getGraphics();
-        mappingCanvas.drawOnto(offscreenGraphics, dlg.width, dlg.height);
+
+        // This is rewritten history, it was not this smart in the beginning
+        BufferedImage offscreen = mappingImage(dlg.width);
+
         try {
             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
             DataOutputStream dos = new DataOutputStream(bos);
@@ -913,6 +888,51 @@ public class UVMappingEditorDialog extends BDialog {
     private void doAutoScale() {
         mappingCanvas.resetMeshLayout();
         mappingCanvas.repaint();
+    }
+
+    private BufferedImage mappingImage(int resolution) 
+    {
+        UnfoldedMesh[] meshes = mappingData.getMeshes();
+        if (meshes == null)
+            return null;
+
+        BufferedImage mappingImage = new BufferedImage(resolution, resolution, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = mappingImage.createGraphics();
+
+        g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        // Paint the background
+
+         g.setColor(Color.white);
+         g.fillRect(0, 0, resolution, resolution);
+
+        // Draw the lines
+
+        AffineTransform at = new AffineTransform();
+        at.scale(resolution, -resolution);
+        at.translate(0.0, -1.0);
+        g.setStroke(new BasicStroke((float)(1.0/resolution)));
+        g.setTransform(at);
+        g.setColor(currentMapping.edgeColor);
+        for (int i = 0; i < meshes.length; i++) 
+        {
+            UnfoldedMesh mesh = meshes[i];
+            Vec2[] v = currentMapping.v[i];
+            UnfoldedEdge[] e = mesh.getEdges();
+            for (int j = 0; j < e.length; j++)
+            {
+                if (e[j].hidden) // What is this? Need another user choice?
+                    continue;
+                g.draw(new Line2D.Double(v[e[j].v1].x, v[e[j].v1].y, v[e[j].v2].x, v[e[j].v2].y));
+            }
+        }
+        g.dispose();
+
+        // We're good
+
+        return mappingImage;
     }
 
     /**
