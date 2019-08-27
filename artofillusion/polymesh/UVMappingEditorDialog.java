@@ -33,8 +33,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 
-import artofillusion.image.BMPEncoder;
 import artofillusion.math.Vec2;
 import artofillusion.object.FacetedMesh;
 import artofillusion.object.ObjectInfo;
@@ -42,8 +42,8 @@ import artofillusion.polymesh.UVMappingCanvas.MappingPositionsCommand;
 import artofillusion.polymesh.UVMappingCanvas.Range;
 import artofillusion.polymesh.UVMappingData.UVMeshMapping;
 import artofillusion.polymesh.UnfoldedMesh.UnfoldedEdge;
-
 import artofillusion.texture.*;
+import artofillusion.TextureParameter;
 import artofillusion.ui.*;
 
 import buoy.event.*;
@@ -107,6 +107,9 @@ public class UVMappingEditorDialog extends BDialog {
     private BMenu sendTexToMappingMenu;
     private BMenuItem removeMappingMenuItem;
     private BCheckBoxMenuItem[] mappingMenuItems;
+
+    public static final int TRANSPARENT = 0, WHITE = 1, TEXTURED = 2;
+
 
     /** 
      *  Construct a new UVMappingEditorDialog
@@ -307,7 +310,7 @@ public class UVMappingEditorDialog extends BDialog {
         menu.add(Translate.menuItem("polymesh:unpinSelection", this, "doUnpinSelection"));
         menu.add(Translate.menuItem("polymesh:renameSelectedPiece", this, "doRenameSelectedPiece"));
         menu.add(new BSeparator());
-        menu.add(Translate.menuItem("polymesh:exportImage", this, "doExportImage"));
+        menu.add(Translate.menuItem("polymesh:exportImage", this, "openImageExportDialog"));
         menuBar.add(menu);
 
         menu = Translate.menu("polymesh:mapping");
@@ -698,31 +701,6 @@ public class UVMappingEditorDialog extends BDialog {
         mappingCanvas.setSampling(((Integer) resSpinner.getValue()).intValue());
     }
 
-    private void doExportImage() {
-        ExportImageDialog dlg = new ExportImageDialog(500, 500);
-        if (!dlg.clickedOk || dlg.file == null)
-            return;
-
-        File f = dlg.file;
-
-        // This is rewritten history, it was not this smart in the beginning
-        BufferedImage offscreen = mappingImage(dlg.width);
-
-        try {
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
-            DataOutputStream dos = new DataOutputStream(bos);
-            BMPEncoder bmp = new BMPEncoder(offscreen);
-            bmp.writeImage(dos);
-            dos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void processMousePressed(WidgetMouseEvent ev) {
         if (mouseProcessor != null)
             mouseProcessor.stopProcessing();
@@ -890,7 +868,50 @@ public class UVMappingEditorDialog extends BDialog {
         mappingCanvas.repaint();
     }
 
-    private BufferedImage mappingImage(int resolution) 
+    private void openImageExportDialog()
+    {
+        new ExportImageDialog();
+    }
+
+    private void createAndExportMapImage(ExportImageDialog exportDialog, File outputFile)
+    {
+        BufferedImage mappingImage = mappingImage(exportDialog.getResolution(), 
+                                                  exportDialog.getSelectedBackground(),
+                                                  exportDialog.useAntialias(),
+                                                  exportDialog.useMappingColor());
+
+        // Let's make sure it is .png. This could be more sophisticated, 
+        // but at least it eliminates mistakes
+
+        String fullPath = outputFile.getAbsolutePath();
+        boolean extensionChanged = false;
+        if (! fullPath.endsWith(".png"))
+        {
+            fullPath = fullPath + ".png";
+            outputFile = new File(fullPath);
+            extensionChanged = true;
+        }
+        try 
+        {
+            ImageIO.write(mappingImage, "png", outputFile);
+            if (extensionChanged)
+            {
+                BStandardDialog extWarning = new BStandardDialog();
+                extWarning.setStyle(BStandardDialog.INFORMATION);
+                extWarning.setMessage("File extension changed: " + outputFile.getName());
+                extWarning.showMessageDialog(this);
+            }
+        }
+        catch (FileNotFoundException e) 
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+    }
+    private BufferedImage mappingImage(int resolution, int background, boolean antialiased, boolean mappingColor) 
     {
         UnfoldedMesh[] meshes = mappingData.getMeshes();
         if (meshes == null)
@@ -898,15 +919,44 @@ public class UVMappingEditorDialog extends BDialog {
 
         BufferedImage mappingImage = new BufferedImage(resolution, resolution, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = mappingImage.createGraphics();
+        if (antialiased)
+        {
+            g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        }
 
-        g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        
         // Paint the background
 
-         g.setColor(Color.white);
-         g.fillRect(0, 0, resolution, resolution);
+        switch (background)
+        {
+            case TRANSPARENT:
+                break;
+            case WHITE:
+                g.setColor(Color.white);
+                g.fillRect(0, 0, resolution, resolution);
+                break;
+            case TEXTURED:
+                TextureParameter param[] = mappingList.get(currentTexture).getParameters();
+                double paramVal[] = null;
+                if (param != null) 
+                {
+                    paramVal = new double[param.length];
+                    for (int i = 0; i < param.length; i++)
+                        paramVal[i] = param[i].defaultVal;
+                }
+                Image textureImage = ((Texture2D)texList.
+                                       get(currentTexture)).
+                                       createComponentImage(0, 1, 0, 1, 
+                                                            resolution, resolution, 
+                                                            componentCB.getSelectedIndex(),
+                                                            0.0, paramVal);
+                if (textureImage != null)
+                     g.drawImage(textureImage, 0, 0, null);
+                break; 
+            default:
+                break;
+        }
 
         // Draw the lines
 
@@ -915,7 +965,10 @@ public class UVMappingEditorDialog extends BDialog {
         at.translate(0.0, -1.0);
         g.setStroke(new BasicStroke((float)(1.0/resolution)));
         g.setTransform(at);
-        g.setColor(currentMapping.edgeColor);
+        if (mappingColor)
+            g.setColor(currentMapping.edgeColor);
+        else
+            g.setColor(Color.black);
         for (int i = 0; i < meshes.length; i++) 
         {
             UnfoldedMesh mesh = meshes[i];
@@ -1210,91 +1263,131 @@ public class UVMappingEditorDialog extends BDialog {
     }
 
     /**
-     * Implementation of ExportImage dialog as a subclass of UVMappingEditor
-     * Dialog.
-     * 
-     * @author François Guillet
+     * A dialog to to define the exported mapping image.
      */
-    private class ExportImageDialog extends BDialog {
+    class ExportImageDialog extends BDialog 
+    {
+        BSpinner resolutionSpinner;
+        BButton exportButton;
+        BButton closeButton;
+        BButton cancelButton;
+        RadioButtonGroup bgButtons, colorButtons;
+        BRadioButton transparentButton, whiteButton, texturedButton, useMappingButton, blackButton;
+        BCheckBox antialiasBox;
+        ColumnContainer content, leftBox, rightBox;
+        RowContainer resoContainer, optsContainer, actionContainer;
 
-        private BorderContainer borderContainer1;
-        private BSpinner widthSpinner;
-        private BSpinner heightSpinner;
-        private BTextField fileTextField;
-        private BButton fileButton;
-        private BButton okButton;
-        private BButton cancelButton;
-        public int width;
-        public int height;
-        public boolean clickedOk;
-        public File file;
+        // Things to consider:
+        // - Selection for line width? More choices for antialiased image?
+        // - Option to export the texture image only
 
-        public ExportImageDialog(int width, int height) {
+        ExportImageDialog()
+        {
             super(UVMappingEditorDialog.this, true);
-            this.width = width;
-            this.height = height;
-            setTitle(Translate.text("polymesh:exportImageFile"));
-            InputStream inputStream = null;
-            try {
-                WidgetDecoder decoder = new WidgetDecoder(inputStream = 
-                                                          getClass().getResource("interfaces/exportImage.xml").openStream(), 
-                                                          PolyMeshPlugin.resources);
-                borderContainer1 = (BorderContainer) decoder.getRootObject();
-                widthSpinner = ((BSpinner) decoder.getObject("widthSpinner"));
-                widthSpinner.setValue(new Integer(width));
-                heightSpinner = ((BSpinner) decoder.getObject("heightSpinner"));
-                heightSpinner.setValue(new Integer(height));
-                fileTextField = ((BTextField) decoder.getObject("fileTextField"));
-                fileButton = ((BButton) decoder.getObject("fileButton"));
-                okButton = ((BButton) decoder.getObject("okButton"));
-                cancelButton = ((BButton) decoder.getObject("cancelButton"));
-                okButton.addEventLink(CommandEvent.class, this, "doOK");
-                cancelButton.addEventLink(CommandEvent.class, this, "doCancel");
-                fileButton.addEventLink(CommandEvent.class, this, "doChooseFile");
-                fileTextField.addEventLink(ValueChangedEvent.class, this, "doFilePathChanged");
-                this.addEventLink(WindowClosingEvent.class, this, "doCancel");
-                setContent(borderContainer1);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } finally {
-                try {
-                    if (inputStream != null)
-                        inputStream.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+            addEventLink(WindowClosingEvent.class, new Object()
+                        {void processEvent(WindowClosingEvent e) {dispose();}});
+            
+            LayoutInfo labelLayout  = new LayoutInfo(LayoutInfo.WEST,      LayoutInfo.NONE,       new Insets(10, 10, 0,  2), null);
+            LayoutInfo valueLayout  = new LayoutInfo(LayoutInfo.WEST,      LayoutInfo.HORIZONTAL, new Insets(10,  0, 2, 10), null);
+            LayoutInfo headerLayout = new LayoutInfo(LayoutInfo.NORTHWEST, LayoutInfo.NONE,       new Insets(10, 10, 5, 10), null);
+            LayoutInfo radioLayout  = new LayoutInfo(LayoutInfo.NORTHWEST, LayoutInfo.NONE,       new Insets( 0, 25, 0, 10), null);
+            LayoutInfo actionLayout = new LayoutInfo(LayoutInfo.SOUTHEAST, LayoutInfo.NONE,       new Insets(10,  0, 0, 10), null);
+            LayoutInfo boxLayout    = new LayoutInfo(LayoutInfo.NORTHWEST, LayoutInfo.NONE,       new Insets( 0,  0, 0,  0), null);
+            LayoutInfo actboxLayout = new LayoutInfo(LayoutInfo.SOUTHEAST, LayoutInfo.NONE,       new Insets( 15, 0, 0, 10), null);
+
+            content = new ColumnContainer();
+            content.add(resoContainer   = new RowContainer(), boxLayout);
+            content.add(optsContainer   = new RowContainer(), boxLayout);
+            content.add(actionContainer = new RowContainer(), actboxLayout);
+            optsContainer.add(leftBox   = new ColumnContainer(), boxLayout);
+            optsContainer.add(rightBox  = new ColumnContainer(), boxLayout);
+
+            resoContainer.add(new BLabel("Image resolution:"), labelLayout);
+            resoContainer.add(resolutionSpinner = new BSpinner(), valueLayout);
+
+            bgButtons = new RadioButtonGroup();
+            leftBox.add(new BLabel("Background type:"), headerLayout);
+            leftBox.add(transparentButton = new BRadioButton("Transparent", true,  bgButtons), radioLayout);
+            leftBox.add(whiteButton       = new BRadioButton("White",       false, bgButtons), radioLayout);
+            leftBox.add(texturedButton    = new BRadioButton("Textured",    false, bgButtons), radioLayout);
+
+            colorButtons = new RadioButtonGroup();
+            rightBox.add(new BLabel("Line properties:"), headerLayout);
+            rightBox.add(antialiasBox     = new BCheckBox   ("Soft lines",    true), radioLayout);
+            rightBox.add(useMappingButton = new BRadioButton("Mapping color", true,  colorButtons), radioLayout);
+            rightBox.add(blackButton      = new BRadioButton("Black",         false, colorButtons), radioLayout);
+
+            actionContainer.add(exportButton = new BButton("Export"));
+            actionContainer.add(cancelButton = new BButton("Cancel"));
+            
+            cancelButton.addEventLink(CommandEvent.class, this, "close");
+            exportButton.addEventLink(CommandEvent.class, new Object()
+            {
+                void processEvent()
+                {
+                    openExportChooser(ExportImageDialog.this); // Could move the method inline here?
                 }
-            }
-            file = null;
+            });
+            
+            if (currentTexture == -1)
+                texturedButton.setEnabled(false);
+            
+            resolutionSpinner.setValue(new Integer(123456)); 
+            Dimension d = resolutionSpinner.getPreferredSize();
+            resolutionSpinner.getComponent().setPreferredSize(d);
+            resolutionSpinner.setValue(new Integer(600)); 
+
+            setContent(content);
             pack();
+            setResizable(false);
             setVisible(true);
         }
 
-        private void doOK() {
-            clickedOk = true;
-            width = ((Integer) widthSpinner.getValue()).intValue();
-            height = ((Integer) heightSpinner.getValue()).intValue();
+        int getSelectedBackground()
+        {
+            if (transparentButton.getState()) return TRANSPARENT;
+            if (whiteButton.getState()) return WHITE;
+            if (texturedButton.getState()) return TEXTURED;
+            return -1;
+        }
+
+        int getResolution()
+        {
+            return ((Integer) resolutionSpinner.getValue()).intValue();
+        }
+        
+        boolean useAntialias()
+        {
+            return antialiasBox.getState();
+        }
+
+        boolean useMappingColor()
+        {
+            return useMappingButton.getState();
+        }
+
+        void close()
+        {
             dispose();
         }
 
-        private void doCancel() {
-            clickedOk = false;
-            dispose();
-        }
-
-        private void doChooseFile() {
-            BFileChooser chooser = new BFileChooser(BFileChooser.SAVE_FILE, 
-                                   Translate.text("polymesh:chooseExportImageFile"));
-            if (file != null) {
-                chooser.setDirectory(file.getParentFile());
+        private void openExportChooser(ExportImageDialog exportDialog)
+        {
+            BFileChooser exportChooser = new BFileChooser(BFileChooser.SAVE_FILE, "Choose PNG file");
+            exportChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PNG file", "png"));
+            exportChooser.setSelectedFile(new File(objInfo.getName() + ", " + currentMapping.name + ".png"));
+            if (exportChooser.showDialog(this))
+            {
+                try
+                {
+                    createAndExportMapImage(exportDialog, exportChooser.getSelectedFile());
+                    exportDialog.close();
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
-            if (chooser.showDialog(UVMappingEditorDialog.this)) {
-                file = chooser.getSelectedFile();
-                fileTextField.setText(file.getAbsolutePath());
-            }
-        }
-
-        private void doFilePathChanged() {
-            file = new File(fileTextField.getText());
         }
     }
 }

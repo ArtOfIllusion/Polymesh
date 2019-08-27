@@ -239,8 +239,9 @@ public class UVMappingCanvas extends CustomWidget {
             oldSize = new Dimension(size);
         }
         Graphics2D g = evt.getGraphics();
-        if (textureImage != null)
+        if (textureImage != null) {
             g.drawImage(textureImage, 0, 0, null);
+        }
         for (int i = 0; i < meshes.length; i++) {
             UnfoldedMesh mesh = meshes[i];
             Vec2[] v = mapping.v[i];
