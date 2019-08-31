@@ -76,7 +76,7 @@ public class UVMappingCanvas extends CustomWidget {
     private boolean boldEdges;
     private final static Stroke normal = new BasicStroke();
     private final static Stroke bold = new BasicStroke(2.0f);
-    private final static Dimension minSize = new Dimension(512, 512);
+    private final static Dimension minSize = new Dimension(640, 640);
     private final static Dimension maxSize = new Dimension(5000, 5000);
     private final static Color unselectedColor = new Color(0, 180, 0);
     private final static Color selectedColor = Color.red;
@@ -100,7 +100,7 @@ public class UVMappingCanvas extends CustomWidget {
         this.texMapping = texMapping;
         this.mapping = mappingData.mappings.get(0);
         setBackground(Color.white);
-        size = new Dimension(512, 512);
+        size = new Dimension(640, 640);
         oldSize = new Dimension(0, 0);
         origin = new Vec2();
         this.mappingData = mappingData;
@@ -907,8 +907,7 @@ public class UVMappingCanvas extends CustomWidget {
         int maxDistance = parent.getMaxTensionDistance();
 
         // First, set each distance to 0 or -1, depending on whether that vertex
-        // is part of the
-        // current selection.
+        // is part of the current selection.
 
         for (i = 0; i < selected.length; i++)
             dist[mappingData.verticesTable[currentPiece][i]] = selected[i] ? 0 : -1;

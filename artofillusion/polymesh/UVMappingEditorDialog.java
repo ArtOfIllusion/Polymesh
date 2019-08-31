@@ -23,6 +23,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.BasicStroke;
+import java.awt.Rectangle;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -264,7 +265,7 @@ public class UVMappingEditorDialog extends BDialog {
         }
         BSplitPane meshViewPanel = new BSplitPane(BSplitPane.VERTICAL, 
                                                   pieceList = new BList(), 
-                                                  preview = new MeshPreviewer(objInfo, 150, 150));
+                                                  preview = new MeshPreviewer(objInfo, 200, 200));
         tex = null;
         mapping = null;
         if (currentTexture >= 0) {
@@ -272,11 +273,11 @@ public class UVMappingEditorDialog extends BDialog {
             mapping = mappingList.get(currentTexture);
         }
         mappingCanvas = new UVMappingCanvas(this, mappingData, preview, tex, (UVMapping)mapping);
-        BScrollPane sp = new BScrollPane(mappingCanvas);
-        meshViewPanel.setResizeWeight(0.7);
+        BScrollPane sp = new BScrollPane(mappingCanvas, BScrollPane.SCROLLBAR_NEVER,  BScrollPane.SCROLLBAR_NEVER);
+        meshViewPanel.setResizeWeight(1.0);
         meshViewPanel.setContinuousLayout(true);
         BSplitPane div = new BSplitPane(BSplitPane.HORIZONTAL, sp, meshViewPanel);
-        div.setResizeWeight(0.5);
+        div.setResizeWeight(1.0);
         div.setContinuousLayout(true);
         content.add(div, 
                     BorderContainer.CENTER, 
@@ -289,8 +290,8 @@ public class UVMappingEditorDialog extends BDialog {
             pieceList.add(meshes[i].getName());
         pieceList.setMultipleSelectionEnabled(false);
         pieceList.setSelected(0, true);
-        addEventLink(WindowClosingEvent.class, this, "doCancel");
-        UIUtilities.centerWindow(this);
+        pieceList.addEventLink(SelectionChangedEvent.class, this, "doPieceListSelection");
+
         mappingCanvas.addEventLink(MousePressedEvent.class, this, "processMousePressed");
         mappingCanvas.addEventLink(MouseReleasedEvent.class, this, "processMouseReleased");
         mappingCanvas.addEventLink(MouseDraggedEvent.class, this, "processMouseDragged");
@@ -341,8 +342,29 @@ public class UVMappingEditorDialog extends BDialog {
             textureCB.setSelectedIndex(0);
 
         updateState();
+
+        // This prevents the "0...." in U/V min/max labels.
+        Dimension d = new BLabel("+XX.XXX").getPreferredSize();
+        uMinValue.getComponent().setPreferredSize(d);
+        uMaxValue.getComponent().setPreferredSize(d);
+        vMinValue.getComponent().setPreferredSize(d);
+        vMaxValue.getComponent().setPreferredSize(d);
+
         pack();
-        pieceList.addEventLink(SelectionChangedEvent.class, this, "doPieceListSelection");
+
+        // This was entirely unexpected: The next four lines seem to bring the crazy pane split  
+        // sizes back to their senses. The size increase needs to be at least 2x2 pixels. 
+        // Without this the window split is badly off, zoom center may be outside the canvas etc...
+        // - Q: Is this platform dependent? Via the look and feel and hence the frame sizes?
+        // - To consider: WindowResizedEvent to launch recalculation of the sizes.
+
+        Rectangle b = getBounds();
+        b.width  += 2;
+        b.height += 2;
+        setBounds(b);
+
+        UIUtilities.centerWindow(this); // Has to be after 'pack()'
+        addEventLink(WindowClosingEvent.class, this, "doCancel");
         setVisible(true);
     }
 
@@ -1372,7 +1394,7 @@ public class UVMappingEditorDialog extends BDialog {
             resolutionSpinner.setValue(new Integer(123456)); 
             Dimension d = resolutionSpinner.getPreferredSize();
             resolutionSpinner.getComponent().setPreferredSize(d);
-            resolutionSpinner.setValue(new Integer(600)); 
+            resolutionSpinner.setValue(new Integer(640)); 
 
             setContent(content);
             pack();
