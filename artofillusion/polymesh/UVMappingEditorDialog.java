@@ -608,37 +608,30 @@ public class UVMappingEditorDialog extends BDialog {
         cmd.setOldPos(currentMapping.v);
         Range range = mappingCanvas.getRange();
         cmd.setOldRange(range.umin, range.umax, range.vmin, range.vmax);
-        double xmin = Double.MAX_VALUE;
+        double xmin =  Double.MAX_VALUE;
         double xmax = -Double.MAX_VALUE;
-        double ymin = Double.MAX_VALUE;
+        double ymin =  Double.MAX_VALUE;
         double ymax = -Double.MAX_VALUE;
         for (int i = 0; i < currentMapping.v.length; i++) {
             for (int j = 0; j < currentMapping.v[i].length; j++) {
                 if (mappingData.meshes[i].vertices[j].id == -1)
                     continue;
-                if (currentMapping.v[i][j].x < xmin)
-                    xmin = currentMapping.v[i][j].x;
-                if (currentMapping.v[i][j].x > xmax)
-                    xmax = currentMapping.v[i][j].x;
-                if (currentMapping.v[i][j].y < ymin)
-                    ymin = currentMapping.v[i][j].y;
-                if (currentMapping.v[i][j].y > ymax)
-                    ymax = currentMapping.v[i][j].y;
+                xmin = Math.min(xmin, currentMapping.v[i][j].x);
+                xmax = Math.max(xmax, currentMapping.v[i][j].x);
+                ymin = Math.min(ymin, currentMapping.v[i][j].y);
+                ymax = Math.max(ymax, currentMapping.v[i][j].y);
             }
         }
-        if (xmin == xmax || ymin == ymax) {
+        if (xmin == xmax || ymin == ymax)
             return;
-        }
-        double uscale = (0.9) / (xmax - xmin);
-        double vscale = (0.9) / (ymax - ymin);
-        if (uscale < vscale)
-            vscale = uscale;
-        else
-            uscale = vscale;
+        double scale = 0.9/Math.max(xmax - xmin, ymax - ymin);
+        double xMargin = (1.0-(xmax - xmin)*scale)*0.5;
+        double yMargin = (1.0-(ymax - ymin)*scale)*0.5;
+
         for (int i = 0; i < currentMapping.v.length; i++)
             for (int j = 0; j < currentMapping.v[i].length; j++) {
-                currentMapping.v[i][j].x = (currentMapping.v[i][j].x - xmin) * uscale + 0.05;
-                currentMapping.v[i][j].y = (currentMapping.v[i][j].y - ymin) * vscale + 0.05;
+                currentMapping.v[i][j].x = (currentMapping.v[i][j].x - xmin) * scale + xMargin;
+                currentMapping.v[i][j].y = (currentMapping.v[i][j].y - ymin) * scale + yMargin;
             }
 
         cmd.setNewPos(currentMapping.v);
@@ -870,12 +863,12 @@ public class UVMappingEditorDialog extends BDialog {
 
     private void openImageExportDialog()
     {
-        // First check is the mapping coordinates fit the texture image area
+        // First check if the mapping coordinates fit the texture image area
         // UV-Coordinates must be within [0.0, 1.0], if they aren't, warn the user
 
-        double xmin = Double.MAX_VALUE;
+        double xmin =  Double.MAX_VALUE;
         double xmax = -Double.MAX_VALUE;
-        double ymin = Double.MAX_VALUE;
+        double ymin =  Double.MAX_VALUE;
         double ymax = -Double.MAX_VALUE;
         for (int i = 0; i < currentMapping.v.length; i++) {
             for (int j = 0; j < currentMapping.v[i].length; j++) {
