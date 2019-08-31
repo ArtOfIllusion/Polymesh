@@ -657,9 +657,9 @@ public class UVMappingEditorDialog extends BDialog {
             }
 
         cmd.setNewPos(currentMapping.v);
-        cmd.setNewRange(0, 1, 0, 1);
+        cmd.setNewRange(-0.02, 1.02, -0.02, 1.02);
         addUndoCommand(cmd);
-        mappingCanvas.setRange(0, 1, 0, 1);
+        mappingCanvas.setRange(-0.02, 1.02, -0.02, 1.02);
         mappingCanvas.repaint();
     }
 
@@ -803,7 +803,7 @@ public class UVMappingEditorDialog extends BDialog {
      * the first time. Call is forwarded to UVMappingCanvas.initializeMeshLayout().
      */
     public void initializeMeshLayout() {
-        mappingCanvas.resetMeshLayout();
+        mappingCanvas.fitRangeToAll();
     }
 
     public void displayUVMinMax(double umin, double umax, double vmin, double vmax) {
@@ -879,7 +879,7 @@ public class UVMappingEditorDialog extends BDialog {
     }
 
     private void doAutoScale() {
-        mappingCanvas.resetMeshLayout();
+        mappingCanvas.fitRangeToAll();
         mappingCanvas.repaint();
     }
 
@@ -1394,7 +1394,7 @@ public class UVMappingEditorDialog extends BDialog {
             resolutionSpinner.setValue(new Integer(123456)); 
             Dimension d = resolutionSpinner.getPreferredSize();
             resolutionSpinner.getComponent().setPreferredSize(d);
-            resolutionSpinner.setValue(new Integer(640)); 
+            resolutionSpinner.setValue(new Integer(600)); 
 
             setContent(content);
             pack();

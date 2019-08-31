@@ -82,7 +82,7 @@ public class UVMappingCanvas extends CustomWidget {
     private final static Color selectedColor = Color.red;
     private final static Color pinnedColor = new Color(182, 0, 185);
     private final static Color pinnedSelectedColor = new Color(255, 142, 255);
-    private Color bgColor1 = new Color(239,239,239), 
+    private Color bgColor1 = new Color(239, 239, 239), 
                   bgColor2 = new Color(223, 223, 223), 
                   txAreaColor = Color.white;
 
@@ -114,7 +114,7 @@ public class UVMappingCanvas extends CustomWidget {
             return;
         currentPiece = 0;
         component = 0;
-        resetMeshLayout();
+        fitRangeToAll();
         createImage();
         setSelectedPiece(0);
         initializeTexCoordsIndex();
@@ -143,7 +143,7 @@ public class UVMappingCanvas extends CustomWidget {
     public void setMapping(UVMappingData.UVMeshMapping mapping) {
         clearSelection();
         this.mapping = mapping;
-        resetMeshLayout();
+        fitRangeToAll();
         update();
     }
 
@@ -321,37 +321,41 @@ public class UVMappingCanvas extends CustomWidget {
 
     /**
      * Computes default range from mesh sizes
+     * @deprecated use {@link #fitRangeToAll()} instead.  
      */
+    @Deprecated
     public void resetMeshLayout() {
-        vmin = umin = Double.MAX_VALUE;
-        vmax = umax = -Double.MAX_VALUE;
+        fitRangeToAll();
+    }
+
+
+    /**
+     * Computes range for fitting the mesh and the unit texture image
+     * on the canvas.
+     */
+    public void fitRangeToAll() {
+        vmin = umin = 0.0;
+        vmax = umax = 1.0;
         Vec2[] v;
         UnfoldedVertex[] vert;
         for (int i = 0; i < meshes.length; i++) {
             v = mapping.v[i];
             vert = meshes[i].vertices;
-            for (int j = 0; j < v.length; j++) {
+            for (int j = 0; j < v.length; j++) 
+            {
                 if (vert[j].id == -1)
                     continue;
-
-                if (v[j].x < umin)
-                    umin = v[j].x;
-                else if (v[j].x > umax)
-                    umax = v[j].x;
-
-                if (v[j].y < vmin)
-                    vmin = v[j].y;
-                else if (v[j].y > vmax)
-                    vmax = v[j].y;
-
+                umin = Math.min(umin, v[j].x);
+                umax = Math.max(umax, v[j].x);
+                vmin = Math.min(vmin, v[j].y);
+                vmax = Math.max(vmax, v[j].y);
             }
         }
-        double deltau = umax - umin;
-        double deltav = vmax - vmin;
-        umin -= 0.05 * deltau;
-        vmin -= 0.05 * deltav;
-        umax += 0.05 * deltau;
-        vmax += 0.05 * deltav;
+        double margin = Math.max(umax - umin, umax - umin) * 0.02;
+        umin -= margin;
+        vmin -= margin;
+        umax += margin;
+        vmax += margin;
         setRange(umin, umax, vmin, vmax);
     }
 
@@ -363,6 +367,11 @@ public class UVMappingCanvas extends CustomWidget {
      * @param vmin Low V Limit
      * @param vmax Hich V Limit
      */
+
+     // Should not blend the uv-space coordinates with the screen aspect ratio.
+     // Range needs to be as is given and the corners of the viewable area calculated 
+     // where they are needed.
+ 
     public void setRange(double umin, double umax, double vmin, double vmax) {
         this.umin = umin;
         this.umax = umax;
