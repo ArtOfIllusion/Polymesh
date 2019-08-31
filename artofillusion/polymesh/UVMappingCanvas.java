@@ -82,6 +82,9 @@ public class UVMappingCanvas extends CustomWidget {
     private final static Color selectedColor = Color.red;
     private final static Color pinnedColor = new Color(182, 0, 185);
     private final static Color pinnedSelectedColor = new Color(255, 142, 255);
+    private Color bgColor1 = new Color(239,239,239), 
+                  bgColor2 = new Color(223, 223, 223), 
+                  txAreaColor = Color.white;
 
     /** 
      *  Construct a new UVMappingCanvas
@@ -99,7 +102,7 @@ public class UVMappingCanvas extends CustomWidget {
         this.texture = texture;
         this.texMapping = texMapping;
         this.mapping = mappingData.mappings.get(0);
-        setBackground(Color.white);
+        setBackground(bgColor1);
         size = new Dimension(640, 640);
         oldSize = new Dimension(0, 0);
         origin = new Vec2();
@@ -239,8 +242,29 @@ public class UVMappingCanvas extends CustomWidget {
             oldSize = new Dimension(size);
         }
         Graphics2D g = evt.getGraphics();
-        if (textureImage != null) {
+
+        if (textureImage != null)
             g.drawImage(textureImage, 0, 0, null);
+        else{
+            g.setColor(bgColor2);
+            int x0 = (size.width % 40)/2-20;
+            int y0 = (size.height % 40)/2-20;
+            int x = x0, y;
+            while (x < size.width)
+            {
+                y = y0;
+                while(y < size.height)
+                {
+                    g.fillRect(x, y, 10, 10);
+                    g.fillRect(x+10, y+10, 10, 10);
+                    y += 20;
+                }
+                x += 20;
+            }
+            Point p1 = VertexToLayout(new Vec2(0, 0));
+            Point p2 = VertexToLayout(new Vec2(1, 1));
+            g.setColor(txAreaColor);
+            g.fillRect(p1.x, p2.y,  p2.x-p1.x,  p1.y-p2.y);
         }
         for (int i = 0; i < meshes.length; i++) {
             UnfoldedMesh mesh = meshes[i];
@@ -907,7 +931,8 @@ public class UVMappingCanvas extends CustomWidget {
         int maxDistance = parent.getMaxTensionDistance();
 
         // First, set each distance to 0 or -1, depending on whether that vertex
-        // is part of the current selection.
+        // is part of the
+        // current selection.
 
         for (i = 0; i < selected.length; i++)
             dist[mappingData.verticesTable[currentPiece][i]] = selected[i] ? 0 : -1;
