@@ -108,9 +108,9 @@ public class UVMappingEditorDialog extends BDialog {
     private BMenu sendTexToMappingMenu;
     private BMenuItem removeMappingMenuItem;
     private BCheckBoxMenuItem[] mappingMenuItems;
+    private BCheckBoxMenuItem gridMenuItem;
 
     public static final int TRANSPARENT = 0, WHITE = 1, TEXTURED = 2;
-
 
     /** 
      *  Construct a new UVMappingEditorDialog
@@ -328,13 +328,18 @@ public class UVMappingEditorDialog extends BDialog {
         menuBar.add(menu);
 
         menu = Translate.menu("polymesh:preferences");
-        BCheckBoxMenuItem cbitem = Translate.checkboxMenuItem("polymesh:showSelectionOnPreview", this, "doShowSelection", true);
-        menu.add(cbitem);
-        cbitem = Translate.checkboxMenuItem("polymesh:liveUpdate", this, "doLiveUpdate", true);
-        menu.add(cbitem);
-        cbitem = Translate.checkboxMenuItem("polymesh:boldEdges", this, "doBoldEdges", true);
-        menu.add(cbitem);
+        menu.add(Translate.checkboxMenuItem("polymesh:showSelectionOnPreview", this, "doShowSelection", true));
+        menu.add(Translate.checkboxMenuItem("polymesh:liveUpdate", this, "doLiveUpdate", true));
+        menu.add(Translate.checkboxMenuItem("polymesh:boldEdges", this, "doBoldEdges", true));
         menuBar.add(menu);
+
+		// Should use transpations of AoI but unfortunately those come with keypad shortcuts notes that are't there.
+        menu = Translate.menu("view");
+        menu.add(Translate.menuItem("polymesh:fitToSelection", mappingCanvas, "fitToSelection"));
+        menu.add(Translate.menuItem("polymesh:fitToAll", mappingCanvas, "fitToAll"));
+        menu.add(gridMenuItem = Translate.checkboxMenuItem("polymesh:showGrid", mappingCanvas, "repaint", true));
+        menuBar.add(menu);
+
         setMenuBar(menuBar);
         setTexturesForMapping(currentMapping);
 
@@ -344,7 +349,7 @@ public class UVMappingEditorDialog extends BDialog {
         updateState();
 
         // This prevents the "0...." in U/V min/max labels.
-        Dimension d = new BLabel("+XX.XXX").getPreferredSize();
+        Dimension d = new BLabel("+XXX.XXX").getPreferredSize();
         uMinValue.getComponent().setPreferredSize(d);
         uMaxValue.getComponent().setPreferredSize(d);
         vMinValue.getComponent().setPreferredSize(d);
@@ -365,6 +370,7 @@ public class UVMappingEditorDialog extends BDialog {
 
         UIUtilities.centerWindow(this); // Has to be after 'pack()'
         addEventLink(WindowClosingEvent.class, this, "doCancel");
+
         setVisible(true);
     }
 
@@ -808,7 +814,8 @@ public class UVMappingEditorDialog extends BDialog {
 
     public void displayUVMinMax(double umin, double umax, double vmin, double vmax) {
         DecimalFormat format = new DecimalFormat();
-        format.setMaximumFractionDigits(2);
+        format.setMaximumFractionDigits(3);
+        format.setPositivePrefix(" ");
         uMinValue.setText(format.format(umin));
         vMinValue.setText(format.format(vmin));
         uMaxValue.setText(format.format(umax));
@@ -840,6 +847,13 @@ public class UVMappingEditorDialog extends BDialog {
                 System.out.print(mapping.textures.get(j) + " ");
             System.out.println("");
         }
+    }
+
+    /**
+     * @return True if mesh tension is on
+     */
+    public boolean drawGrid() {
+        return gridMenuItem.getState();
     }
 
     /**
@@ -885,7 +899,7 @@ public class UVMappingEditorDialog extends BDialog {
 
     private void openImageExportDialog()
     {
-        // First check if the mapping coordinates fit the texture image area
+        // First check is the mapping coordinates fit the texture image area
         // UV-Coordinates must be within [0.0, 1.0], if they aren't, warn the user
 
         double xmin =  Double.MAX_VALUE;
@@ -1394,7 +1408,7 @@ public class UVMappingEditorDialog extends BDialog {
             resolutionSpinner.setValue(new Integer(123456)); 
             Dimension d = resolutionSpinner.getPreferredSize();
             resolutionSpinner.getComponent().setPreferredSize(d);
-            resolutionSpinner.setValue(new Integer(600)); 
+            resolutionSpinner.setValue(new Integer(640)); 
 
             setContent(content);
             pack();

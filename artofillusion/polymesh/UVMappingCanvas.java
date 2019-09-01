@@ -21,6 +21,9 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
+import java.awt.BasicStroke;
 
 import artofillusion.TextureParameter;
 import artofillusion.math.BoundingBox;
@@ -40,6 +43,7 @@ import artofillusion.texture.UVMapping;
 import buoy.event.RepaintEvent;
 import buoy.widget.BScrollPane;
 import buoy.widget.CustomWidget;
+
 
 /**
  * This canvas displays several mesh pieces over a bitmap image. The goal is to
@@ -82,9 +86,10 @@ public class UVMappingCanvas extends CustomWidget {
     private final static Color selectedColor = Color.red;
     private final static Color pinnedColor = new Color(182, 0, 185);
     private final static Color pinnedSelectedColor = new Color(255, 142, 255);
-    private Color bgColor1 = new Color(239, 239, 239), 
+    private Color bgColor1 = new Color(239,239,239), 
                   bgColor2 = new Color(223, 223, 223), 
-                  txAreaColor = Color.white;
+                  txAreaColor = new Color(255, 255, 255, 159), 
+                  ink = new Color(63, 127, 191);
 
     /** 
      *  Construct a new UVMappingCanvas
@@ -112,13 +117,13 @@ public class UVMappingCanvas extends CustomWidget {
         addEventLink(RepaintEvent.class, this, "paintCanvas");
         if (meshes == null)
             return;
-        currentPiece = 0;
-        component = 0;
         fitRangeToAll();
-        createImage();
-        setSelectedPiece(0);
         initializeTexCoordsIndex();
         updateTextureCoords();
+        component = 0;
+        createImage();
+        currentPiece = 0;
+        setSelectedPiece(currentPiece);
     }
 
     public boolean isBoldEdges() {
@@ -266,6 +271,7 @@ public class UVMappingCanvas extends CustomWidget {
             g.setColor(txAreaColor);
             g.fillRect(p1.x, p2.y,  p2.x-p1.x,  p1.y-p2.y);
         }
+        drawGrid(g);
         for (int i = 0; i < meshes.length; i++) {
             UnfoldedMesh mesh = meshes[i];
             Vec2[] v = mapping.v[i];
@@ -311,14 +317,85 @@ public class UVMappingCanvas extends CustomWidget {
             }
         }
         if (dragBoxRect != null) {
-            g.setColor(Color.black);
-            g.drawRect(dragBoxRect.x, dragBoxRect.y, dragBoxRect.width,
-                    dragBoxRect.height);
+            g.setColor(ink);
+            g.drawRect(dragBoxRect.x, dragBoxRect.y, dragBoxRect.width, dragBoxRect.height);
         }
         if (manipulator != null)
             manipulator.paint(g);
     }
 
+    private void drawGrid(Graphics2D g)
+    {
+        if (! parent.drawGrid())
+            return;
+        if (scale < 2.0)
+            return;
+
+        // Must use the original AT from the Graphics2D because at startup the coordinates
+        // are measured from the content pane of the UVMappingEditorDialog. Later on a new AT would do.
+
+        AffineTransform aBefore = g.getTransform();
+        AffineTransform aNow = new AffineTransform(aBefore);
+        Point corner = VertexToLayout(new Vec2(0, 0));
+        aNow.translate(corner.x, corner.y);
+        aNow.scale(scale, -scale);
+        g.setTransform(aNow);
+        g.setStroke(new BasicStroke((float)(1.0/scale)));
+
+        //double opacy = Math.min(255*Math.sqrt(scale/640), 223);
+        double opacy = Math.min(255.0*Math.pow(scale/520.0, 2.0/3.0), 223.0);
+        Color ink1 = new Color(ink.getRed(), ink.getGreen(), ink.getBlue(), (int)opacy);
+        Color ink2 = new Color(ink.getRed(), ink.getGreen(), ink.getBlue(), (int)(opacy/1.6));
+        Color ink3 = new Color(ink.getRed(), ink.getGreen(), ink.getBlue(), (int)(opacy/2.5));
+        double v = Math.round(vmin -1.0);
+        double u = Math.round(umin -1.0);
+
+        // Avoiding to draw lines over already drawn lines becuse they are transparent
+
+        while (u < umax)
+        {
+            g.setColor(ink1);
+            g.draw(new Line2D.Double(u, vmin, u, vmax));
+            if (scale > 75)
+            {
+                g.setColor(ink2);
+                g.draw(new Line2D.Double(u+0.5, vmin,u+0.5, vmax));
+            }
+            if (scale > 200)
+            {
+                g.setColor(ink3);
+                for (double d = 0.1; d < 0.5; d += 0.1)
+                {
+                    g.draw(new Line2D.Double(u+d, vmin, u+d, vmax));
+                    g.draw(new Line2D.Double(u+0.5+d, vmin, u+0.5+d, vmax));
+                }
+            }
+            u += 1.0;
+        }
+        while (v < vmax)
+        {
+            g.setColor(ink1);
+            g.draw(new Line2D.Double(umin, v, umax, v));
+            if (scale > 75)
+            {
+                g.setColor(ink2);
+                g.draw(new Line2D.Double(umin, v+0.5, umax, v+0.5));
+            }
+            if (scale > 200)
+            {
+                g.setColor(ink3);
+                for (double d = 0.1; d < 0.5; d += 0.1)
+                {
+                    g.draw(new Line2D.Double(umin, v+d, umax, v+d));
+                    g.draw(new Line2D.Double(umin, v+0.5+d, umax, v+0.5+d));
+                }
+            }
+            v += 1.0;
+        }
+        g.setTransform(aBefore);
+    }
+    
+    
     /**
      * Computes default range from mesh sizes
      * @deprecated use {@link #fitRangeToAll()} instead.  
@@ -328,12 +405,24 @@ public class UVMappingCanvas extends CustomWidget {
         fitRangeToAll();
     }
 
+    public void fitToAll()
+    {
+        fitRangeToAll();
+        repaint();
+    }
+
+    public void fitToSelection()
+    {
+        fitRangeToSelection();
+        repaint();
+    }
 
     /**
      * Computes range for fitting the mesh and the unit texture image
      * on the canvas.
      */
-    public void fitRangeToAll() {
+    public void fitRangeToAll()
+    {
         vmin = umin = 0.0;
         vmax = umax = 1.0;
         Vec2[] v;
@@ -351,7 +440,61 @@ public class UVMappingCanvas extends CustomWidget {
                 vmax = Math.max(vmax, v[j].y);
             }
         }
-        double margin = Math.max(umax - umin, umax - umin) * 0.02;
+        double margin = Math.max(umax - umin, vmax - vmin) * 0.02;
+        umin -= margin;
+        vmin -= margin;
+        umax += margin;
+        vmax += margin;
+        setRange(umin, umax, vmin, vmax);
+    }
+
+    /**
+     * Computes range for fitting the selected piece or the selected vertices 
+     * on the canvas. (As soon as I find the selected vertices.... now just the piece)
+     */
+    public void fitRangeToSelection()
+    {
+        vmin = umin =  Double.MAX_VALUE;
+        vmax = umax = -Double.MAX_VALUE;
+        Vec2[]  v = mapping.v[currentPiece];
+        UnfoldedVertex[] vert = meshes[currentPiece].vertices;
+        double margin;
+
+        // Check if any vertices are selected and calculate range based on those
+        int countSelected = 0;
+        for(int i = 0; i < selected.length; i++)
+        {
+            if(selected[i])
+            {
+                countSelected++;
+                if (vert[i].id == -1)
+                    continue;
+                umin = Math.min(umin, v[i].x);
+                umax = Math.max(umax, v[i].x);
+                vmin = Math.min(vmin, v[i].y);
+                vmax = Math.max(vmax, v[i].y);
+            }
+        }
+        if (countSelected == 1)
+            margin = 0.25; // To do: Find the next closest vertex and fit that in too with margin
+        else if (countSelected > 1)
+            margin = Math.max(umax - umin, vmax - vmin) * 0.25;
+
+        // If no vertices are selected, fit to the selected piece
+        else
+        {
+            for (int j = 0; j < v.length; j++) 
+            {
+                if (vert[j].id == -1)
+                    continue;
+                umin = Math.min(umin, v[j].x);
+                umax = Math.max(umax, v[j].x);
+                vmin = Math.min(vmin, v[j].y);
+                vmax = Math.max(vmax, v[j].y);
+            }
+            margin = Math.max(umax - umin, vmax - vmin) * 0.07;
+        }
+
         umin -= margin;
         vmin -= margin;
         umax += margin;
