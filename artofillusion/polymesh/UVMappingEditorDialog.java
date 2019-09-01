@@ -208,8 +208,8 @@ public class UVMappingEditorDialog extends BDialog {
             uMaxValue = ((BLabel) decoder.getObject("uMaxValue"));
             vMinValue = ((BLabel) decoder.getObject("vMinValue"));
             vMaxValue = ((BLabel) decoder.getObject("vMaxValue"));
-            autoButton = ((BButton) decoder.getObject("autoButton"));
-            autoButton.addEventLink(CommandEvent.class, this, "doAutoScale");
+            //autoButton = ((BButton) decoder.getObject("autoButton"));
+            //autoButton.addEventLink(CommandEvent.class, this, "doAutoScale");
             resLabel = ((BLabel) decoder.getObject("resLabel"));
             mappingCB = ((BComboBox) decoder.getObject("mappingCB"));
             mappingCB.addEventLink(ValueChangedEvent.class, this, "doMappingChanged");
@@ -333,7 +333,8 @@ public class UVMappingEditorDialog extends BDialog {
         menu.add(Translate.checkboxMenuItem("polymesh:boldEdges", this, "doBoldEdges", true));
         menuBar.add(menu);
 
-		// Should use transpations of AoI but unfortunately those come with keypad shortcuts notes that are't there.
+        // Would prefer to use transpations of AoI but unfortunately those come with keyboard shortcuts
+        // that are't implemented.
         menu = Translate.menu("view");
         menu.add(Translate.menuItem("polymesh:fitToSelection", mappingCanvas, "fitToSelection"));
         menu.add(Translate.menuItem("polymesh:fitToAll", mappingCanvas, "fitToAll"));
@@ -892,15 +893,15 @@ public class UVMappingEditorDialog extends BDialog {
         mappingCanvas.findSelectionDistance();
     }
 
-    private void doAutoScale() {
-        mappingCanvas.fitRangeToAll();
-        mappingCanvas.repaint();
-    }
+    //private void doAutoScale() {
+    //    mappingCanvas.fitRangeToAll();
+    //    mappingCanvas.repaint();
+    //}
 
     private void openImageExportDialog()
     {
-        // First check is the mapping coordinates fit the texture image area
-        // UV-Coordinates must be within [0.0, 1.0], if they aren't, warn the user
+        // First check if the mapping coordinates fit the texture image area.
+        // UV-Coordinates must be within [0.0, 1.0], if they aren't, warn the user.
 
         double xmin =  Double.MAX_VALUE;
         double xmax = -Double.MAX_VALUE;

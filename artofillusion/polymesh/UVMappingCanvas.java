@@ -394,16 +394,6 @@ public class UVMappingCanvas extends CustomWidget {
         }
         g.setTransform(aBefore);
     }
-    
-    
-    /**
-     * Computes default range from mesh sizes
-     * @deprecated use {@link #fitRangeToAll()} instead.  
-     */
-    @Deprecated
-    public void resetMeshLayout() {
-        fitRangeToAll();
-    }
 
     public void fitToAll()
     {
