@@ -1,5 +1,7 @@
 /*
  *  Copyright (C) 2007 by François Guillet
+ *  Modifications Copyright (C) 2019 by Petri Ihalainen
+ *
  *  This program is free software; you can redistribute it and/or modify it under the 
  *  terms of the GNU General Public License as published by the Free Software 
  *  Foundation; either version 2 of the License, or (at your option) any later version. 
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
+import artofillusion.ArtOfIllusion;
 import artofillusion.math.Mat4;
 import artofillusion.math.Vec2;
 import artofillusion.math.Vec3;
@@ -61,7 +64,7 @@ public class UVMappingManipulator
     private double rotAngle, scalex, scaley;
     private int axisLength = 75;
     private int originalAxisLength;
-    private boolean scaling, moving;
+    private boolean scaling, moving, reverseZoom;
     private double originalScale;
     private Vec2 originalOrigin;
     private int numSel; //used to keep track if more than one vertex is selected manipulator is displayed only if numSel >= 2
@@ -105,6 +108,7 @@ public class UVMappingManipulator
             centerhandle = ThemeManager.getIcon( "polymesh:centerhandle").getImage();
         }
         anchor = -1;
+        reverseZoom = ArtOfIllusion.getPreferences().getReverseZooming();
     }
 
     public void mousePressed(WidgetMouseEvent ev)
@@ -821,15 +825,21 @@ public class UVMappingManipulator
 
     public void mouseScrolled(MouseScrolledEvent ev)
     {
+        // Use the same scroll direction and Alt function as AoI
+
         int amount = ev.getWheelRotation();
-        if (ev.isAltDown())
+        if (! ev.isAltDown())
             amount *= 10;
-        canvas.scale(Math.pow(0.99, amount));
+        if (reverseZoom)
+            canvas.scale(Math.pow(0.99, amount));
+        else
+            canvas.scale(Math.pow(0.99, -amount));
+        computeCenter(); // So the manipulator follows tghe selection during zoom
     }
 
     public void paint(Graphics2D g)
     {
-        if (numSel < 2)
+        if (numSel == 0)
             return;
         if (center == null)
             return;
@@ -967,7 +977,7 @@ public class UVMappingManipulator
         * Given an angle, this method returns a 2D polygon which can be used to
         * tell the user the rotation amount when drawn on the canvas
         *
-        * @param angle
+        * @param  angle
         * @return The polygon
         */
         public Polygon getRotationFeedback(double angle)
