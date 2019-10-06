@@ -20,6 +20,9 @@ import artofillusion.math.Vec3;
 import artofillusion.ui.MeshEditController;
 import artofillusion.ui.ThemeManager;
 import artofillusion.ui.Translate;
+
+import static artofillusion.ui.UIUtilities.*;
+
 import buoy.event.KeyPressedEvent;
 import buoy.event.ToolTipEvent;
 import buoy.event.WidgetMouseEvent;
@@ -491,8 +494,6 @@ extends SSMRManipulator
 
     public boolean scaleDragged(WidgetMouseEvent e)
     {
-        //if (view instanceof PolyMeshViewer)
-        //    ((PolyMeshViewer)view).moveToGrid(e);
         Point p = e.getPoint();
         Rectangle newBounds = new Rectangle();
         boolean move = false;
@@ -844,7 +845,7 @@ extends SSMRManipulator
             return false;
         if (baseClick.x == e.getPoint().x && baseClick.y == e.getPoint().y && handle != TOOL_HANDLE)
         {
-            if (e.getButton() == MouseEvent.BUTTON2 && handle != CENTER)
+            if (mouseButtonTwo(e) && handle != CENTER)
             {
                 if (valueWidget != null)
                 {
@@ -864,11 +865,6 @@ extends SSMRManipulator
                     return true;
                 }
             }
-            /*else if (e.getButton() == MouseEvent.BUTTON3)
-            {
-                if (!e.isControlDown() && !e.isShiftDown())
-                    ((PolyMeshEditorWindow)((PolyMeshViewer)view).getController()).triggerPopupEvent(e);
-            }*/
             else
             {
                 rotateX = bounds.x + bounds.width/2;
@@ -884,7 +880,6 @@ extends SSMRManipulator
         }
         else
         {
-            //mouseDragged(e);
             if (handle == CENTER || handle == TOOL_HANDLE)
             {
                 if (state == SCALE || handle == TOOL_HANDLE)
@@ -972,6 +967,7 @@ extends SSMRManipulator
         int key = e.getKeyCode();
         int dx = 0;
         int dy = 0;
+
         // Pressing an arrow key is equivalent to dragging the first selected point by one pixel.
 
         if (key == KeyPressedEvent.VK_UP)

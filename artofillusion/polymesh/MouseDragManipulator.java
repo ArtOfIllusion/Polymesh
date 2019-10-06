@@ -17,6 +17,7 @@ import artofillusion.math.Vec3;
 import artofillusion.object.Mesh;
 import artofillusion.object.MeshVertex;
 import artofillusion.ui.MeshEditController;
+import static artofillusion.ui.UIUtilities.*;
 import buoy.event.WidgetMouseEvent;
 
 /**
@@ -37,7 +38,6 @@ public class MouseDragManipulator extends Manipulator
     private static final double DRAG_SCALE = 0.01;
     private Vec3 center;
     private Vec2 axisCenter;
-    private int button;
     /**
      * Creates a mouse drag manipulator that displays the given image at selection center
      *
@@ -82,8 +82,7 @@ public class MouseDragManipulator extends Manipulator
         if (bounds == null)
             return false;
         //good enough for us
-        button = e.getButton();
-        if (button == MouseEvent.BUTTON2 ) // && ( e.getModifiers() & ActionEvent.CTRL_MASK) == 0)
+        if (mouseButtonTwo(e))
         {
             Camera cam = view.getCamera();
             baseClick = e.getPoint();
@@ -92,7 +91,7 @@ public class MouseDragManipulator extends Manipulator
             dragging = true;
             return true;
         }
-        else if (e.getButton() == MouseEvent.BUTTON1)
+        else if (mouseButtonOne(e))
         {
             Point p = e.getPoint();
             if (image != null)
@@ -128,7 +127,7 @@ public class MouseDragManipulator extends Manipulator
             return false;
         if (! dragging)
             return false;
-        if (button == MouseEvent.BUTTON2)
+        if (mouseButtonTwo(e))
         {
             viewDragged(e);
             return true;
@@ -213,7 +212,7 @@ public class MouseDragManipulator extends Manipulator
         if (!dragging)
             return false;
         dragging = false;
-        if (button != MouseEvent.BUTTON2)
+        if (!mouseButtonTwo(e))
             dispatchEvent(new ManipulatorCompletedEvent(this, view));
         return true;
     }
