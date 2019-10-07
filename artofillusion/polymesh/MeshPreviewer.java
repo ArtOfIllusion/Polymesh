@@ -1,14 +1,15 @@
-/* 
- Copyright (C) 1999-2005 by Peter Eastman, 2007 by Francois Guillet
- Modifications Copyright (C) 2019 by Petri Ihalainen
-
- This program is free software; you can redistribute it and/or modify it under the 
- terms of the GNU General Public License as published by the Free Software 
- Foundation; either version 2 of the License, or (at your option) any later version.
-
- This program is distributed in the hope that it will be useful, but WITHOUT ANY 
- WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
- PARTICULAR PURPOSE.  See the GNU General Public License for more details. */
+/*
+    Copyright (C) 1999-2005 by Peter Eastman, 2007 by Francois Guillet
+    Modifications Copyright (C) 2019 by Petri Ihalainen
+    
+    This program is free software; you can redistribute it and/or modify it under the 
+    terms of the GNU General Public License as published by the Free Software 
+    Foundation; either version 2 of the License, or (at your option) any later version.
+    
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY 
+    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+    PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+*/
 
 package artofillusion.polymesh;
 
@@ -37,7 +38,7 @@ import javax.swing.Timer;
  * MeshPreviewer is a component used for renderering previews of Mesh.
  */
 
-public class MeshPreviewer extends CustomWidget implements RenderListener 
+public class MeshPreviewer extends CustomWidget implements RenderListener
 {
     Scene theScene;
     Camera theCamera;
@@ -48,14 +49,14 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
     Point clickPoint;
     private Mat4 dragTransform;
     public static final int HANDLE_SIZE = 5;
-    static final double DRAG_SCALE = Math.PI / 360.0;
+    static final double DRAG_SCALE = Math.PI / 360.0; // Half a degree
     ArrayList<ObjectInfo> selection;
     ArrayList<Vec3> selPos;
     private UniformTexture selTexture;
     private Sphere sphere;
     private int spheresIndex;
     private boolean showSelection;
-    private double boundR; // Bound radius is the reference size of the object.
+    private double boundR; // Bound radius is used as reference size of the object.
     private boolean reverseWheel;
     private int amount, scrollAmount;
     private Timer scrollTimer;
@@ -72,18 +73,19 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
         init(objInfo, width, height);
     }
 
-    /** 
+    /**
      * Create a MaterialPreviewer to display the specified object, with its
      * current texture and material.
      */
 
-    public MeshPreviewer(ObjectInfo obj, int width, int height) {
-    init(obj.duplicate(), width, height);
+    public MeshPreviewer(ObjectInfo obj, int width, int height)
+    {
+        init(obj.duplicate(), width, height);
     }
 
     /** Initialize the object's texture and material. */
 
-    private void initObject(Texture tex, Material mat, ObjectInfo objInfo) 
+    private void initObject(Texture tex, Material mat, ObjectInfo objInfo)
     {
         if (tex == null)
             tex = UniformTexture.invisibleTexture();
@@ -94,58 +96,53 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
 
     /** Initialize the MaterialPreviewer. */
 
-    private void init(ObjectInfo obj, int width, int height) 
+    private void init(ObjectInfo obj, int width, int height)
     {
         BoundingBox bounds = obj.getBounds();
         Vec3 size = bounds.getSize();
         boundR = bounds.getSize().length()*0.5;
         CoordinateSystem coords = new CoordinateSystem(new Vec3(0.0, 0.0, 8.0 * boundR), 
                                                        new Vec3(0.0, 0.0, -1.0), Vec3.vy());
-        Vec3 vert[] = new Vec3[] {new Vec3( 100.0 * boundR, -boundR,  100.0 * boundR),
-                                  new Vec3(-100.0 * boundR, -boundR,  100.0 * boundR),
+        Vec3 vert[] = new Vec3[] {new Vec3( 100.0 * boundR, -boundR,  100.0 * boundR), 
+                                  new Vec3(-100.0 * boundR, -boundR,  100.0 * boundR), 
                                   new Vec3(   0.0,          -boundR, -100.0 * boundR)};
-        int face[][] = { { 0, 1, 2 } };
+        int face[][] = {{0, 1, 2}};
         TriangleMesh tri;
-        
         theScene = new Scene();
         theCamera = new Camera();
         theCamera.setCameraCoordinates(coords);
-        coords = new CoordinateSystem(new Vec3(), new Vec3(-0.5, -0.4, -1.0),
-            Vec3.vy());
-        theScene.addObject(new DirectionalLight(new RGBColor(1.0f, 1.0f, 1.0f),
-            0.8f), coords, "", null);
+        coords = new CoordinateSystem(new Vec3(), new Vec3(-0.5, -0.4, -1.0), Vec3.vy());
+        theScene.addObject(new DirectionalLight(new RGBColor(1.0f, 1.0f, 1.0f), 0.8f), coords, "", null);
         coords = new CoordinateSystem(new Vec3(), Vec3.vz(), Vec3.vy());
-        theScene
-            .addObject(tri = new TriangleMesh(vert, face), coords, "", null);
+        theScene.addObject(tri = new TriangleMesh(vert, face), coords, "", null);
         Texture tex = theScene.getDefaultTexture();
         tri.setTexture(tex, tex.getDefaultMapping(tri));
         info = obj;
         objectCoords = info.coords = new CoordinateSystem();
         theScene.addObject(info, null);
         setPreferredSize(new Dimension(width, height));
-        addEventLink(MousePressedEvent.class, this, "mousePressed");
+        addEventLink(MousePressedEvent.class,  this, "mousePressed");
         addEventLink(MouseReleasedEvent.class, this, "mouseReleased");
-        // addEventLink(MouseClickedEvent.class, this, "mouseClicked");
-        addEventLink(MouseEnteredEvent.class, this, "mouseEntered");
-        addEventLink(MouseExitedEvent.class, this, "mouseExited");
-        addEventLink(MouseDraggedEvent.class, this, "mouseDragged");
+        addEventLink(MouseEnteredEvent.class,  this, "mouseEntered");
+        addEventLink(MouseExitedEvent.class,   this, "mouseExited");
+        addEventLink(MouseDraggedEvent.class,  this, "mouseDragged");
         addEventLink(MouseScrolledEvent.class, this, "mouseScrolled");
-        addEventLink(RepaintEvent.class, this, "paint");
-        
+        addEventLink(RepaintEvent.class,       this, "paint");
+
         // Set up other listeners.
-        
+
         getComponent().addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent ev) {render();}
         });
         getComponent().addHierarchyListener(new HierarchyListener() {
             public void hierarchyChanged(HierarchyEvent ev) {
-            if ((ev.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) != 0)
-                if (!getComponent().isDisplayable()) {
-                Renderer rend = ArtOfIllusion.getPreferences()
-                    .getTexturePreviewRenderer();
-                if (rend != null)
-                    rend.cancelRendering(theScene);
-                }
+                if ((ev.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) != 0)
+                    if (!getComponent().isDisplayable())
+                    {
+                        Renderer rend = ArtOfIllusion.getPreferences().getTexturePreviewRenderer();
+                        if (rend != null)
+                            rend.cancelRendering(theScene);
+                    }
             }
         });
         selection = new ArrayList<ObjectInfo>();
@@ -163,10 +160,10 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
                 mouseStoppedScrolling();}});
         render();
     }
-        
+
     /** Get the object on which the texture and material are being displayed. */
-    
-    public ObjectInfo getObject() 
+
+    public ObjectInfo getObject()
     {
         return info;
     }
@@ -176,7 +173,7 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
      * being displayed.
      */
 
-    public void setTexture(Texture tex, TextureMapping map) 
+    public void setTexture(Texture tex, TextureMapping map)
     {
         if (tex == null)
             tex = UniformTexture.invisibleTexture();
@@ -191,7 +188,7 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
 
     /** Render the preview. */
 
-    public synchronized void render() 
+    public synchronized void render()
     {
         Renderer rend = ArtOfIllusion.getPreferences()
             .getTexturePreviewRenderer();
@@ -213,15 +210,14 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
 
     /** Cancel rendering. */
 
-    public synchronized void cancelRendering() 
+    public synchronized void cancelRendering()
     {
-        Renderer rend = ArtOfIllusion.getPreferences()
-            .getTexturePreviewRenderer();
+        Renderer rend = ArtOfIllusion.getPreferences().getTexturePreviewRenderer();
         if (rend != null)
             rend.cancelRendering(theScene);
     }
 
-    private void paint(RepaintEvent ev) 
+    private void paint(RepaintEvent ev)
     {
         Graphics2D g = ev.getGraphics();
         if (theImage != null)
@@ -236,7 +232,7 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
         }
     }
 
-    private void drawHilight(Graphics g) 
+    private void drawHilight(Graphics g)
     {
         Rectangle bounds = getBounds();
         g.setColor(Color.red);
@@ -246,7 +242,7 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
         g.fillRect(bounds.width - HANDLE_SIZE, bounds.height - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
     }
 
-    private void drawObject(Graphics g) 
+    private void drawObject(Graphics g)
     {
         g.setColor(Color.gray);
         Vec3 origin = objectCoords.getOrigin();
@@ -269,11 +265,11 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
 
     /** Rotate the object to show a specific side. */
 
-    private void changeView(int view) 
+    private void changeView(int view)
     {
         double angles[][] = new double[][] {{   0.0,   0.0, 0.0}, { 0.0, 180.0, 0.0}, 
-                                            {   0.0, -90.0, 0.0}, { 0.0,  90.0, 0.0},
-                                            { -90.0,   0.0, 0.0}, {90.0,   0.0, 0.0}, };
+                                            {   0.0, -90.0, 0.0}, { 0.0,  90.0, 0.0}, 
+                                            { -90.0,   0.0, 0.0}, {90.0,   0.0, 0.0}};
         objectCoords.setOrientation(angles[view][0], angles[view][1], angles[view][2]);
         objectCoords.setOrigin(new Vec3());
         updateSelectionPositions();
@@ -300,7 +296,7 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
 
     /** Called when rendering is complete. */
 
-    public void imageComplete(ComplexImage image) 
+    public void imageComplete(ComplexImage image)
     {
         theImage = image.getImage();
         renderInProgress = false;
@@ -344,7 +340,7 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
             return;
         Point dragPoint = e.getPoint();
 
-        // Why is dragTransform recalculated here? Nothing is moving any more.
+        // Why is dragTransform recalculated here, nothing is moving any more?
 
         if (!clickPoint.equals(dragPoint))
         {
@@ -356,8 +352,8 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
                     dragTransform = Mat4.translation((dragPoint.x - clickPoint.x) * 0.01, (clickPoint.y - dragPoint.y) * 0.01, 0.0);
                 objectCoords.transformOrigin(dragTransform);
                 updateSelectionPositions();
-            } 
-            else 
+            }
+            else
             {
                 Vec3 rotAxis = new Vec3((clickPoint.y - dragPoint.y) * DRAG_SCALE, (dragPoint.x - clickPoint.x) * DRAG_SCALE, 0.0);
                 double angle = rotAxis.length();
@@ -371,23 +367,22 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
         render();
     }
 
-    private void mouseDragged(MouseDraggedEvent e) 
+    private void mouseDragged(MouseDraggedEvent e)
     {
         if (clickPoint == null)
             return;
         Graphics g = getComponent().getGraphics();
         Point dragPoint = e.getPoint();
-        if (mouseButtonThree(e)) 
+        if (mouseButtonThree(e))
         {
             if (e.isControlDown())
                 dragTransform = Mat4.translation(0.0, 0.0, (dragPoint.y - clickPoint.y) * 0.05);
             else
                 dragTransform = Mat4.translation((dragPoint.x - clickPoint.x) * 0.01, (clickPoint.y - dragPoint.y) * 0.01, 0.0);
         }
-        else 
+        else
         {
-            Vec3 rotAxis = new Vec3((clickPoint.y - dragPoint.y) * DRAG_SCALE,
-                (dragPoint.x - clickPoint.x) * DRAG_SCALE, 0.0);
+            Vec3 rotAxis = new Vec3((clickPoint.y - dragPoint.y) * DRAG_SCALE, (dragPoint.x - clickPoint.x) * DRAG_SCALE, 0.0);
             double angle = rotAxis.length();
             rotAxis = rotAxis.times(1.0 / angle);
             rotAxis = theCamera.getViewToWorld().timesDirection(rotAxis);
@@ -426,14 +421,13 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
         render();
     }
 
-    public void setVertexSelection(boolean[] sel) 
+    public void setVertexSelection(boolean[] sel)
     {
-        if (!showSelection) 
+        if (!showSelection)
             return;
-            
+
         clearVertexSelection();
         PolyMesh mesh = (PolyMesh) info.object;
-        //Vec3[] normals = mesh.getNormals();
         MeshVertex[] v = mesh.getVertices();
         selPos.clear();
         Mat4 m = objectCoords.fromLocal();
@@ -442,7 +436,6 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
             if (sel[i])
             {
                 Vec3 pos = new Vec3(v[i].r);
-                //pos.add(normals[i].times(0.03));
                 selPos.add(pos);
                 pos = m.times(pos);
                 CoordinateSystem c = new CoordinateSystem(pos, 0, 0, 0);
@@ -458,10 +451,9 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
     {
         if (selection.size() == 0)
             return;
-            
+
         for (int i = selection.size() - 1; i >= 0; i--)
             theScene.removeObject(spheresIndex + i, null);
-
         selection.clear();
         selPos.clear();
     }
