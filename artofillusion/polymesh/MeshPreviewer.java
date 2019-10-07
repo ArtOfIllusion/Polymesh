@@ -31,6 +31,7 @@ import buoy.widget.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import javax.swing.Timer;
 
 /**
  * MeshPreviewer is a component used for renderering previews of Mesh.
@@ -55,6 +56,9 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
     private int spheresIndex;
     private boolean showSelection;
     private double boundR; // Bound radius is the reference size of the object.
+    private boolean reverseWheel;
+    private int amount, scrollAmount;
+    private Timer scrollTimer;
 
     /**
      * Same as above, except you can specify a different object to use
@@ -125,6 +129,7 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
         addEventLink(MouseEnteredEvent.class, this, "mouseEntered");
         addEventLink(MouseExitedEvent.class, this, "mouseExited");
         addEventLink(MouseDraggedEvent.class, this, "mouseDragged");
+        addEventLink(MouseScrolledEvent.class, this, "mouseScrolled");
         addEventLink(RepaintEvent.class, this, "paint");
         
         // Set up other listeners.
@@ -151,6 +156,11 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
         sphere.setTexture(selTexture, selTexture.getDefaultMapping(sphere));
         spheresIndex = theScene.getNumObjects();
         showSelection = true;
+        reverseWheel = ArtOfIllusion.getPreferences().getReverseZooming();
+        scrollAmount = 0;
+        scrollTimer = new Timer(250, new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                mouseStoppedScrolling();}});
         render();
     }
         
@@ -387,6 +397,33 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
         drawHilight(g);
         drawObject(g);
         g.dispose();
+    }
+
+    private void mouseScrolled(MouseScrolledEvent e)
+    {
+        scrollTimer.restart();
+        amount = e.getWheelRotation();
+        if (! e.isAltDown())
+            amount *= 5;
+        if (reverseWheel)
+            scrollAmount += amount;
+        else
+            scrollAmount -= amount;
+
+        dragTransform = Mat4.translation(0.0, 0.0, scrollAmount*boundR*0.075);
+        Graphics g = getComponent().getGraphics();
+        g.drawImage(theImage, 0, 0, getComponent());
+        drawHilight(g);
+        drawObject(g);
+        g.dispose();
+    }
+
+    private void mouseStoppedScrolling()
+    {
+        scrollTimer.stop();
+        scrollAmount = 0;
+        objectCoords.transformOrigin(dragTransform);
+        render();
     }
 
     public void setVertexSelection(boolean[] sel) 
