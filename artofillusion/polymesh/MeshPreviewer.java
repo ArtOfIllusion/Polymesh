@@ -1,6 +1,6 @@
 /* 
  Copyright (C) 1999-2005 by Peter Eastman, 2007 by Francois Guillet
- Modification Copyright (C) 2019 by Petri Ihalainen (mouse button detection)
+ Modifications Copyright (C) 2019 by Petri Ihalainen
 
  This program is free software; you can redistribute it and/or modify it under the 
  terms of the GNU General Public License as published by the Free Software 
@@ -54,6 +54,7 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
     private Sphere sphere;
     private int spheresIndex;
     private boolean showSelection;
+    private double boundR; // Bound radius is the reference size of the object.
 
     /**
      * Same as above, except you can specify a different object to use
@@ -93,15 +94,12 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
     {
         BoundingBox bounds = obj.getBounds();
         Vec3 size = bounds.getSize();
-        double max = Math.max(size.x, Math.max(size.y, size.z)) / 2.0;
-        double floor = -bounds.getSize().length() / 2.0;
-        CoordinateSystem coords = new CoordinateSystem(new Vec3(0.0, 0.0,
-            10.0 * max), new Vec3(0.0, 0.0, -1.0), Vec3.vy());
-        if (max > 10.0)
-            max = 10.0;
-        Vec3 vert[] = new Vec3[] { new Vec3(100.0 * max, floor, 100.0 * max),
-            new Vec3(-100.0 * max, floor, 100.0 * max),
-            new Vec3(0.0, floor, -100.0 * max) };
+        boundR = bounds.getSize().length()*0.5;
+        CoordinateSystem coords = new CoordinateSystem(new Vec3(0.0, 0.0, 8.0 * boundR), 
+                                                       new Vec3(0.0, 0.0, -1.0), Vec3.vy());
+        Vec3 vert[] = new Vec3[] {new Vec3( 100.0 * boundR, -boundR,  100.0 * boundR),
+                                  new Vec3(-100.0 * boundR, -boundR,  100.0 * boundR),
+                                  new Vec3(   0.0,          -boundR, -100.0 * boundR)};
         int face[][] = { { 0, 1, 2 } };
         TriangleMesh tri;
         
@@ -193,10 +191,12 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
         Rectangle bounds = getBounds();
         if (bounds.width == 0 || bounds.height == 0)
             return;
-        theCamera.setSize(bounds.width, bounds.height);
-        theCamera.setDistToScreen((bounds.height / 200.0) / Math.tan(0.14));
+        SceneCamera sc = new SceneCamera();
+        sc.setFieldOfView(16.0);
+        theCamera.setScreenTransform(sc.getScreenTransform(bounds.width, bounds.height), 
+                                                           bounds.width, bounds.height);
         rend.configurePreview();
-        rend.renderScene(theScene, theCamera, this, null);
+        rend.renderScene(theScene, theCamera, this, sc);
         renderInProgress = true;
         repaint();
     }
@@ -333,12 +333,15 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
         if (clickPoint == null)
             return;
         Point dragPoint = e.getPoint();
+
+        // Why is dragTransform recalculated here? Nothing is moving any more.
+
         if (!clickPoint.equals(dragPoint))
         {
             if (mouseButtonThree(e))
             {
                 if (e.isControlDown())
-                    dragTransform = Mat4.translation(0.0, 0.0,(dragPoint.y - clickPoint.y) * 0.01);
+                    dragTransform = Mat4.translation(0.0, 0.0,(dragPoint.y - clickPoint.y) * 0.05);
                 else
                     dragTransform = Mat4.translation((dragPoint.x - clickPoint.x) * 0.01, (clickPoint.y - dragPoint.y) * 0.01, 0.0);
                 objectCoords.transformOrigin(dragTransform);
@@ -367,7 +370,7 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
         if (mouseButtonThree(e)) 
         {
             if (e.isControlDown())
-                dragTransform = Mat4.translation(0.0, 0.0, (dragPoint.y - clickPoint.y) * 0.01);
+                dragTransform = Mat4.translation(0.0, 0.0, (dragPoint.y - clickPoint.y) * 0.05);
             else
                 dragTransform = Mat4.translation((dragPoint.x - clickPoint.x) * 0.01, (clickPoint.y - dragPoint.y) * 0.01, 0.0);
         }
