@@ -1,5 +1,7 @@
 /*
  *  Copyright (C) 2007 by François Guillet
+ *  Modifications Copyright (C) 2019 by Petri Ihalainen
+ *
  *  This program is free software; you can redistribute it and/or modify it under the 
  *  terms of the GNU General Public License as published by the Free Software 
  *  Foundation; either version 2 of the License, or (at your option) any later version. 
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
+import artofillusion.ArtOfIllusion;
 import artofillusion.math.Mat4;
 import artofillusion.math.Vec2;
 import artofillusion.math.Vec3;
@@ -61,10 +64,10 @@ public class UVMappingManipulator
     private double rotAngle, scalex, scaley;
     private int axisLength = 75;
     private int originalAxisLength;
-    private boolean scaling, moving;
+    private boolean scaling, moving, reverseZoom;
     private double originalScale;
     private Vec2 originalOrigin;
-    private int numSel; //used to keep track if more than one vertex is selected manipulator is displayed only if numSel >= 2
+    private int numSel; //number of selected but unpinned vertices. Needs to be >= 1 to draw the manipulator.
     private boolean liveUpdate = true;
     private boolean draggingHandle;
     private int anchor; //index of the anchor vertex, when set using ctrl drag center handle
@@ -85,6 +88,7 @@ public class UVMappingManipulator
     private static final int VS_HANDLE = 4;
     private static final int UVS_HANDLE = 5;
     private static final int ROTATE_HANDLE = 6;
+    private Color rotateGhost;
 
     public UVMappingManipulator(UVMappingCanvas canvas, UVMappingEditorDialog window)
     {
@@ -105,6 +109,8 @@ public class UVMappingManipulator
             centerhandle = ThemeManager.getIcon( "polymesh:centerhandle").getImage();
         }
         anchor = -1;
+        reverseZoom = ArtOfIllusion.getPreferences().getReverseZooming();
+        rotateGhost = new Color(127, 127, 127, 127);
     }
 
     public void mousePressed(WidgetMouseEvent ev)
@@ -481,6 +487,8 @@ public class UVMappingManipulator
                     break;
 
                 case ROTATE_HANDLE:
+                    if (numSel < 2) // Drawing the rotation sector to just one vertex would seem silly
+                        return;
                     Vec2 disp = new Vec2(currentPt.x - click.x, currentPt.y - click.y);
                     Polygon p = rotationHandle.handle;
                     Vec2 vector = new Vec2();
@@ -534,11 +542,9 @@ public class UVMappingManipulator
                                 v[i].x = (int)Math.round(x + center.x);
                                 v[i].y = (int)Math.round(y + center.y);
                             }
-                            else
-                            {
-                                v[i].x = originalPositions[i].x; // OCCASIONAL NULL POINTER!!
-                                v[i].y = originalPositions[i].y;
-                            }
+                            // No need for else-block
+                            // v already is canvas.getVerticesPoints() and they are not changing;
+                            // Sometimes originalPositions was not set, which caused UI-freeze by NullPointerException
                         }
                         canvas.setPositions(v, selected);
                     }
@@ -821,20 +827,33 @@ public class UVMappingManipulator
 
     public void mouseScrolled(MouseScrolledEvent ev)
     {
+        // Use the same scroll direction and Alt function as AoI
+
         int amount = ev.getWheelRotation();
-        if (ev.isAltDown())
+        if (! ev.isAltDown())
             amount *= 10;
-        canvas.scale(Math.pow(0.99, amount));
+        if (reverseZoom)
+            canvas.scale(Math.pow(0.99, amount));
+        else
+            canvas.scale(Math.pow(0.99, -amount));
+
+        //'computeCenter()' at 'paint()' takes cere of the position
     }
 
     public void paint(Graphics2D g)
     {
-        if (numSel < 2)
+        if (numSel == 0)
             return;
         if (center == null)
             return;
         if (scaling || moving)
             return;
+
+        // This repositions the manipulator during zoom and window resize
+        // Without the 'if' the manipulator starts to wandrer whem rotated
+
+        if (! dragging) 
+            computeCenter();
 
         g.setColor(Color.orange);
         g.drawLine(center.x + dx, center.y + dy, center.x + dx + axisLength, center.y + dy);
@@ -859,8 +878,8 @@ public class UVMappingManipulator
             {
                 case ROTATE_HANDLE:
                     Polygon p = rotationHandle.getRotationFeedback(rotAngle);
+                    g.setColor(rotateGhost);
                     g.drawPolygon(p);
-                    g.setColor(Color.gray);
                     g.fillPolygon(p);
                     break;
 
@@ -967,7 +986,7 @@ public class UVMappingManipulator
         * Given an angle, this method returns a 2D polygon which can be used to
         * tell the user the rotation amount when drawn on the canvas
         *
-        * @param angle
+        * @param  angle
         * @return The polygon
         */
         public Polygon getRotationFeedback(double angle)
