@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<baliseinterface>
+<projectfile>polymesh.bpr</projectfile>
+<saveasexport>true</saveasexport>
+<widgetproperties>
+<widget name="BorderContainer1">
+<prototyped>true</prototyped>
+</widget>
+<widget name="chooseLevelsLabel">
+<prototyped>true</prototyped>
+</widget>
+<widget name="FormContainer1">
+<prototyped>true</prototyped>
+</widget>
+<widget name="interactiveLabel">
+<prototyped>true</prototyped>
+</widget>
+<widget name="renderingLabel">
+<prototyped>true</prototyped>
+</widget>
+<widget name="interactiveSpinner">
+<prototyped>true</prototyped>
+</widget>
+<widget name="renderingSpinner">
+<prototyped>true</prototyped>
+</widget>
+<widget name="OkCancelGrid">
+<prototyped>true</prototyped>
+</widget>
+<widget name="okButton">
+<prototyped>true</prototyped>
+</widget>
+<widget name="cancelButton">
+<prototyped>true</prototyped>
+</widget>
+<widget name="OkCancelGrid">
+<prototyped>true</prototyped>
+</widget>
+<widget name="OkCancelGrid">
+<prototyped>true</prototyped>
+</widget>
+</widgetproperties>
+<gui>
+<java class="java.beans.XMLDecoder" version="1.5.0_03"> 
+ <object class="buoy.widget.BDialog"> 
+  <void property="background"> 
+   <object class="javax.swing.plaf.ColorUIResource" id="ColorUIResource0"> 
+    <int>228</int> 
+    <int>231</int> 
+    <int>237</int> 
+   </object> 
+  </void> 
+  <void property="bounds"> 
+   <object class="java.awt.Rectangle"> 
+    <int>61</int> 
+    <int>348</int> 
+    <int>199</int> 
+    <int>128</int> 
+   </object> 
+  </void> 
+  <void property="content"> 
+   <object class="buoy.widget.BorderContainer"> 
+    <void property="background"> 
+     <object idref="ColorUIResource0"/> 
+    </void> 
+    <void property="defaultLayout"> 
+     <void property="insets"> 
+      <object class="java.awt.Insets"> 
+       <int>2</int> 
+       <int>2</int> 
+       <int>2</int> 
+       <int>2</int> 
+      </object> 
+     </void> 
+     <void property="padding"> 
+      <object class="java.awt.Dimension"> 
+       <int>0</int> 
+       <int>0</int> 
+      </object> 
+     </void> 
+    </void> 
+    <void property="name"> 
+     <string>BorderContainer1</string> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.FormContainer"> 
+      <int>2</int> 
+      <int>2</int> 
+      <void property="background"> 
+       <object idref="ColorUIResource0"/> 
+      </void> 
+      <void property="defaultLayout"> 
+       <void property="insets"> 
+        <object class="java.awt.Insets"> 
+         <int>0</int> 
+         <int>0</int> 
+         <int>0</int> 
+         <int>0</int> 
+        </object> 
+       </void> 
+       <void property="padding"> 
+        <object class="java.awt.Dimension"> 
+         <int>0</int> 
+         <int>0</int> 
+        </object> 
+       </void> 
+      </void> 
+      <void property="name"> 
+       <string>FormContainer1</string> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BLabel"> 
+        <void property="background"> 
+         <object idref="ColorUIResource0"/> 
+        </void> 
+        <void property="name"> 
+         <string>interactiveLabel</string> 
+        </void> 
+        <void property="text"> 
+         <string>interactiveSmoothing</string> 
+        </void> 
+       </object> 
+       <int>0</int> 
+       <int>0</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BLabel"> 
+        <void property="background"> 
+         <object idref="ColorUIResource0"/> 
+        </void> 
+        <void property="name"> 
+         <string>renderingLabel</string> 
+        </void> 
+        <void property="text"> 
+         <string>renderingSmoothing</string> 
+        </void> 
+       </object> 
+       <int>0</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BSpinner"> 
+        <void property="background"> 
+         <object idref="ColorUIResource0"/> 
+        </void> 
+        <void property="model"> 
+         <void property="maximum"> 
+          <int>100</int> 
+         </void> 
+         <void property="minimum"> 
+          <int>0</int> 
+         </void> 
+         <void property="value"> 
+          <int>10</int> 
+         </void> 
+        </void> 
+        <void property="name"> 
+         <string>interactiveSpinner</string> 
+        </void> 
+       </object> 
+       <int>1</int> 
+       <int>0</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BSpinner"> 
+        <void property="background"> 
+         <object idref="ColorUIResource0"/> 
+        </void> 
+        <void property="model"> 
+         <void property="maximum"> 
+          <int>100</int> 
+         </void> 
+         <void property="minimum"> 
+          <int>0</int> 
+         </void> 
+         <void property="value"> 
+          <int>10</int> 
+         </void> 
+        </void> 
+        <void property="name"> 
+         <string>renderingSpinner</string> 
+        </void> 
+       </object> 
+       <int>1</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <int>1</int> 
+       <null/> 
+      </void> 
+     </object> 
+     <object class="buoy.widget.BorderContainer" field="CENTER"/> 
+     <null/> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.BLabel"> 
+      <void property="background"> 
+       <object idref="ColorUIResource0"/> 
+      </void> 
+      <void property="name"> 
+       <string>chooseLevelsLabel</string> 
+      </void> 
+      <void property="text"> 
+       <string>chooseLevels</string> 
+      </void> 
+     </object> 
+     <object class="buoy.widget.BorderContainer" field="NORTH"/> 
+     <object class="buoy.widget.LayoutInfo"> 
+      <void property="alignment"> 
+       <object class="buoy.widget.LayoutInfo" field="WEST"/> 
+      </void> 
+      <void property="insets"> 
+       <object class="java.awt.Insets"> 
+        <int>2</int> 
+        <int>2</int> 
+        <int>2</int> 
+        <int>2</int> 
+       </object> 
+      </void> 
+      <void property="padding"> 
+       <object class="java.awt.Dimension"> 
+        <int>0</int> 
+        <int>0</int> 
+       </object> 
+      </void> 
+     </object> 
+    </void> 
+    <void method="add"> 
+     <object class="buoy.widget.GridContainer"> 
+      <int>2</int> 
+      <int>1</int> 
+      <void property="background"> 
+       <object idref="ColorUIResource0"/> 
+      </void> 
+      <void property="defaultLayout"> 
+       <void property="padding"> 
+        <object class="java.awt.Dimension"> 
+         <int>0</int> 
+         <int>0</int> 
+        </object> 
+       </void> 
+      </void> 
+      <void property="name"> 
+       <string>OkCancelGrid</string> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BButton"> 
+        <void property="actionCommand"> 
+         <string>ok</string> 
+        </void> 
+        <void property="background"> 
+         <object idref="ColorUIResource0"/> 
+        </void> 
+        <void property="name"> 
+         <string>okButton</string> 
+        </void> 
+        <void property="text"> 
+         <string>ok</string> 
+        </void> 
+       </object> 
+       <int>0</int> 
+       <int>0</int> 
+       <null/> 
+      </void> 
+      <void method="add"> 
+       <object class="buoy.widget.BButton"> 
+        <void property="actionCommand"> 
+         <string>cancel</string> 
+        </void> 
+        <void property="background"> 
+         <object idref="ColorUIResource0"/> 
+        </void> 
+        <void property="name"> 
+         <string>cancelButton</string> 
+        </void> 
+        <void property="text"> 
+         <string>cancel</string> 
+        </void> 
+       </object> 
+       <int>1</int> 
+       <int>0</int> 
+       <null/> 
+      </void> 
+     </object> 
+     <object class="buoy.widget.BorderContainer" field="SOUTH"/> 
+     <null/> 
+    </void> 
+   </object> 
+  </void> 
+  <void property="name"> 
+   <string>dialog0</string> 
+  </void> 
+  <void property="title"> 
+   <string>New Dialog</string> 
+  </void> 
+ </object> 
+</java>
+</gui>
+</baliseinterface>
