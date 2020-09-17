@@ -37,7 +37,9 @@
       <fileset dir="${src}/artofillusion/polymesh/Icons" />
     </copy>
     <copy todir="${build}/artofillusion/polymesh/interfaces">
-      <fileset dir="${src}/artofillusion/polymesh/interfaces" />
+      <fileset dir="${src}/artofillusion/polymesh/interfaces">
+        <include name="*.xml"/>
+      </fileset>	    
     </copy>
     <jar jarfile="${dist}/PolyMesh.jar" basedir="${build}" />
   </target>
