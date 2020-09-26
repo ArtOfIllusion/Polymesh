@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<java version="1.6.0" class="java.beans.XMLDecoder">
- <object class="buoy.widget.BorderContainer">
+<java version="1.8.0_265" class="java.beans.XMLDecoder">
+ <object class="buoy.widget.BorderContainer" id="BorderContainer0">
   <void property="defaultLayout">
    <void property="insets">
     <object class="java.awt.Insets">
@@ -11,17 +11,14 @@
     </object>
    </void>
    <void property="padding">
-    <object class="java.awt.Dimension">
-     <int>0</int>
-     <int>0</int>
-    </object>
+    <object class="java.awt.Dimension"/>
    </void>
   </void>
   <void property="name">
    <string>BorderContainer1</string>
   </void>
   <void method="add">
-   <object class="buoy.widget.ColumnContainer">
+   <object class="buoy.widget.ColumnContainer" id="ColumnContainer0">
     <void method="add">
      <object class="buoy.widget.BOutline">
       <void property="border">
@@ -32,9 +29,9 @@
        </object>
       </void>
       <void property="content">
-       <object class="buoy.widget.ColumnContainer">
+       <object class="buoy.widget.ColumnContainer" id="ColumnContainer1">
         <void method="add">
-         <object class="buoy.widget.GridContainer">
+         <object class="buoy.widget.GridContainer" id="GridContainer0">
           <int>2</int>
           <int>4</int>
           <void property="defaultLayout">
@@ -42,10 +39,7 @@
             <object class="buoy.widget.LayoutInfo" field="WEST"/>
            </void>
            <void property="padding">
-            <object class="java.awt.Dimension">
-             <int>0</int>
-             <int>0</int>
-            </object>
+            <object class="java.awt.Dimension"/>
            </void>
           </void>
           <void property="name">
@@ -81,10 +75,7 @@
              </object>
             </void>
             <void property="padding">
-             <object class="java.awt.Dimension">
-              <int>0</int>
-              <int>0</int>
-             </object>
+             <object class="java.awt.Dimension"/>
             </void>
            </object>
           </void>
@@ -118,10 +109,7 @@
              </object>
             </void>
             <void property="padding">
-             <object class="java.awt.Dimension">
-              <int>0</int>
-              <int>0</int>
-             </object>
+             <object class="java.awt.Dimension"/>
             </void>
            </object>
           </void>
@@ -155,10 +143,7 @@
              </object>
             </void>
             <void property="padding">
-             <object class="java.awt.Dimension">
-              <int>0</int>
-              <int>0</int>
-             </object>
+             <object class="java.awt.Dimension"/>
             </void>
            </object>
           </void>
@@ -192,10 +177,7 @@
              </object>
             </void>
             <void property="padding">
-             <object class="java.awt.Dimension">
-              <int>0</int>
-              <int>0</int>
-             </object>
+             <object class="java.awt.Dimension"/>
             </void>
            </object>
           </void>
@@ -254,28 +236,9 @@
          </object>
          <null/>
         </void>
-        <void method="add">
-         <object class="buoy.widget.BButton">
-          <void property="actionCommand">
-           <object id="String0" class="buoy.xml.WidgetLocalization" method="getLocalizedString">
-            <string>auto</string>
-           </object>
-          </void>
-          <void property="name">
-           <string>autoButton</string>
-          </void>
-          <void property="text">
-           <object idref="String0"/>
-          </void>
-         </object>
-         <null/>
-        </void>
         <void property="defaultLayout">
          <void property="padding">
-          <object class="java.awt.Dimension">
-           <int>0</int>
-           <int>0</int>
-          </object>
+          <object class="java.awt.Dimension"/>
          </void>
         </void>
         <void property="name">
@@ -300,10 +263,7 @@
        </object>
       </void>
       <void property="padding">
-       <object class="java.awt.Dimension">
-        <int>0</int>
-        <int>0</int>
-       </object>
+       <object class="java.awt.Dimension"/>
       </void>
      </object>
     </void>
@@ -317,7 +277,7 @@
        </object>
       </void>
       <void property="content">
-       <object class="buoy.widget.ColumnContainer">
+       <object class="buoy.widget.ColumnContainer" id="ColumnContainer2">
         <void method="add">
          <object class="buoy.widget.BLabel">
           <void property="name">
@@ -342,10 +302,7 @@
            </object>
           </void>
           <void property="padding">
-           <object class="java.awt.Dimension">
-            <int>0</int>
-            <int>0</int>
-           </object>
+           <object class="java.awt.Dimension"/>
           </void>
          </object>
         </void>
@@ -371,10 +328,7 @@
            </object>
           </void>
           <void property="padding">
-           <object class="java.awt.Dimension">
-            <int>0</int>
-            <int>0</int>
-           </object>
+           <object class="java.awt.Dimension"/>
           </void>
          </object>
         </void>
@@ -402,10 +356,7 @@
            </object>
           </void>
           <void property="padding">
-           <object class="java.awt.Dimension">
-            <int>0</int>
-            <int>0</int>
-           </object>
+           <object class="java.awt.Dimension"/>
           </void>
          </object>
         </void>
@@ -431,10 +382,7 @@
            </object>
           </void>
           <void property="padding">
-           <object class="java.awt.Dimension">
-            <int>0</int>
-            <int>0</int>
-           </object>
+           <object class="java.awt.Dimension"/>
           </void>
          </object>
         </void>
@@ -462,10 +410,7 @@
            </object>
           </void>
           <void property="padding">
-           <object class="java.awt.Dimension">
-            <int>0</int>
-            <int>0</int>
-           </object>
+           <object class="java.awt.Dimension"/>
           </void>
          </object>
         </void>
@@ -491,10 +436,7 @@
            </object>
           </void>
           <void property="padding">
-           <object class="java.awt.Dimension">
-            <int>0</int>
-            <int>0</int>
-           </object>
+           <object class="java.awt.Dimension"/>
           </void>
          </object>
         </void>
@@ -522,15 +464,12 @@
            </object>
           </void>
           <void property="padding">
-           <object class="java.awt.Dimension">
-            <int>0</int>
-            <int>0</int>
-           </object>
+           <object class="java.awt.Dimension"/>
           </void>
          </object>
         </void>
         <void method="add">
-         <object class="buoy.widget.BSpinner">
+         <object class="buoy.widget.BSpinner" id="BSpinner0">
           <void property="model">
            <void property="maximum">
             <int>99</int>
@@ -559,10 +498,7 @@
            </object>
           </void>
           <void property="padding">
-           <object class="java.awt.Dimension">
-            <int>0</int>
-            <int>0</int>
-           </object>
+           <object class="java.awt.Dimension"/>
           </void>
          </object>
         </void>
@@ -571,10 +507,7 @@
           <object class="buoy.widget.LayoutInfo" field="HORIZONTAL"/>
          </void>
          <void property="padding">
-          <object class="java.awt.Dimension">
-           <int>0</int>
-           <int>0</int>
-          </object>
+          <object class="java.awt.Dimension"/>
          </void>
         </void>
         <void property="name">
@@ -599,10 +532,7 @@
        </object>
       </void>
       <void property="padding">
-       <object class="java.awt.Dimension">
-        <int>0</int>
-        <int>0</int>
-       </object>
+       <object class="java.awt.Dimension"/>
       </void>
      </object>
     </void>
@@ -616,7 +546,7 @@
        </object>
       </void>
       <void property="content">
-       <object class="buoy.widget.ColumnContainer">
+       <object class="buoy.widget.ColumnContainer" id="ColumnContainer3">
         <void method="add">
          <object class="buoy.widget.BCheckBox">
           <void property="name">
@@ -641,10 +571,7 @@
            </object>
           </void>
           <void property="padding">
-           <object class="java.awt.Dimension">
-            <int>0</int>
-            <int>0</int>
-           </object>
+           <object class="java.awt.Dimension"/>
           </void>
          </object>
         </void>
@@ -672,15 +599,12 @@
            </object>
           </void>
           <void property="padding">
-           <object class="java.awt.Dimension">
-            <int>0</int>
-            <int>0</int>
-           </object>
+           <object class="java.awt.Dimension"/>
           </void>
          </object>
         </void>
         <void method="add">
-         <object class="buoy.widget.BSpinner">
+         <object class="buoy.widget.BSpinner" id="BSpinner1">
           <void property="model">
            <void property="maximum">
             <int>100</int>
@@ -709,10 +633,7 @@
            </object>
           </void>
           <void property="padding">
-           <object class="java.awt.Dimension">
-            <int>0</int>
-            <int>0</int>
-           </object>
+           <object class="java.awt.Dimension"/>
           </void>
          </object>
         </void>
@@ -740,10 +661,7 @@
            </object>
           </void>
           <void property="padding">
-           <object class="java.awt.Dimension">
-            <int>0</int>
-            <int>0</int>
-           </object>
+           <object class="java.awt.Dimension"/>
           </void>
          </object>
         </void>
@@ -766,10 +684,7 @@
            </object>
           </void>
           <void property="padding">
-           <object class="java.awt.Dimension">
-            <int>0</int>
-            <int>0</int>
-           </object>
+           <object class="java.awt.Dimension"/>
           </void>
          </object>
         </void>
@@ -778,10 +693,7 @@
           <object class="buoy.widget.LayoutInfo" field="HORIZONTAL"/>
          </void>
          <void property="padding">
-          <object class="java.awt.Dimension">
-           <int>0</int>
-           <int>0</int>
-          </object>
+          <object class="java.awt.Dimension"/>
          </void>
         </void>
         <void property="name">
@@ -806,19 +718,13 @@
        </object>
       </void>
       <void property="padding">
-       <object class="java.awt.Dimension">
-        <int>0</int>
-        <int>0</int>
-       </object>
+       <object class="java.awt.Dimension"/>
       </void>
      </object>
     </void>
     <void property="defaultLayout">
      <void property="padding">
-      <object class="java.awt.Dimension">
-       <int>0</int>
-       <int>0</int>
-      </object>
+      <object class="java.awt.Dimension"/>
      </void>
     </void>
     <void property="name">

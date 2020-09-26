@@ -1,5 +1,7 @@
 /*
  *  Copyright (C) 2007 by François Guillet
+ *  Modifications Copyright (C) 2019 by Petri Ihalainen
+ *
  *  This program is free software; you can redistribute it and/or modify it under the 
  *  terms of the GNU General Public License as published by the Free Software 
  *  Foundation; either version 2 of the License, or (at your option) any later version. 
@@ -14,7 +16,15 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Window;
+import java.awt.Color;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
+import java.awt.BasicStroke;
+import java.awt.Rectangle;
+
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -24,58 +34,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 
-import artofillusion.image.BMPEncoder;
 import artofillusion.math.Vec2;
 import artofillusion.object.FacetedMesh;
 import artofillusion.object.ObjectInfo;
 import artofillusion.polymesh.UVMappingCanvas.MappingPositionsCommand;
 import artofillusion.polymesh.UVMappingCanvas.Range;
 import artofillusion.polymesh.UVMappingData.UVMeshMapping;
-import artofillusion.texture.LayeredMapping;
-import artofillusion.texture.LayeredTexture;
-import artofillusion.texture.Texture;
-import artofillusion.texture.TextureMapping;
-import artofillusion.texture.UVMapping;
-import artofillusion.ui.ActionProcessor;
-import artofillusion.ui.ComponentsDialog;
-import artofillusion.ui.Translate;
-import artofillusion.ui.UIUtilities;
-import artofillusion.ui.ValueField;
-import buoy.event.CommandEvent;
-import buoy.event.MouseDraggedEvent;
-import buoy.event.MouseMovedEvent;
-import buoy.event.MousePressedEvent;
-import buoy.event.MouseReleasedEvent;
-import buoy.event.MouseScrolledEvent;
-import buoy.event.SelectionChangedEvent;
-import buoy.event.ValueChangedEvent;
-import buoy.event.WidgetMouseEvent;
-import buoy.event.WindowClosingEvent;
-import buoy.widget.BButton;
-import buoy.widget.BCheckBox;
-import buoy.widget.BCheckBoxMenuItem;
-import buoy.widget.BColorChooser;
-import buoy.widget.BComboBox;
-import buoy.widget.BDialog;
-import buoy.widget.BFileChooser;
-import buoy.widget.BFrame;
-import buoy.widget.BLabel;
-import buoy.widget.BList;
-import buoy.widget.BMenu;
-import buoy.widget.BMenuBar;
-import buoy.widget.BMenuItem;
-import buoy.widget.BScrollPane;
-import buoy.widget.BSeparator;
-import buoy.widget.BSpinner;
-import buoy.widget.BSplitPane;
-import buoy.widget.BStandardDialog;
-import buoy.widget.BTextField;
-import buoy.widget.BorderContainer;
-import buoy.widget.LayoutInfo;
-import buoy.widget.RowContainer;
-import buoy.widget.Widget;
+import artofillusion.polymesh.UnfoldedMesh.UnfoldedEdge;
+import artofillusion.texture.*;
+import artofillusion.TextureParameter;
+import artofillusion.ui.*;
+
+import buoy.event.*;
+import buoy.widget.*;
 import buoy.xml.WidgetDecoder;
+
 
 /**
  * This window allows the user to edit UV mapping using unfolded pieces of mesh
@@ -133,6 +108,9 @@ public class UVMappingEditorDialog extends BDialog {
     private BMenu sendTexToMappingMenu;
     private BMenuItem removeMappingMenuItem;
     private BCheckBoxMenuItem[] mappingMenuItems;
+    private BCheckBoxMenuItem gridMenuItem;
+
+    public static final int TRANSPARENT = 0, WHITE = 1, TEXTURED = 2;
 
     /** 
      *  Construct a new UVMappingEditorDialog
@@ -230,8 +208,8 @@ public class UVMappingEditorDialog extends BDialog {
             uMaxValue = ((BLabel) decoder.getObject("uMaxValue"));
             vMinValue = ((BLabel) decoder.getObject("vMinValue"));
             vMaxValue = ((BLabel) decoder.getObject("vMaxValue"));
-            autoButton = ((BButton) decoder.getObject("autoButton"));
-            autoButton.addEventLink(CommandEvent.class, this, "doAutoScale");
+            //autoButton = ((BButton) decoder.getObject("autoButton"));
+            //autoButton.addEventLink(CommandEvent.class, this, "doAutoScale");
             resLabel = ((BLabel) decoder.getObject("resLabel"));
             mappingCB = ((BComboBox) decoder.getObject("mappingCB"));
             mappingCB.addEventLink(ValueChangedEvent.class, this, "doMappingChanged");
@@ -287,7 +265,7 @@ public class UVMappingEditorDialog extends BDialog {
         }
         BSplitPane meshViewPanel = new BSplitPane(BSplitPane.VERTICAL, 
                                                   pieceList = new BList(), 
-                                                  preview = new MeshPreviewer(objInfo, 150, 150));
+                                                  preview = new MeshPreviewer(objInfo, 200, 200));
         tex = null;
         mapping = null;
         if (currentTexture >= 0) {
@@ -295,11 +273,11 @@ public class UVMappingEditorDialog extends BDialog {
             mapping = mappingList.get(currentTexture);
         }
         mappingCanvas = new UVMappingCanvas(this, mappingData, preview, tex, (UVMapping)mapping);
-        BScrollPane sp = new BScrollPane(mappingCanvas);
-        meshViewPanel.setResizeWeight(0.7);
+        BScrollPane sp = new BScrollPane(mappingCanvas, BScrollPane.SCROLLBAR_NEVER,  BScrollPane.SCROLLBAR_NEVER);
+        meshViewPanel.setResizeWeight(1.0);
         meshViewPanel.setContinuousLayout(true);
         BSplitPane div = new BSplitPane(BSplitPane.HORIZONTAL, sp, meshViewPanel);
-        div.setResizeWeight(0.5);
+        div.setResizeWeight(1.0);
         div.setContinuousLayout(true);
         content.add(div, 
                     BorderContainer.CENTER, 
@@ -312,8 +290,8 @@ public class UVMappingEditorDialog extends BDialog {
             pieceList.add(meshes[i].getName());
         pieceList.setMultipleSelectionEnabled(false);
         pieceList.setSelected(0, true);
-        addEventLink(WindowClosingEvent.class, this, "doCancel");
-        UIUtilities.centerWindow(this);
+        pieceList.addEventLink(SelectionChangedEvent.class, this, "doPieceListSelection");
+
         mappingCanvas.addEventLink(MousePressedEvent.class, this, "processMousePressed");
         mappingCanvas.addEventLink(MouseReleasedEvent.class, this, "processMouseReleased");
         mappingCanvas.addEventLink(MouseDraggedEvent.class, this, "processMouseDragged");
@@ -333,7 +311,7 @@ public class UVMappingEditorDialog extends BDialog {
         menu.add(Translate.menuItem("polymesh:unpinSelection", this, "doUnpinSelection"));
         menu.add(Translate.menuItem("polymesh:renameSelectedPiece", this, "doRenameSelectedPiece"));
         menu.add(new BSeparator());
-        menu.add(Translate.menuItem("polymesh:exportImage", this, "doExportImage"));
+        menu.add(Translate.menuItem("polymesh:exportImage", this, "openImageExportDialog"));
         menuBar.add(menu);
 
         menu = Translate.menu("polymesh:mapping");
@@ -350,13 +328,19 @@ public class UVMappingEditorDialog extends BDialog {
         menuBar.add(menu);
 
         menu = Translate.menu("polymesh:preferences");
-        BCheckBoxMenuItem cbitem = Translate.checkboxMenuItem("polymesh:showSelectionOnPreview", this, "doShowSelection", true);
-        menu.add(cbitem);
-        cbitem = Translate.checkboxMenuItem("polymesh:liveUpdate", this, "doLiveUpdate", true);
-        menu.add(cbitem);
-        cbitem = Translate.checkboxMenuItem("polymesh:boldEdges", this, "doBoldEdges", true);
-        menu.add(cbitem);
+        menu.add(Translate.checkboxMenuItem("polymesh:showSelectionOnPreview", this, "doShowSelection", true));
+        menu.add(Translate.checkboxMenuItem("polymesh:liveUpdate", this, "doLiveUpdate", true));
+        menu.add(Translate.checkboxMenuItem("polymesh:boldEdges", this, "doBoldEdges", true));
         menuBar.add(menu);
+
+        // Would prefer to use transpations of AoI but unfortunately those come with keyboard shortcuts
+        // that are't implemented.
+        menu = Translate.menu("view");
+        menu.add(Translate.menuItem("polymesh:fitToSelection", mappingCanvas, "fitToSelection"));
+        menu.add(Translate.menuItem("polymesh:fitToAll", mappingCanvas, "fitToAll"));
+        menu.add(gridMenuItem = Translate.checkboxMenuItem("polymesh:showGrid", mappingCanvas, "repaint", true));
+        menuBar.add(menu);
+
         setMenuBar(menuBar);
         setTexturesForMapping(currentMapping);
 
@@ -364,8 +348,30 @@ public class UVMappingEditorDialog extends BDialog {
             textureCB.setSelectedIndex(0);
 
         updateState();
+
+        // This prevents the "0...." in U/V min/max labels.
+        Dimension d = new BLabel("+XXX.XXX").getPreferredSize();
+        uMinValue.getComponent().setPreferredSize(d);
+        uMaxValue.getComponent().setPreferredSize(d);
+        vMinValue.getComponent().setPreferredSize(d);
+        vMaxValue.getComponent().setPreferredSize(d);
+
         pack();
-        pieceList.addEventLink(SelectionChangedEvent.class, this, "doPieceListSelection");
+
+        // This was entirely unexpected: The next four lines seem to bring the crazy pane split  
+        // sizes back to their senses. The size increase needs to be at least 2x2 pixels. 
+        // Without this the window split is badly off, zoom center may be outside the canvas etc...
+        // - Q: Is this platform dependent? Via the look and feel and hence the frame sizes?
+        // - To consider: WindowResizedEvent to launch recalculation of the sizes.
+
+        Rectangle b = getBounds();
+        b.width  += 2;
+        b.height += 2;
+        setBounds(b);
+
+        UIUtilities.centerWindow(this); // Has to be after 'pack()'
+        addEventLink(WindowClosingEvent.class, this, "doCancel");
+
         setVisible(true);
     }
 
@@ -631,43 +637,36 @@ public class UVMappingEditorDialog extends BDialog {
         cmd.setOldPos(currentMapping.v);
         Range range = mappingCanvas.getRange();
         cmd.setOldRange(range.umin, range.umax, range.vmin, range.vmax);
-        double xmin = Double.MAX_VALUE;
+        double xmin =  Double.MAX_VALUE;
         double xmax = -Double.MAX_VALUE;
-        double ymin = Double.MAX_VALUE;
+        double ymin =  Double.MAX_VALUE;
         double ymax = -Double.MAX_VALUE;
         for (int i = 0; i < currentMapping.v.length; i++) {
             for (int j = 0; j < currentMapping.v[i].length; j++) {
                 if (mappingData.meshes[i].vertices[j].id == -1)
                     continue;
-                if (currentMapping.v[i][j].x < xmin)
-                    xmin = currentMapping.v[i][j].x;
-                if (currentMapping.v[i][j].x > xmax)
-                    xmax = currentMapping.v[i][j].x;
-                if (currentMapping.v[i][j].y < ymin)
-                    ymin = currentMapping.v[i][j].y;
-                if (currentMapping.v[i][j].y > ymax)
-                    ymax = currentMapping.v[i][j].y;
+                xmin = Math.min(xmin, currentMapping.v[i][j].x);
+                xmax = Math.max(xmax, currentMapping.v[i][j].x);
+                ymin = Math.min(ymin, currentMapping.v[i][j].y);
+                ymax = Math.max(ymax, currentMapping.v[i][j].y);
             }
         }
-        if (xmin == xmax || ymin == ymax) {
+        if (xmin == xmax || ymin == ymax)
             return;
-        }
-        double uscale = (0.9) / (xmax - xmin);
-        double vscale = (0.9) / (ymax - ymin);
-        if (uscale < vscale)
-            vscale = uscale;
-        else
-            uscale = vscale;
+        double scale = 0.9/Math.max(xmax - xmin, ymax - ymin);
+        double xMargin = (1.0-(xmax - xmin)*scale)*0.5;
+        double yMargin = (1.0-(ymax - ymin)*scale)*0.5;
+
         for (int i = 0; i < currentMapping.v.length; i++)
             for (int j = 0; j < currentMapping.v[i].length; j++) {
-                currentMapping.v[i][j].x = (currentMapping.v[i][j].x - xmin) * uscale + 0.05;
-                currentMapping.v[i][j].y = (currentMapping.v[i][j].y - ymin) * vscale + 0.05;
+                currentMapping.v[i][j].x = (currentMapping.v[i][j].x - xmin) * scale + xMargin;
+                currentMapping.v[i][j].y = (currentMapping.v[i][j].y - ymin) * scale + yMargin;
             }
 
         cmd.setNewPos(currentMapping.v);
-        cmd.setNewRange(0, 1, 0, 1);
+        cmd.setNewRange(-0.02, 1.02, -0.02, 1.02);
         addUndoCommand(cmd);
-        mappingCanvas.setRange(0, 1, 0, 1);
+        mappingCanvas.setRange(-0.02, 1.02, -0.02, 1.02);
         mappingCanvas.repaint();
     }
 
@@ -722,30 +721,6 @@ public class UVMappingEditorDialog extends BDialog {
 
     private void doSamplingChanged() {
         mappingCanvas.setSampling(((Integer) resSpinner.getValue()).intValue());
-    }
-
-    private void doExportImage() {
-        ExportImageDialog dlg = new ExportImageDialog(500, 500);
-        if (!dlg.clickedOk || dlg.file == null)
-            return;
-
-        File f = dlg.file;
-        BufferedImage offscreen = new BufferedImage(dlg.width, dlg.height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D offscreenGraphics = (Graphics2D) offscreen.getGraphics();
-        mappingCanvas.drawOnto(offscreenGraphics, dlg.width, dlg.height);
-        try {
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
-            DataOutputStream dos = new DataOutputStream(bos);
-            BMPEncoder bmp = new BMPEncoder(offscreen);
-            bmp.writeImage(dos);
-            dos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void processMousePressed(WidgetMouseEvent ev) {
@@ -835,12 +810,13 @@ public class UVMappingEditorDialog extends BDialog {
      * the first time. Call is forwarded to UVMappingCanvas.initializeMeshLayout().
      */
     public void initializeMeshLayout() {
-        mappingCanvas.resetMeshLayout();
+        mappingCanvas.fitRangeToAll();
     }
 
     public void displayUVMinMax(double umin, double umax, double vmin, double vmax) {
         DecimalFormat format = new DecimalFormat();
-        format.setMaximumFractionDigits(2);
+        format.setMaximumFractionDigits(3);
+        format.setPositivePrefix(" ");
         uMinValue.setText(format.format(umin));
         vMinValue.setText(format.format(vmin));
         uMaxValue.setText(format.format(umax));
@@ -872,6 +848,13 @@ public class UVMappingEditorDialog extends BDialog {
                 System.out.print(mapping.textures.get(j) + " ");
             System.out.println("");
         }
+    }
+
+    /**
+     * @return True if mesh tension is on
+     */
+    public boolean drawGrid() {
+        return gridMenuItem.getState();
     }
 
     /**
@@ -910,9 +893,168 @@ public class UVMappingEditorDialog extends BDialog {
         mappingCanvas.findSelectionDistance();
     }
 
-    private void doAutoScale() {
-        mappingCanvas.resetMeshLayout();
-        mappingCanvas.repaint();
+    //private void doAutoScale() {
+    //    mappingCanvas.fitRangeToAll();
+    //    mappingCanvas.repaint();
+    //}
+
+    private void openImageExportDialog()
+    {
+        // First check if the mapping coordinates fit the texture image area.
+        // UV-Coordinates must be within [0.0, 1.0], if they aren't, warn the user.
+
+        double xmin =  Double.MAX_VALUE;
+        double xmax = -Double.MAX_VALUE;
+        double ymin =  Double.MAX_VALUE;
+        double ymax = -Double.MAX_VALUE;
+        for (int i = 0; i < currentMapping.v.length; i++) {
+            for (int j = 0; j < currentMapping.v[i].length; j++) {
+                if (mappingData.meshes[i].vertices[j].id == -1)
+                    continue;
+                xmin = Math.min(xmin, currentMapping.v[i][j].x);
+                xmax = Math.max(xmax, currentMapping.v[i][j].x);
+                ymin = Math.min(ymin, currentMapping.v[i][j].y);
+                ymax = Math.max(ymax, currentMapping.v[i][j].y);
+            }
+        }
+        if(xmin < 0.0 || ymin < 0.0 || xmax > 1.0 || ymax > 1.0)
+        {
+            BStandardDialog sizeWarning = new BStandardDialog();
+            sizeWarning.setStyle(BStandardDialog.WARNING);
+            sizeWarning.setMessage(Translate.text("polymesh:mappingSizeWarning"));
+            int choice = sizeWarning.showOptionDialog(this, 
+                                                      new String[] {Translate.text("polymesh:continue"),
+                                                                    Translate.text("polymesh:revert")}, 
+                                                                    Translate.text("polymesh:revert"));
+            if (choice == 1)
+                return;
+        }
+
+        // Good to go
+
+        new ExportImageDialog();
+    }
+
+    private void createAndExportMapImage(ExportImageDialog exportDialog, File outputFile)
+    {
+        BufferedImage mappingImage = mappingImage(exportDialog.getResolution(), 
+                                                  exportDialog.getSelectedBackground(),
+                                                  exportDialog.useAntialias(),
+                                                  exportDialog.useMappingColor(),
+                                                  exportDialog.textureOnly());
+
+        // Let's make sure it is .png. This could be more sophisticated, 
+        // but at least it eliminates mistakes
+
+        String fullPath = outputFile.getAbsolutePath();
+        boolean extensionChanged = false;
+        if (! fullPath.endsWith(".png"))
+        {
+            fullPath = fullPath + ".png";
+            outputFile = new File(fullPath);
+            extensionChanged = true;
+        }
+        try 
+        {
+            ImageIO.write(mappingImage, "png", outputFile);
+            if (extensionChanged)
+            {
+                BStandardDialog extWarning = new BStandardDialog();
+                extWarning.setStyle(BStandardDialog.INFORMATION);
+                extWarning.setMessage(Translate.text("polymesh:fileExtensionChanged") + " " + outputFile.getName());
+                extWarning.showMessageDialog(this);
+            }
+        }
+        catch (FileNotFoundException e) 
+        {
+            e.printStackTrace();
+            new BStandardDialog("Save failed", e.getMessage(), BStandardDialog.ERROR).showMessageDialog(this);
+        }
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+            new BStandardDialog("Save failed", e.getMessage(), BStandardDialog.ERROR).showMessageDialog(this);
+        }
+    }
+
+    private BufferedImage mappingImage(int resolution, int background, boolean antialiased, boolean mappingColor, boolean textureOnly) 
+    {
+        UnfoldedMesh[] meshes = mappingData.getMeshes();
+        if (meshes == null)
+            return null;
+
+        BufferedImage mappingImage = new BufferedImage(resolution, resolution, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = mappingImage.createGraphics();
+        if (antialiased)
+        {
+            g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        }
+
+        // Paint the background
+
+        switch (background)
+        {
+            case TRANSPARENT:
+                break;
+            case WHITE:
+                g.setColor(Color.white);
+                g.fillRect(0, 0, resolution, resolution);
+                break;
+            case TEXTURED:
+                TextureParameter param[] = mappingList.get(currentTexture).getParameters();
+                double paramVal[] = null;
+                if (param != null) 
+                {
+                    paramVal = new double[param.length];
+                    for (int i = 0; i < param.length; i++)
+                        paramVal[i] = param[i].defaultVal;
+                }
+                Image textureImage = ((Texture2D)texList.
+                                       get(currentTexture)).
+                                       createComponentImage(0, 1, 0, 1, 
+                                                            resolution, resolution, 
+                                                            componentCB.getSelectedIndex(),
+                                                            0.0, paramVal);
+                if (textureImage != null)
+                     g.drawImage(textureImage, 0, 0, null);
+                break; 
+            default:
+                break;
+        }
+
+        // Draw the lines
+
+        if (!textureOnly)
+        {
+            AffineTransform at = new AffineTransform();
+            at.scale(resolution, -resolution);
+            at.translate(0.0, -1.0);
+            g.setStroke(new BasicStroke((float)(1.0/resolution)));
+            g.setTransform(at);
+            if (mappingColor)
+                g.setColor(currentMapping.edgeColor);
+            else
+                g.setColor(Color.black);
+            for (int i = 0; i < meshes.length; i++) 
+            {
+                UnfoldedMesh mesh = meshes[i];
+                Vec2[] v = currentMapping.v[i];
+                UnfoldedEdge[] e = mesh.getEdges();
+                for (int j = 0; j < e.length; j++)
+                {
+                    if (e[j].hidden) // What is this? Need another user choice?
+                        continue;
+                    g.draw(new Line2D.Double(v[e[j].v1].x, v[e[j].v1].y, v[e[j].v2].x, v[e[j].v2].y));
+                }
+            }
+        }
+        g.dispose();
+
+        // We're good
+
+        return mappingImage;
     }
 
     /**
@@ -1155,7 +1297,6 @@ public class UVMappingEditorDialog extends BDialog {
             pieceList.setSelected(oldPiece, true);
             repaint();
         }
-
     }
 
     /**
@@ -1186,95 +1327,154 @@ public class UVMappingEditorDialog extends BDialog {
         public void undo() {
             setPieceName(piece, oldName);
         }
-
     }
 
     /**
-     * Implementation of ExportImage dialog as a subclass of UVMappingEditor
-     * Dialog.
-     * 
-     * @author François Guillet
+     * A dialog to to define the exported mapping image.
      */
-    private class ExportImageDialog extends BDialog {
+    class ExportImageDialog extends BDialog 
+    {
+        BSpinner resolutionSpinner;
+        BButton exportButton;
+        BButton closeButton;
+        BButton cancelButton;
+        RadioButtonGroup bgButtons, colorButtons;
+        BRadioButton transparentButton, whiteButton, texturedButton, useMappingButton, blackButton;
+        BCheckBox antialiasBox, textureOnlyBox;
+        ColumnContainer content, leftBox, rightBox;
+        RowContainer resoContainer, optsContainer, actionContainer;
 
-        private BorderContainer borderContainer1;
-        private BSpinner widthSpinner;
-        private BSpinner heightSpinner;
-        private BTextField fileTextField;
-        private BButton fileButton;
-        private BButton okButton;
-        private BButton cancelButton;
-        public int width;
-        public int height;
-        public boolean clickedOk;
-        public File file;
+        // Things to consider:
+        // - Selection for line width? More choices for antialiased image?
+        // - Option to export the texture image only
 
-        public ExportImageDialog(int width, int height) {
+        ExportImageDialog()
+        {
             super(UVMappingEditorDialog.this, true);
-            this.width = width;
-            this.height = height;
-            setTitle(Translate.text("polymesh:exportImageFile"));
-            InputStream inputStream = null;
-            try {
-                WidgetDecoder decoder = new WidgetDecoder(inputStream = 
-                                                          getClass().getResource("interfaces/exportImage.xml").openStream(), 
-                                                          PolyMeshPlugin.resources);
-                borderContainer1 = (BorderContainer) decoder.getRootObject();
-                widthSpinner = ((BSpinner) decoder.getObject("widthSpinner"));
-                widthSpinner.setValue(new Integer(width));
-                heightSpinner = ((BSpinner) decoder.getObject("heightSpinner"));
-                heightSpinner.setValue(new Integer(height));
-                fileTextField = ((BTextField) decoder.getObject("fileTextField"));
-                fileButton = ((BButton) decoder.getObject("fileButton"));
-                okButton = ((BButton) decoder.getObject("okButton"));
-                cancelButton = ((BButton) decoder.getObject("cancelButton"));
-                okButton.addEventLink(CommandEvent.class, this, "doOK");
-                cancelButton.addEventLink(CommandEvent.class, this, "doCancel");
-                fileButton.addEventLink(CommandEvent.class, this, "doChooseFile");
-                fileTextField.addEventLink(ValueChangedEvent.class, this, "doFilePathChanged");
-                this.addEventLink(WindowClosingEvent.class, this, "doCancel");
-                setContent(borderContainer1);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } finally {
-                try {
-                    if (inputStream != null)
-                        inputStream.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+            addEventLink(WindowClosingEvent.class, new Object()
+                        {void processEvent(WindowClosingEvent e) {dispose();}});
+            
+            LayoutInfo labelLayout  = new LayoutInfo(LayoutInfo.WEST,      LayoutInfo.NONE,       new Insets(10, 10, 0,  2), null);
+            LayoutInfo valueLayout  = new LayoutInfo(LayoutInfo.WEST,      LayoutInfo.HORIZONTAL, new Insets(10,  0, 2, 10), null);
+            LayoutInfo headerLayout = new LayoutInfo(LayoutInfo.NORTHWEST, LayoutInfo.NONE,       new Insets(10, 10, 5, 10), null);
+            LayoutInfo radioLayout  = new LayoutInfo(LayoutInfo.NORTHWEST, LayoutInfo.NONE,       new Insets( 0, 25, 0, 10), null);
+            LayoutInfo actionLayout = new LayoutInfo(LayoutInfo.SOUTHEAST, LayoutInfo.NONE,       new Insets(10,  0, 0, 10), null);
+            LayoutInfo boxLayout    = new LayoutInfo(LayoutInfo.NORTHWEST, LayoutInfo.NONE,       new Insets( 0,  0, 0,  0), null);
+            LayoutInfo actboxLayout = new LayoutInfo(LayoutInfo.SOUTHEAST, LayoutInfo.NONE,       new Insets( 15, 0, 0, 10), null);
+
+            content = new ColumnContainer();
+            content.add(resoContainer   = new RowContainer(), boxLayout);
+            content.add(optsContainer   = new RowContainer(), boxLayout);
+            content.add(actionContainer = new RowContainer(), actboxLayout);
+            optsContainer.add(leftBox   = new ColumnContainer(), boxLayout);
+            optsContainer.add(rightBox  = new ColumnContainer(), boxLayout);
+
+            resoContainer.add(new BLabel(Translate.text("polymesh:imageResolution")), labelLayout);
+            resoContainer.add(resolutionSpinner = new BSpinner(), valueLayout);
+
+            bgButtons = new RadioButtonGroup();
+            leftBox.add(new BLabel(Translate.text("polymesh:backgroundType")), headerLayout);
+            leftBox.add(transparentButton = new BRadioButton(Translate.text("polymesh:transparent"), true,  bgButtons), radioLayout);
+            leftBox.add(whiteButton       = new BRadioButton(Translate.text("polymesh:white"),       false, bgButtons), radioLayout);
+            leftBox.add(texturedButton    = new BRadioButton(Translate.text("polymesh:textured"),    false, bgButtons), radioLayout);
+            leftBox.add(textureOnlyBox    = new BCheckBox   (Translate.text("polymesh:textureOnly"), false), radioLayout);
+            textureOnlyBox.setEnabled(false);
+
+            colorButtons = new RadioButtonGroup();
+            rightBox.add(new BLabel(Translate.text("polymesh:lineProperties")), headerLayout);
+            rightBox.add(antialiasBox     = new BCheckBox   (Translate.text("polymesh:softLines"),       true), radioLayout);
+            rightBox.add(useMappingButton = new BRadioButton(Translate.text("polymesh:useMappingColor"), true,  colorButtons), radioLayout);
+            rightBox.add(blackButton      = new BRadioButton(Translate.text("polymesh:useBlack"),        false, colorButtons), radioLayout);
+
+            actionContainer.add(exportButton = new BButton(Translate.text("polymesh:exportImage")));
+            actionContainer.add(cancelButton = new BButton(Translate.text("polymesh:cancel")));
+
+            transparentButton.addEventLink(ValueChangedEvent.class, this, "updateDialogState");
+            whiteButton.addEventLink      (ValueChangedEvent.class, this, "updateDialogState");
+            texturedButton.addEventLink   (ValueChangedEvent.class, this, "updateDialogState");
+            textureOnlyBox.addEventLink   (ValueChangedEvent.class, this, "updateDialogState");
+
+            cancelButton.addEventLink(CommandEvent.class, this, "close");
+            exportButton.addEventLink(CommandEvent.class, new Object()
+            {
+                void processEvent()
+                {
+                    openExportChooser(ExportImageDialog.this); // Could move the method inline here?
                 }
-            }
-            file = null;
+            });
+
+            if (currentTexture == -1)
+                texturedButton.setEnabled(false);
+            
+            resolutionSpinner.setValue(new Integer(123456)); 
+            Dimension d = resolutionSpinner.getPreferredSize();
+            resolutionSpinner.getComponent().setPreferredSize(d);
+            resolutionSpinner.setValue(new Integer(640)); 
+
+            setContent(content);
             pack();
+            setResizable(false);
             setVisible(true);
         }
 
-        private void doOK() {
-            clickedOk = true;
-            width = ((Integer) widthSpinner.getValue()).intValue();
-            height = ((Integer) heightSpinner.getValue()).intValue();
+        private void updateDialogState()
+        {
+            textureOnlyBox.setEnabled(texturedButton.getState());
+            antialiasBox.setEnabled(!textureOnlyBox.isEnabled() || !textureOnlyBox.getState());
+            useMappingButton.setEnabled(!textureOnlyBox.isEnabled() || !textureOnlyBox.getState());
+            blackButton.setEnabled(!textureOnlyBox.isEnabled() || !textureOnlyBox.getState());
+        }
+        
+        int getSelectedBackground()
+        {
+            if (transparentButton.getState()) return TRANSPARENT;
+            if (whiteButton.getState())       return WHITE;
+            if (texturedButton.getState())    return TEXTURED;
+            return -1;
+        }
+
+        int getResolution()
+        {
+            return ((Integer) resolutionSpinner.getValue()).intValue();
+        }
+        
+        boolean useAntialias()
+        {
+            return antialiasBox.getState();
+        }
+
+        boolean useMappingColor()
+        {
+            return useMappingButton.getState();
+        }
+
+        boolean textureOnly()
+        {
+            return textureOnlyBox.getState();
+        }
+
+        void close()
+        {
             dispose();
         }
 
-        private void doCancel() {
-            clickedOk = false;
-            dispose();
-        }
-
-        private void doChooseFile() {
-            BFileChooser chooser = new BFileChooser(BFileChooser.SAVE_FILE, 
-                                   Translate.text("polymesh:chooseExportImageFile"));
-            if (file != null) {
-                chooser.setDirectory(file.getParentFile());
+        private void openExportChooser(ExportImageDialog exportDialog)
+        {
+            BFileChooser exportChooser = new BFileChooser(BFileChooser.SAVE_FILE, Translate.text("polymesh:chooseExportImageFile"));
+            exportChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PNG file", "png"));
+            exportChooser.setSelectedFile(new File(objInfo.getName() + ", " + currentMapping.name + ".png"));
+            if (exportChooser.showDialog(this))
+            {
+                try
+                {
+                    createAndExportMapImage(exportDialog, exportChooser.getSelectedFile());
+                    exportDialog.close();
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
-            if (chooser.showDialog(UVMappingEditorDialog.this)) {
-                file = chooser.getSelectedFile();
-                fileTextField.setText(file.getAbsolutePath());
-            }
-        }
-
-        private void doFilePathChanged() {
-            file = new File(fileTextField.getText());
         }
     }
 }

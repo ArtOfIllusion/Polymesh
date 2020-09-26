@@ -1,5 +1,7 @@
 /*
  *  Copyright (C) 2007 by François Guillet
+ *  Modifications Copyright (C) 2019 by Petri Ihalainen
+ *
  *  This program is free software; you can redistribute it and/or modify it under the 
  *  terms of the GNU General Public License as published by the Free Software 
  *  Foundation; either version 2 of the License, or (at your option) any later version. 
@@ -19,6 +21,9 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
+import java.awt.BasicStroke;
 
 import artofillusion.TextureParameter;
 import artofillusion.math.BoundingBox;
@@ -38,6 +43,7 @@ import artofillusion.texture.UVMapping;
 import buoy.event.RepaintEvent;
 import buoy.widget.BScrollPane;
 import buoy.widget.CustomWidget;
+
 
 /**
  * This canvas displays several mesh pieces over a bitmap image. The goal is to
@@ -74,12 +80,16 @@ public class UVMappingCanvas extends CustomWidget {
     private boolean boldEdges;
     private final static Stroke normal = new BasicStroke();
     private final static Stroke bold = new BasicStroke(2.0f);
-    private final static Dimension minSize = new Dimension(512, 512);
+    private final static Dimension minSize = new Dimension(640, 640);
     private final static Dimension maxSize = new Dimension(5000, 5000);
     private final static Color unselectedColor = new Color(0, 180, 0);
     private final static Color selectedColor = Color.red;
     private final static Color pinnedColor = new Color(182, 0, 185);
     private final static Color pinnedSelectedColor = new Color(255, 142, 255);
+    private Color bgColor1 = new Color(239,239,239), 
+                  bgColor2 = new Color(223, 223, 223), 
+                  txAreaColor = new Color(255, 255, 255, 159), 
+                  ink = new Color(63, 127, 191);
 
     /** 
      *  Construct a new UVMappingCanvas
@@ -97,23 +107,23 @@ public class UVMappingCanvas extends CustomWidget {
         this.texture = texture;
         this.texMapping = texMapping;
         this.mapping = mappingData.mappings.get(0);
-        setBackground(Color.white);
-        size = new Dimension(512, 512);
+        setBackground(bgColor1);
+        size = new Dimension(640, 640);
         oldSize = new Dimension(0, 0);
         origin = new Vec2();
         this.mappingData = mappingData;
         meshes = mappingData.getMeshes();
         boldEdges = true;
-        addEventLink(RepaintEvent.class, this, "doRepaint");
+        addEventLink(RepaintEvent.class, this, "paintCanvas");
         if (meshes == null)
             return;
-        currentPiece = 0;
-        component = 0;
-        resetMeshLayout();
-        createImage();
-        setSelectedPiece(0);
+        fitRangeToAll();
         initializeTexCoordsIndex();
         updateTextureCoords();
+        component = 0;
+        createImage();
+        currentPiece = 0;
+        setSelectedPiece(currentPiece);
     }
 
     public boolean isBoldEdges() {
@@ -138,7 +148,7 @@ public class UVMappingCanvas extends CustomWidget {
     public void setMapping(UVMappingData.UVMeshMapping mapping) {
         clearSelection();
         this.mapping = mapping;
-        resetMeshLayout();
+        fitRangeToAll();
         update();
     }
 
@@ -219,21 +229,13 @@ public class UVMappingCanvas extends CustomWidget {
         return maxSize;
     }
 
-    private void doRepaint(RepaintEvent evt) {
-        Graphics2D g = evt.getGraphics();
-        doPaint(g, false);
-    }
-
     /**
-     * Draws the mesh pieces, either in the current canvas or for export
-     * purposes
-     * 
-     * @param g      The graphics to draw on
-     * @param export True if it's for export purposes
+     * Draws the mesh pieces, on the current canvas
      */
-    private void doPaint(Graphics2D g, boolean export) {
+     private void paintCanvas(RepaintEvent evt) {
         if (meshes == null)
             return;
+
         if (oldSize.width != size.width || oldSize.height != size.height) {
             vmax = origin.y + (size.height ) / (2 * scale);
             vmin = origin.y - (size.height ) / (2 * scale);
@@ -244,16 +246,39 @@ public class UVMappingCanvas extends CustomWidget {
             refreshVerticesPoints();
             oldSize = new Dimension(size);
         }
-        if (textureImage != null) {
+        Graphics2D g = evt.getGraphics();
+
+        if (textureImage != null)
             g.drawImage(textureImage, 0, 0, null);
+        else{
+            g.setColor(bgColor2);
+            int x0 = (size.width % 40)/2-20;
+            int y0 = (size.height % 40)/2-20;
+            int x = x0, y;
+            while (x < size.width)
+            {
+                y = y0;
+                while(y < size.height)
+                {
+                    g.fillRect(x, y, 10, 10);
+                    g.fillRect(x+10, y+10, 10, 10);
+                    y += 20;
+                }
+                x += 20;
+            }
+            Point p1 = VertexToLayout(new Vec2(0, 0));
+            Point p2 = VertexToLayout(new Vec2(1, 1));
+            g.setColor(txAreaColor);
+            g.fillRect(p1.x, p2.y,  p2.x-p1.x,  p1.y-p2.y);
         }
+        drawGrid(g);
         for (int i = 0; i < meshes.length; i++) {
             UnfoldedMesh mesh = meshes[i];
             Vec2[] v = mapping.v[i];
             UnfoldedEdge[] e = mesh.getEdges();
             Point p1;
             Point p2;
-            if (export || currentPiece == i) {
+            if (currentPiece == i) {
                 g.setColor(mapping.edgeColor);
                 if (boldEdges)
                     g.setStroke(bold);
@@ -272,69 +297,198 @@ public class UVMappingCanvas extends CustomWidget {
             }
         }
         g.setStroke(normal);
-        if (!export) {
-            for (int i = 0; i < verticesPoints.length; i++) {
-                if (selected[i]) {
-                    if (mappingData.meshes[currentPiece].vertices[mappingData.verticesTable[currentPiece][i]].pinned)
-                        g.setColor(pinnedSelectedColor);
-                    else
-                        g.setColor(selectedColor);
+        for (int i = 0; i < verticesPoints.length; i++) {
+            if (selected[i]) {
+                if (mappingData.meshes[currentPiece].vertices[mappingData.verticesTable[currentPiece][i]].pinned)
+                    g.setColor(pinnedSelectedColor);
+                else
+                    g.setColor(selectedColor);
 
-                    g.drawOval(verticesPoints[i].x - 3,
-                            verticesPoints[i].y - 3, 6, 6);
-                } else {
-                    if (mappingData.meshes[currentPiece].vertices[mappingData.verticesTable[currentPiece][i]].pinned)
-                        g.setColor(pinnedColor);
-                    else
-                        g.setColor(unselectedColor);
+                g.drawOval(verticesPoints[i].x - 3,
+                        verticesPoints[i].y - 3, 6, 6);
+            } else {
+                if (mappingData.meshes[currentPiece].vertices[mappingData.verticesTable[currentPiece][i]].pinned)
+                    g.setColor(pinnedColor);
+                else
+                    g.setColor(unselectedColor);
 
-                    g.fillOval(verticesPoints[i].x - 3,
-                            verticesPoints[i].y - 3, 6, 6);
+                g.fillOval(verticesPoints[i].x - 3,
+                        verticesPoints[i].y - 3, 6, 6);
+            }
+        }
+        if (dragBoxRect != null) {
+            g.setColor(ink);
+            g.drawRect(dragBoxRect.x, dragBoxRect.y, dragBoxRect.width, dragBoxRect.height);
+        }
+        if (manipulator != null)
+            manipulator.paint(g);
+    }
+
+    private void drawGrid(Graphics2D g)
+    {
+        if (! parent.drawGrid())
+            return;
+        if (scale < 2.0)
+            return;
+
+        // Must use the original AT from the Graphics2D because at startup the coordinates
+        // are measured from the content pane of the UVMappingEditorDialog. Later on a new AT would do.
+
+        AffineTransform aBefore = g.getTransform();
+        AffineTransform aNow = new AffineTransform(aBefore);
+        Point corner = VertexToLayout(new Vec2(0, 0));
+        aNow.translate(corner.x, corner.y);
+        aNow.scale(scale, -scale);
+        g.setTransform(aNow);
+        g.setStroke(new BasicStroke((float)(1.0/scale)));
+
+        //double opacy = Math.min(255*Math.sqrt(scale/640), 223);
+        double opacy = Math.min(255.0*Math.pow(scale/520.0, 2.0/3.0), 223.0);
+        Color ink1 = new Color(ink.getRed(), ink.getGreen(), ink.getBlue(), (int)opacy);
+        Color ink2 = new Color(ink.getRed(), ink.getGreen(), ink.getBlue(), (int)(opacy/1.6));
+        Color ink3 = new Color(ink.getRed(), ink.getGreen(), ink.getBlue(), (int)(opacy/2.5));
+        double v = Math.round(vmin -1.0);
+        double u = Math.round(umin -1.0);
+
+        // Avoiding to draw lines over already drawn lines becuse they are transparent
+
+        while (u < umax)
+        {
+            g.setColor(ink1);
+            g.draw(new Line2D.Double(u, vmin, u, vmax));
+            if (scale > 75)
+            {
+                g.setColor(ink2);
+                g.draw(new Line2D.Double(u+0.5, vmin,u+0.5, vmax));
+            }
+            if (scale > 200)
+            {
+                g.setColor(ink3);
+                for (double d = 0.1; d < 0.5; d += 0.1)
+                {
+                    g.draw(new Line2D.Double(u+d, vmin, u+d, vmax));
+                    g.draw(new Line2D.Double(u+0.5+d, vmin, u+0.5+d, vmax));
                 }
             }
-            if (dragBoxRect != null) {
-                g.setColor(Color.black);
-                g.drawRect(dragBoxRect.x, dragBoxRect.y, dragBoxRect.width,
-                        dragBoxRect.height);
-            }
-            if (manipulator != null)
-                manipulator.paint(g);
+            u += 1.0;
         }
+        while (v < vmax)
+        {
+            g.setColor(ink1);
+            g.draw(new Line2D.Double(umin, v, umax, v));
+            if (scale > 75)
+            {
+                g.setColor(ink2);
+                g.draw(new Line2D.Double(umin, v+0.5, umax, v+0.5));
+            }
+            if (scale > 200)
+            {
+                g.setColor(ink3);
+                for (double d = 0.1; d < 0.5; d += 0.1)
+                {
+                    g.draw(new Line2D.Double(umin, v+d, umax, v+d));
+                    g.draw(new Line2D.Double(umin, v+0.5+d, umax, v+0.5+d));
+                }
+            }
+            v += 1.0;
+        }
+        g.setTransform(aBefore);
+    }
+
+    public void fitToAll()
+    {
+        fitRangeToAll();
+        repaint();
+    }
+
+    public void fitToSelection()
+    {
+        fitRangeToSelection();
+        repaint();
     }
 
     /**
-     * Computes default range from mesh sizes
+     * Computes range for fitting the mesh and the unit texture image
+     * on the canvas.
      */
-    public void resetMeshLayout() {
-        vmin = umin = Double.MAX_VALUE;
-        vmax = umax = -Double.MAX_VALUE;
+    public void fitRangeToAll()
+    {
+        vmin = umin = 0.0;
+        vmax = umax = 1.0;
         Vec2[] v;
         UnfoldedVertex[] vert;
         for (int i = 0; i < meshes.length; i++) {
             v = mapping.v[i];
             vert = meshes[i].vertices;
-            for (int j = 0; j < v.length; j++) {
+            for (int j = 0; j < v.length; j++) 
+            {
                 if (vert[j].id == -1)
                     continue;
-
-                if (v[j].x < umin)
-                    umin = v[j].x;
-                else if (v[j].x > umax)
-                    umax = v[j].x;
-
-                if (v[j].y < vmin)
-                    vmin = v[j].y;
-                else if (v[j].y > vmax)
-                    vmax = v[j].y;
-
+                umin = Math.min(umin, v[j].x);
+                umax = Math.max(umax, v[j].x);
+                vmin = Math.min(vmin, v[j].y);
+                vmax = Math.max(vmax, v[j].y);
             }
         }
-        double deltau = umax - umin;
-        double deltav = vmax - vmin;
-        umin -= 0.05 * deltau;
-        vmin -= 0.05 * deltav;
-        umax += 0.05 * deltau;
-        vmax += 0.05 * deltav;
+        double margin = Math.max(umax - umin, vmax - vmin) * 0.02;
+        umin -= margin;
+        vmin -= margin;
+        umax += margin;
+        vmax += margin;
+        setRange(umin, umax, vmin, vmax);
+    }
+
+    /**
+     * Computes range for fitting the selected piece or the selected vertices 
+     * on the canvas. (As soon as I find the selected vertices.... now just the piece)
+     */
+    public void fitRangeToSelection()
+    {
+        vmin = umin =  Double.MAX_VALUE;
+        vmax = umax = -Double.MAX_VALUE;
+        Vec2[]  v = mapping.v[currentPiece];
+        UnfoldedVertex[] vert = meshes[currentPiece].vertices;
+        double margin;
+
+        // Check if any vertices are selected and calculate range based on those
+        int countSelected = 0;
+        for(int i = 0; i < selected.length; i++)
+        {
+            if(selected[i])
+            {
+                countSelected++;
+                if (vert[i].id == -1)
+                    continue;
+                umin = Math.min(umin, v[i].x);
+                umax = Math.max(umax, v[i].x);
+                vmin = Math.min(vmin, v[i].y);
+                vmax = Math.max(vmax, v[i].y);
+            }
+        }
+        if (countSelected == 1)
+            margin = 0.25; // To do: Find the next closest vertex and fit that in too with margin
+        else if (countSelected > 1)
+            margin = Math.max(umax - umin, vmax - vmin) * 0.25;
+
+        // If no vertices are selected, fit to the selected piece
+        else
+        {
+            for (int j = 0; j < v.length; j++) 
+            {
+                if (vert[j].id == -1)
+                    continue;
+                umin = Math.min(umin, v[j].x);
+                umax = Math.max(umax, v[j].x);
+                vmin = Math.min(vmin, v[j].y);
+                vmax = Math.max(vmax, v[j].y);
+            }
+            margin = Math.max(umax - umin, vmax - vmin) * 0.07;
+        }
+
+        umin -= margin;
+        vmin -= margin;
+        umax += margin;
+        vmax += margin;
         setRange(umin, umax, vmin, vmax);
     }
 
@@ -346,6 +500,11 @@ public class UVMappingCanvas extends CustomWidget {
      * @param vmin Low V Limit
      * @param vmax Hich V Limit
      */
+
+     // Should not blend the uv-space coordinates with the screen aspect ratio.
+     // Range needs to be as is given and the corners of the viewable area calculated 
+     // where they are needed.
+ 
     public void setRange(double umin, double umax, double vmin, double vmax) {
         this.umin = umin;
         this.umax = umax;
@@ -856,53 +1015,6 @@ public class UVMappingCanvas extends CustomWidget {
 
     public UnfoldedMesh[] getMeshes() {
         return meshes;
-    }
-
-    /**
-     * Offscreen drawing for exporting images
-     * 
-     * @param g      The graphics to draw onto
-     * @param width  Width of the image to draw
-     * @param height Height of the image to draw
-     */
-    public void drawOnto(Graphics2D g, int width, int height) {
-        g.setColor(Color.white);
-        g.fillRect(0, 0, width, height);
-        g.setColor(Color.black);
-        double oldScale = scale;
-        double oldUmin = umin;
-        double oldUmax = umax;
-        double oldVmin = vmin;
-        double oldVmax = vmax;
-        Vec2 oldOrigin = new Vec2(origin);
-        Dimension tmpSize = size;
-        Dimension tmpOldSize = oldSize;
-        oldSize = size = new Dimension(width, height);
-        Image oldTextureImage = textureImage;
-
-        textureImage = null;
-        scale = ((double) (width)) / (umax - umin);
-        double scaley = ((double) (height)) / (vmax - vmin);
-        if (scaley < scale)
-            scale = scaley;
-        origin.x = (umax + umin) / 2;
-        origin.y = (vmax + vmin) / 2;
-        vmax = origin.y + height / (2 * scale);
-        vmin = origin.y - height / (2 * scale);
-        umax = origin.x + width / (2 * scale);
-        umin = origin.x - width / (2 * scale);
-        refreshVerticesPoints();
-        doPaint(g, true);
-        textureImage = oldTextureImage;
-        scale = oldScale;
-        umin = oldUmin;
-        umax = oldUmax;
-        vmin = oldVmin;
-        vmax = oldVmax;
-        origin = new Vec2(oldOrigin);
-        size = tmpSize;
-        oldSize = tmpOldSize;
-        refreshVerticesPoints();
     }
 
     public void pinSelection(boolean state) {
