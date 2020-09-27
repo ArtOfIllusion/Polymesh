@@ -691,7 +691,7 @@ public class UVMappingEditorDialog extends BDialog {
         BStandardDialog dlg = new BStandardDialog(Translate.text("polymesh:addMapping"), 
                                                   Translate.text("polymesh:enterMappingName"), 
                                                   BStandardDialog.QUESTION);
-        String res = dlg.showInputDialog(this, null, Translate.text("polymesh:mapping") + " #" + (mappingData.mappings.size() + 1));
+        String res = dlg.showInputDialog(this, null, Translate.text("polymesh:mappingDefaultName") + " #" + (mappingCB.getItemCount()+1));
         if (res != null) {
             UVMeshMapping mapping = null;
             if (duplicate)
