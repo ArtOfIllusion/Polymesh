@@ -4,12 +4,12 @@
 
   <!-- set global properties for this build -->
   <property name="aoilocation" value=".." />
-  <property name="src" value="." />
-  <property name="build" value="${src}/build" />
-  <property name="docs" value="${src}/docs" />
+  <property name="src" value="src" />
+  <property name="build" value="build" />
+  <property name="docs" value="docs" />
   <property name="dist" value="${aoilocation}/Plugins" />
   <property name="aoijar" value="${aoilocation}/ArtOfIllusion.jar" />
-  <property name="mtjjar" value="${src}/mtj.jar" />
+  <property name="mtjjar" value="mtj.jar" />
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -22,7 +22,7 @@
 
   <target name="compile" depends="init">
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac source="1.6" target="1.6" srcdir="${src}" destdir="${build}" classpath="${aoijar}:${mtjjar}" debug="on" extdirs="" />
+    <javac source="1.8" target="1.8" srcdir="${src}" destdir="${build}" classpath="${aoijar}:${mtjjar}" debug="on" extdirs="" />
   </target>
 
   <target name="dist" depends="compile">
