@@ -264,7 +264,7 @@ public class UVMappingEditorDialog extends BDialog {
             }
         }
         BSplitPane meshViewPanel = new BSplitPane(BSplitPane.VERTICAL, 
-                                                  pieceList = new BList(), 
+                                                  new BScrollPane(pieceList = new BList()), 
                                                   preview = new MeshPreviewer(objInfo, 200, 200));
         tex = null;
         mapping = null;
