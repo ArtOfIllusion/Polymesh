@@ -4,12 +4,16 @@
 	<plugin class="artofillusion.polymesh.PolyMeshPlugin"/>
 	<plugin class="artofillusion.polymesh.PMOBJTranslator"/>
 	<author>Francois Guillet</author>
-	<beta>18</beta>
-	<date>2011/11/24</date>
+	<date>2020/12/24</date>
     <description>
-A plugin which provides polygonal mesh modelling for AoI.
+Polygonal n-gon mesh modelling for AoI, featuring modified Catmull-Clark subdivision.
     </description>
     <history>
+	<log version="1.64.0" date="24 December 2020" author="Lucas Stanek & Petri Ihalainen">
+	General updates for AoI 3.1.0 compatibility
+	Fixed several bugs/improved responsiveness in the UVMapping window
+	Added Finnish translation
+	</log>
     	<log version="1.63b18" date="24 August 2011" author="Francois Guillet">
     	Implemented rendered view for AoI 2.9. 
         </log>
