@@ -9,7 +9,7 @@
 Polygonal n-gon mesh modelling for AoI, featuring modified Catmull-Clark subdivision.
     </description>
     <history>
-	<log version="1.64.0" date="24 December 2020" author="Lucas Stanek & Petri Ihalainen">
+	<log version="1.64.0" date="24 December 2020" author="Lucas Stanek &amp; Petri Ihalainen">
 	General updates for AoI 3.1.0 compatibility
 	Fixed several bugs/improved responsiveness in the UVMapping window
 	Added Finnish translation
