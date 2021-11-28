@@ -582,100 +582,61 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * Builds the vertex menu
 	 */
 	void createVertexMenu() {
-		vertexMenu = Translate.menu("polymesh:vertex");
-		menubar.add(vertexMenu);
-		vertexMenuItem = new MenuWidget[16];
-		vertexMenu.add(vertexMenuItem[0] = Translate.menuItem("polymesh:connect",
-				this, "doConnectVertices"));
-		vertexMenu.add(vertexMenuItem[1] = Translate.menu("polymesh:moveAlong"));
-		((BMenu) vertexMenuItem[1]).add(Translate.menuItem("polymesh:normal", this,
-				"doMoveVerticesNormal"));
-		((BMenu) vertexMenuItem[1]).add(Translate.menuItem("polymesh:x", this,
-				"doMoveVerticesX"));
-		((BMenu) vertexMenuItem[1]).add(Translate.menuItem("polymesh:y", this,
-				"doMoveVerticesY"));
-		((BMenu) vertexMenuItem[1]).add(Translate.menuItem("polymesh:z", this,
-				"doMoveVerticesZ"));
-		vertexMenu.add(vertexMenuItem[2] = Translate.menuItem("polymesh:collapse",
-				this, "doCollapseVertices"));
-		vertexMenu.add(vertexMenuItem[3] = Translate.menuItem("polymesh:facet", this,
-				"doFacetVertices"));
-		vertexMenu.add(vertexMenuItem[4] = Translate.menuItem("polymesh:bevel", this,
-				"doBevelVertices"));
-		vertexMenu.addSeparator();
-		vertexMenu.add(vertexMenuItem[5] = Translate.menuItem("polymesh:meanSphere",
-				this, "doMeanSphere"));
-		vertexMenu.add(vertexMenuItem[6] = Translate.menuItem(
-				"polymesh:closestSphere", this, "doClosestSphere"));
-		vertexMenu.add(vertexMenuItem[7] = Translate.menuItem("polymesh:plane", this,
-				"doPlane"));
-		vertexMenu.addSeparator();
-		vertexMenu.add(vertexMenuItem[8] = Translate.menuItem(
-				"polymesh:selectBoundary", this, "doSelectBoundary"));
-		vertexMenu.add(vertexMenuItem[9] = Translate.menuItem(
-				"polymesh:closeBoundary", this, "doCloseBoundary"));
-		vertexMenu.add(vertexMenuItem[10] = Translate.menuItem(
-				"polymesh:joinBoundaries", this, "doJoinBoundaries"));
-		vertexMenu.addSeparator();
-		vertexMenu.add(vertexMenuItem[11] = Translate.menuItem("editPoints",
-				this, "setPointsCommand"));
-		vertexMenu.add(vertexMenuItem[12] = Translate.menuItem(
-				"transformPoints", this, "transformPointsCommand"));
-		vertexMenu.add(vertexMenuItem[13] = Translate.menuItem("randomize",
-				this, "randomizeCommand"));
-		vertexMenu.addSeparator();
-		vertexMenu.add(vertexMenuItem[14] = Translate.menuItem("parameters",
-				this, "setParametersCommand"));
-		vertexMenu.addSeparator();
-		vertexMenu.add(vertexMenuItem[15] = Translate.menuItem(
-				"polymesh:selectCorners", this, "doSelectCorners"));
-		vertexPopupMenu = new BPopupMenu();
-		vertexPopupMenuItem = new MenuWidget[16];
-		vertexPopupMenu.add(vertexPopupMenuItem[0] = Translate.menuItem(
-				"polymesh:connect", this, "doConnectVertices"));
-		vertexPopupMenu.add(vertexPopupMenuItem[1] = Translate
-				.menu("polymesh:moveAlong"));
-		((BMenu) vertexPopupMenuItem[1]).add(Translate.menuItem("polymesh:normal",
-				this, "doMoveVerticesNormal"));
-		((BMenu) vertexPopupMenuItem[1]).add(Translate.menuItem("polymesh:x", this,
-				"doMoveVerticesX"));
-		((BMenu) vertexPopupMenuItem[1]).add(Translate.menuItem("polymesh:y", this,
-				"doMoveVerticesY"));
-		((BMenu) vertexPopupMenuItem[1]).add(Translate.menuItem("polymesh:z", this,
-				"doMoveVerticesZ"));
-		vertexPopupMenu.add(vertexPopupMenuItem[2] = Translate.menuItem(
-				"polymesh:collapse", this, "doCollapseVertices"));
-		vertexPopupMenu.add(vertexPopupMenuItem[3] = Translate.menuItem(
-				"polymesh:facet", this, "doFacetVertices"));
-		vertexPopupMenu.add(vertexPopupMenuItem[4] = Translate.menuItem(
-				"polymesh:bevel", this, "doBevelVertices"));
-		vertexPopupMenu.addSeparator();
-		vertexPopupMenu.add(vertexPopupMenuItem[5] = Translate.menuItem(
-				"polymesh:meanSphere", this, "doMeanSphere"));
-		vertexPopupMenu.add(vertexPopupMenuItem[6] = Translate.menuItem(
-				"polymesh:closestSphere", this, "doClosestSphere"));
-		vertexPopupMenu.add(vertexPopupMenuItem[7] = Translate.menuItem(
-				"polymesh:plane", this, "doPlane"));
-		vertexPopupMenu.addSeparator();
-		vertexPopupMenu.add(vertexPopupMenuItem[8] = Translate.menuItem(
-				"polymesh:selectBoundary", this, "doSelectBoundary"));
-		vertexPopupMenu.add(vertexPopupMenuItem[9] = Translate.menuItem(
-				"polymesh:closeBoundary", this, "doCloseBoundary"));
-		vertexPopupMenu.add(vertexPopupMenuItem[10] = Translate.menuItem(
-				"polymesh:joinBoundaries", this, "doJoinBoundaries"));
-		vertexPopupMenu.addSeparator();
-		vertexPopupMenu.add(vertexPopupMenuItem[11] = Translate.menuItem(
-				"editPoints", this, "setPointsCommand"));
-		vertexPopupMenu.add(vertexPopupMenuItem[12] = Translate.menuItem(
-				"transformPoints", this, "transformPointsCommand"));
-		vertexPopupMenu.add(vertexPopupMenuItem[13] = Translate.menuItem(
-				"randomize", this, "randomizeCommand"));
-		vertexPopupMenu.addSeparator();
-		vertexPopupMenu.add(vertexPopupMenuItem[14] = Translate.menuItem(
-				"parameters", this, "setParametersCommand"));
-		vertexPopupMenu.addSeparator();
-		vertexPopupMenu.add(vertexPopupMenuItem[15] = Translate.menuItem(
-				"polymesh:selectCorners", this, "doSelectCorners"));
+                vertexMenu = Translate.menu("polymesh:vertex");
+                menubar.add(vertexMenu);
+                vertexMenuItem = new MenuWidget[16];
+                vertexMenu.add(vertexMenuItem[0] = Translate.menuItem("polymesh:connect", this, "doConnectVertices"));
+                vertexMenu.add(vertexMenuItem[1] = Translate.menu("polymesh:moveAlong"));
+                ((BMenu) vertexMenuItem[1]).add(Translate.menuItem("polymesh:normal", this, "doMoveVerticesNormal"));
+                ((BMenu) vertexMenuItem[1]).add(Translate.menuItem("polymesh:x", this, "doMoveVerticesX"));
+                ((BMenu) vertexMenuItem[1]).add(Translate.menuItem("polymesh:y", this, "doMoveVerticesY"));
+                ((BMenu) vertexMenuItem[1]).add(Translate.menuItem("polymesh:z", this, "doMoveVerticesZ"));
+                vertexMenu.add(vertexMenuItem[2] = Translate.menuItem("polymesh:collapse", this, "doCollapseVertices"));
+                vertexMenu.add(vertexMenuItem[3] = Translate.menuItem("polymesh:facet", this, "doFacetVertices"));
+                vertexMenu.add(vertexMenuItem[4] = Translate.menuItem("polymesh:bevel", this, "doBevelVertices"));
+                vertexMenu.addSeparator();
+                vertexMenu.add(vertexMenuItem[5] = Translate.menuItem("polymesh:meanSphere", this, "doMeanSphere"));
+                vertexMenu.add(vertexMenuItem[6] = Translate.menuItem("polymesh:closestSphere", this, "doClosestSphere"));
+                vertexMenu.add(vertexMenuItem[7] = Translate.menuItem("polymesh:plane", this, "doPlane"));
+                vertexMenu.addSeparator();
+                vertexMenu.add(vertexMenuItem[8] = Translate.menuItem("polymesh:selectBoundary", this, "doSelectBoundary"));
+                vertexMenu.add(vertexMenuItem[9] = Translate.menuItem("polymesh:closeBoundary", this, "doCloseBoundary"));
+                vertexMenu.add(vertexMenuItem[10] = Translate.menuItem("polymesh:joinBoundaries", this, "doJoinBoundaries"));
+                vertexMenu.addSeparator();
+                vertexMenu.add(vertexMenuItem[11] = Translate.menuItem("editPoints", this, "setPointsCommand"));
+                vertexMenu.add(vertexMenuItem[12] = Translate.menuItem("transformPoints", this, "transformPointsCommand"));
+                vertexMenu.add(vertexMenuItem[13] = Translate.menuItem("randomize", this, "randomizeCommand"));
+                vertexMenu.addSeparator();
+                vertexMenu.add(vertexMenuItem[14] = Translate.menuItem("parameters", this, "setParametersCommand"));
+                vertexMenu.addSeparator();
+                vertexMenu.add(vertexMenuItem[15] = Translate.menuItem("polymesh:selectCorners", this, "doSelectCorners"));
+                vertexPopupMenu = new BPopupMenu();
+                vertexPopupMenuItem = new MenuWidget[16];
+                vertexPopupMenu.add(vertexPopupMenuItem[0] = Translate.menuItem("polymesh:connect", this, "doConnectVertices"));
+                vertexPopupMenu.add(vertexPopupMenuItem[1] = Translate.menu("polymesh:moveAlong"));
+                ((BMenu) vertexPopupMenuItem[1]).add(Translate.menuItem("polymesh:normal", this, "doMoveVerticesNormal"));
+                ((BMenu) vertexPopupMenuItem[1]).add(Translate.menuItem("polymesh:x", this, "doMoveVerticesX"));
+                ((BMenu) vertexPopupMenuItem[1]).add(Translate.menuItem("polymesh:y", this, "doMoveVerticesY"));
+                ((BMenu) vertexPopupMenuItem[1]).add(Translate.menuItem("polymesh:z", this, "doMoveVerticesZ"));
+                vertexPopupMenu.add(vertexPopupMenuItem[2] = Translate.menuItem("polymesh:collapse", this, "doCollapseVertices"));
+                vertexPopupMenu.add(vertexPopupMenuItem[3] = Translate.menuItem("polymesh:facet", this, "doFacetVertices"));
+                vertexPopupMenu.add(vertexPopupMenuItem[4] = Translate.menuItem("polymesh:bevel", this, "doBevelVertices"));
+                vertexPopupMenu.addSeparator();
+                vertexPopupMenu.add(vertexPopupMenuItem[5] = Translate.menuItem("polymesh:meanSphere", this, "doMeanSphere"));
+                vertexPopupMenu.add(vertexPopupMenuItem[6] = Translate.menuItem("polymesh:closestSphere", this, "doClosestSphere"));
+                vertexPopupMenu.add(vertexPopupMenuItem[7] = Translate.menuItem("polymesh:plane", this, "doPlane"));
+                vertexPopupMenu.addSeparator();
+                vertexPopupMenu.add(vertexPopupMenuItem[8] = Translate.menuItem("polymesh:selectBoundary", this, "doSelectBoundary"));
+                vertexPopupMenu.add(vertexPopupMenuItem[9] = Translate.menuItem("polymesh:closeBoundary", this, "doCloseBoundary"));
+                vertexPopupMenu.add(vertexPopupMenuItem[10] = Translate.menuItem("polymesh:joinBoundaries", this, "doJoinBoundaries"));
+                vertexPopupMenu.addSeparator();
+                vertexPopupMenu.add(vertexPopupMenuItem[11] = Translate.menuItem("editPoints", this, "setPointsCommand"));
+                vertexPopupMenu.add(vertexPopupMenuItem[12] = Translate.menuItem("transformPoints", this, "transformPointsCommand"));
+                vertexPopupMenu.add(vertexPopupMenuItem[13] = Translate.menuItem("randomize", this, "randomizeCommand"));
+                vertexPopupMenu.addSeparator();
+                vertexPopupMenu.add(vertexPopupMenuItem[14] = Translate.menuItem("parameters", this, "setParametersCommand"));
+                vertexPopupMenu.addSeparator();
+                vertexPopupMenu.add(vertexPopupMenuItem[15] = Translate.menuItem("polymesh:selectCorners", this, "doSelectCorners"));
 
 	}
 
