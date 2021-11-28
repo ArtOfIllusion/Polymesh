@@ -4657,7 +4657,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 
 	@SuppressWarnings("unused")
 	private void doFindSimilarEdges() {
-		new FindSimilarEdgesDialog(selected);
+          new FindSimilarEdgesDialog(selected).setVisible(true);
 	}
 
 	private void doInteractiveLevel(ValueChangedEvent ev) {
@@ -4975,48 +4975,34 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 		private PMValueField toleranceVF;
 
 		public FindSimilarEdgesDialog(boolean selected[]) {
-			super(PolyMeshEditorWindow.this, Translate
-					.text("polymesh:similarEdgesTitle"), true);
+			super(PolyMeshEditorWindow.this, Translate.text("polymesh:similarEdgesTitle"), true);
 			this.orSelection = selected;
-			InputStream inputStream = null;
-			try {
-				inputStream = getClass().getResource(
-						"interfaces/similaredges.xml").openStream();
-				WidgetDecoder decoder = new WidgetDecoder(inputStream);
+			
+			try(InputStream is = getClass().getResource("interfaces/similaredges.xml").openStream()) {
+				WidgetDecoder decoder = new WidgetDecoder(is);
 				borderContainer1 = (BorderContainer) decoder.getRootObject();
 				BLabel tolerance1 = ((BLabel) decoder.getObject("tolerance1"));
 				tolerance1.setText(Translate.text("polymesh:"+tolerance1.getText()));
 				okButton = ((BButton) decoder.getObject("okButton"));
 				cancelButton = ((BButton) decoder.getObject("cancelButton"));
-				BTextField toleranceTF = ((BTextField) decoder
-						.getObject("toleranceTF"));
+				BTextField toleranceTF = ((BTextField) decoder.getObject("toleranceTF"));
 				toleranceVF = new PMValueField(edgeTol, ValueField.NONE);
-				toleranceVF.setTextField((BTextField) decoder
-						.getObject("toleranceTF"));
+				toleranceVF.setTextField((BTextField) decoder.getObject("toleranceTF"));
 				okButton = ((BButton) decoder.getObject("okButton"));
 				cancelButton = ((BButton) decoder.getObject("cancelButton"));
 				okButton.setText(Translate.text("polymesh:ok"));
 				cancelButton.setText(Translate.text("polymesh:cancel"));
 			} catch (IOException ex) {
 				ex.printStackTrace();
-			} finally {
-				try {
-					if (inputStream != null)
-						inputStream.close();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
 			}
 			setContent(borderContainer1);
-			toleranceVF.addEventLink(ValueChangedEvent.class, this,
-					"doTolValueChanged");
+			toleranceVF.addEventLink(ValueChangedEvent.class, this, "doTolValueChanged");
 			okButton.addEventLink(CommandEvent.class, this, "doOK");
 			cancelButton.addEventLink(CommandEvent.class, this, "doCancel");
 			addEventLink(WindowClosingEvent.class, this, "doCancel");
 			pack();
 			UIUtilities.centerWindow(this);
 			doTolValueChanged();
-			setVisible(true);
 		}
 
 		private void doTolValueChanged() {
