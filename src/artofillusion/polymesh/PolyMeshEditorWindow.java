@@ -1196,13 +1196,8 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	/** Get whether the control mesh is displayed projected onto the surface. */
 
 	public boolean getProjectOntoSurface() {
-		PolyMesh mesh = (PolyMesh) objInfo.object;
-		if (!projectOntoSurface
-				|| (mesh.getSmoothingMethod() != Mesh.APPROXIMATING && mesh
-						.getSmoothingMethod() != Mesh.INTERPOLATING))
-			return false;
-		else
-			return true;
+          PolyMesh mesh = (PolyMesh) objInfo.object;
+          return projectOntoSurface && (mesh.getSmoothingMethod() == Mesh.APPROXIMATING || mesh .getSmoothingMethod() == Mesh.INTERPOLATING);
 	}
 
 	/** Set whether the control mesh is displayed projected onto the surface. */
@@ -1242,8 +1237,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	/** Add an extra texture parameter to a triangle mesh. */
 
 	private void addTriangleMeshExtraParameter(TriangleMesh mesh) {
-		TextureParameter hideFaceParam = new TextureParameter(this,
-				"Hide Face", 0.0, 1.0, 0.0);
+		TextureParameter hideFaceParam = new TextureParameter(this, "Hide Face", 0.0, 1.0, 0.0);
 		TextureParameter params[] = mesh.getParameters();
 		TextureParameter newparams[] = new TextureParameter[params.length + 1];
 		ParameterValue values[] = mesh.getParameterValues();
@@ -4226,11 +4220,11 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	}
 
 	public int getLooseSelectionRange() {
-		if (!looseSelectCB.getState()) {
-			return 0;
-		} else {
-			return ((Integer) looseSelectSpinner.getValue());
-		}
+          if (looseSelectCB.getState()) {
+            return ((Integer) looseSelectSpinner.getValue());
+          } else {
+            return 0;
+          }
 	}
 
 
