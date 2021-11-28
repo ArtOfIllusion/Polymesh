@@ -885,22 +885,16 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 */
 	void createSkeletonMenu(PolyMesh obj) {
 
-		skeletonMenu = Translate.menu("skeleton");
-		menubar.add(skeletonMenu);
-		skeletonMenuItem = new BMenuItem[6];
-		skeletonMenu.add(skeletonMenuItem[0] = Translate.menuItem("editBone",
-				this, "editJointCommand"));
-		skeletonMenu.add(skeletonMenuItem[1] = Translate.menuItem("deleteBone",
-				this, "deleteJointCommand"));
-		skeletonMenu.add(skeletonMenuItem[2] = Translate.menuItem(
-				"setParentBone", this, "setJointParentCommand"));
-		skeletonMenu.add(skeletonMenuItem[3] = Translate.menuItem(
-				"importSkeleton", this, "importSkeletonCommand"));
-		skeletonMenu.addSeparator();
-		skeletonMenu.add(skeletonMenuItem[4] = Translate.menuItem(
-				"bindSkeleton", this, "bindSkeletonCommand"));
-		skeletonMenu.add(skeletonMenuItem[5] = Translate.checkboxMenuItem(
-				"detachSkeleton", this, "skeletonDetachedChanged", false));
+                skeletonMenu = Translate.menu("skeleton");
+                menubar.add(skeletonMenu);
+                skeletonMenuItem = new BMenuItem[6];
+                skeletonMenu.add(skeletonMenuItem[0] = Translate.menuItem("editBone", this, "editJointCommand"));
+                skeletonMenu.add(skeletonMenuItem[1] = Translate.menuItem("deleteBone", this, "deleteJointCommand"));
+                skeletonMenu.add(skeletonMenuItem[2] = Translate.menuItem("setParentBone", this, "setJointParentCommand"));
+                skeletonMenu.add(skeletonMenuItem[3] = Translate.menuItem("importSkeleton", this, "importSkeletonCommand"));
+                skeletonMenu.addSeparator();
+                skeletonMenu.add(skeletonMenuItem[4] = Translate.menuItem("bindSkeleton", this, "bindSkeletonCommand"));
+                skeletonMenu.add(skeletonMenuItem[5] = Translate.checkboxMenuItem("detachSkeleton", this, "skeletonDetachedChanged", false));
 	}
 
         private final BMenuItem unfoldMeshAction = Translate.menuItem("polymesh:unfoldMesh", this, "doUnfoldMesh");
