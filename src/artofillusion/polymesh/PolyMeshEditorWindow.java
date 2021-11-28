@@ -3144,21 +3144,6 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		((JSpinner) spinner.getComponent()).setEditor(ed);
 	}
 
-	/**
-	 * Sets the number of minimum fraction digits for a 'double' spinner
-	 * 
-	 * @param spinner
-	 *                The concerned BSpinner
-	 * @param numDigits
-	 *                The new minimum number of fraction digits
-	 */
-	public static void setSpinnerFractionDigits(BSpinner spinner, int numDigits) {
-		NumberEditor ed = (NumberEditor) ((JSpinner) spinner.getComponent())
-				.getEditor();
-		DecimalFormat format = ed.getFormat();
-		format.setMinimumFractionDigits(1);
-		((JSpinner) spinner.getComponent()).setEditor(ed);
-	}
 
 	/**
 	 * Sets the smoothness of selected vertices or edges
