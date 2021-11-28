@@ -5418,7 +5418,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 	}
 
 	private class UnfoldStatusDialog extends BDialog {
-		private BorderContainer borderContainer1;
+		private BorderContainer borderContainer;
 
 		private BProgressBar progressBar;
 
@@ -5445,56 +5445,42 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 		private Thread unfoldThread;
 
 		public UnfoldStatusDialog() {
-			super(PolyMeshEditorWindow.this, Translate.text("polymesh:meshUnfolding"),
-					true);
+			super(PolyMeshEditorWindow.this, Translate.text("polymesh:meshUnfolding"),true);
 			int nverts = ((PolyMesh) objInfo.object).getVertices().length;
 			if (nverts < 1000) {
 				residual = 0.001;
 			} else {
 				residual = 1;
 			}
-			InputStream inputStream = null;
-			try {
-				WidgetDecoder decoder = new WidgetDecoder(
-						inputStream = getClass().getResource(
-								"interfaces/unfoldStatus.xml").openStream(),
-						PolyMeshPlugin.resources);
-				borderContainer1 = (BorderContainer) decoder.getRootObject();
-				progressBar = ((BProgressBar) decoder.getObject("progressBar"));
-				textArea = ((BTextArea) decoder.getObject("TextArea"));
-				rowContainer1 = ((RowContainer) decoder
-						.getObject("RowContainer1"));
-				proceedButton = ((BButton) decoder.getObject("proceedButton"));
-				advancedButton = ((BButton) decoder.getObject("advancedButton"));
-				advancedButton.addEventLink(CommandEvent.class, this,
-						"doAdvancedButton");
-				residualLabel = ((BLabel) decoder.getObject("residualLabel"));
-				residualTF = ((BTextField) decoder.getObject("residualTF"));
-				setContent(borderContainer1);
-				proceedButton.addEventLink(CommandEvent.class, this,
-						"doProceedButton");
+			
+			try(InputStream is = getClass().getResource("interfaces/unfoldStatus.xml").openStream()) {
+				WidgetDecoder decoder = new WidgetDecoder(is ,PolyMeshPlugin.resources);
+				borderContainer = (BorderContainer) decoder.getRootObject();
+				progressBar = (BProgressBar) decoder.getObject("progressBar");
+				textArea = (BTextArea) decoder.getObject("TextArea");
+				rowContainer1 = (RowContainer) decoder.getObject("RowContainer1");
+				proceedButton = (BButton) decoder.getObject("proceedButton");
+				advancedButton = (BButton) decoder.getObject("advancedButton");
+				advancedButton.addEventLink(CommandEvent.class, this,"doAdvancedButton");
+				residualLabel = (BLabel) decoder.getObject("residualLabel");
+				residualTF = (BTextField) decoder.getObject("residualTF");
+				setContent(borderContainer);
+				proceedButton.addEventLink(CommandEvent.class, this,"doProceedButton");
 				residualVF = new PMValueField(residual, ValueField.POSITIVE);
 				residualVF.setTextField(residualTF);
 				residualVF.setValue(residual);
-				residualVF.addEventLink(ValueChangedEvent.class, this,
-						"doResidualChanged");
+				residualVF.addEventLink(ValueChangedEvent.class, this,"doResidualChanged");
 				residualLabel.setVisible(false);
 				residualVF.setVisible(false);
 			} catch (IOException ex) {
-				ex.printStackTrace();
-			} finally {
-				try {
-					if (inputStream != null)
-						inputStream.close();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
+                          logger.info(() -> "Error creating UnfoldStatusDialog due " + ex.getLocalizedMessage());
 			}
+                        
 			status = 0;
 			cancelled = false;
 			pack();
 			addEventLink(WindowClosingEvent.class, this, "doCancel");
-			UIUtilities.centerDialog(this,PolyMeshEditorWindow.this);
+			UIUtilities.centerWindow(this);
 			advancedButton.setVisible(false);
 			progressBar.setProgressText("");
 			progressBar.setEnabled(false);
