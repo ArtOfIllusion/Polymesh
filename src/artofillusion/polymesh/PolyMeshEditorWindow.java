@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DecimalFormat;
+
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,7 +40,7 @@ import artofillusion.MeshViewer;
 import artofillusion.MoveViewTool;
 import artofillusion.RenderingMesh;
 import artofillusion.RotateViewTool;
-import artofillusion.Scene;
+
 import artofillusion.SkewMeshTool;
 import artofillusion.TaperMeshTool;
 import artofillusion.TextureParameter;
@@ -250,13 +250,10 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	private short moveDirection;
 
-	private BButton okButton;
 
 	private PolyMeshValueWidget valueWidget;
 	
 	private BDialog valueWidgetDialog;
-
-	private Runnable validateWidgetValue, abortWidgetValue;
 
 	private BMenuItem[] extrudeItem, extrudeEdgeItem;
 
@@ -282,7 +279,6 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	protected boolean tolerant;
 	
-	private int lastSelectedJoint;
 
 	private TextureParameter faceIndexParam, jointWeightParam;
 
@@ -353,13 +349,11 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * @param onClose
 	 *                a callback which will be executed when editing is over
 	 */
-	public PolyMeshEditorWindow(EditingWindow parent, String title,
-			ObjectInfo obj, Runnable onClose) {
+	public PolyMeshEditorWindow(EditingWindow parent, String title, ObjectInfo obj, Runnable onClose) {
 		super(parent, title, obj);
-		scene = ((LayoutWindow) parent).getScene();
+		
 		PolyMesh mesh = (PolyMesh) objInfo.object;
-		if (eventSource == null)
-			eventSource = new EventSource();
+		if (eventSource == null) eventSource = new EventSource();
 		eventSource.addEventLink(CopyEvent.class, this, "doCopyEvent");
 		hideVert = new boolean[mesh.getVertices().length];
 		this.onClose = onClose;
@@ -431,7 +425,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		content.add(helpText = new BLabel(), 0, 2, 3, 1);
 		content.add(viewsContainer, 1, 0);
 		RowContainer buttons = new RowContainer();
-		buttons.add(okButton = Translate.button("ok", this, "doOk"));
+		buttons.add(Translate.button("ok", this, "doOk"));
 		buttons.add(Translate.button("cancel", this, "doCancel"));
 		content.add(buttons, 0, 3, 2, 1, new LayoutInfo());
 		FormContainer toolsContainer = new FormContainer(new double[] { 1 },
@@ -500,18 +494,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		doLevelContainerEnable();
 		selected = new boolean[((Mesh) objInfo.object).getVertices().length];
 		// addEventLink( WindowClosingEvent.class, this, "doCancel" );
-		validateWidgetValue = new Runnable() {
 
-			public void run() {
-				doValueWidgetValidate();
-			}
-		};
-		abortWidgetValue = new Runnable() {
-
-			public void run() {
-				doValueWidgetAbort();
-			}
-		};
 		overlayVertexEdgeFace.setVisibleChild(vertexContainer);
 	}
 
@@ -1074,7 +1057,6 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 *                The poly mesh being edited
 	 */
 	void createSkeletonMenu(PolyMesh obj) {
-		BMenuItem item;
 
 		skeletonMenu = Translate.menu("skeleton");
 		menubar.add(skeletonMenu);
@@ -3740,7 +3722,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		VertexParameterValue value = (VertexParameterValue) getObject().object.getParameterValue(jointWeightParam);
 		value.setValue(jointWeight);
 		getObject().object.setParameterValues(getObject().object.getParameterValues());
-		lastSelectedJoint = selJointId;
+		
 		objInfo.clearCachedMeshes();    
 	}
 	
