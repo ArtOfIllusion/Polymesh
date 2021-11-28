@@ -5048,12 +5048,10 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 		 * Constructor for the DivideDialog object
 		 */
 		public DivideDialog() {
-			super(PolyMeshEditorWindow.this, Translate
-					.text("polymesh:subdivideEdgesTitle"), true);
-			InputStream is = null;
-			try {
-				WidgetDecoder decoder = new WidgetDecoder(is = getClass()
-						.getResource("interfaces/divide.xml").openStream());
+			super(PolyMeshEditorWindow.this, Translate.text("polymesh:subdivideEdgesTitle"), true);
+			
+			try(InputStream is = getClass().getResource("interfaces/divide.xml").openStream()) {
+				WidgetDecoder decoder = new WidgetDecoder(is);
 				setContent((BorderContainer) decoder.getRootObject());
 				divideSpinner = ((BSpinner) decoder.getObject("divideSpinner"));
 				BLabel divideLabel = ((BLabel) decoder.getObject("divideLabel"));
@@ -5063,20 +5061,14 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 				cancelButton = ((BButton) decoder.getObject("cancelButton"));
 				cancelButton.setText(Translate.text("polymesh:cancel"));
 			} catch (IOException ex) {
-				ex.printStackTrace();
-			} finally {
-				if (is != null)
-					try {
-						is.close();
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
+                          logger.info(() -> "Error creating DivideDialog due " + ex.getLocalizedMessage());
 			}
+                        
 			okButton.addEventLink(CommandEvent.class, this, "doOK");
 			cancelButton.addEventLink(CommandEvent.class, this, "doCancel");
 			pack();
 			UIUtilities.centerWindow(this);
-			setVisible(true);
+                        setVisible(true);
 		}
 
 		/**
