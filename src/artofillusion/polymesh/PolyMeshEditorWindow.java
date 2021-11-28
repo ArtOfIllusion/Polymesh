@@ -911,20 +911,15 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	}
 
 	private void createPrefsMenu() {
-		BMenu prefsMenu = Translate.menu("polymesh:prefs");
-		menubar.add(prefsMenu);
-		prefsMenu.add(Translate.menuItem("polymesh:reloadKeystrokes", this,
-				"reloadKeystrokes"));
-		// prefsMenu.addSeparator();
-		prefsMenu.add(Translate.menuItem("polymesh:editKeystrokes", this,
-				"editKeystrokes"));
-		prefsMenu.addSeparator();
-		prefsMenu.add(Translate.menuItem("polymesh:loadDefaults", this,
-				"doLoadDefaultProperties"));
-		prefsMenu.add(Translate.menuItem("polymesh:storeDefaults", this,
-				"doStoreDefaultProperties"));
-		prefsMenu.add(Translate.menuItem("polymesh:resetDefaults", this,
-				"doResetDefaultProperties"));
+                BMenu prefsMenu = Translate.menu("polymesh:prefs");
+                menubar.add(prefsMenu);
+                prefsMenu.add(Translate.menuItem("polymesh:reloadKeystrokes", this, "reloadKeystrokes"));
+                // prefsMenu.addSeparator();
+                prefsMenu.add(Translate.menuItem("polymesh:editKeystrokes", this, "editKeystrokes"));
+                prefsMenu.addSeparator();
+                prefsMenu.add(Translate.menuItem("polymesh:loadDefaults", this, "doLoadDefaultProperties"));
+                prefsMenu.add(Translate.menuItem("polymesh:storeDefaults", this, "doStoreDefaultProperties"));
+                prefsMenu.add(Translate.menuItem("polymesh:resetDefaults", this, "doResetDefaultProperties"));
 	}
 	
 	@SuppressWarnings("unused")
