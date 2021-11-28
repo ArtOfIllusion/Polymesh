@@ -5181,8 +5181,8 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 			super(PolyMeshEditorWindow.this, Translate.text("polymesh:checkRepair"),true);
 
 			BorderContainer borderContainer = null;
-                        BButton dismiss;
-                        BTextArea textArea;
+                        BButton dismiss = null;
+                        BTextArea textArea = null;
                         
 			try(InputStream is =  getClass().getResource("interfaces/check.xml").openStream()) {
 				WidgetDecoder decoder = new WidgetDecoder(is);
