@@ -650,209 +650,120 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		edgeMenuItem = new MenuWidget[22];
 		edgeMenu.add(edgeMenuItem[0] = Translate.menu("polymesh:divide"));
 		divideMenuItem = new BMenuItem[5];
-		((BMenu) edgeMenuItem[0]).add(divideMenuItem[0] = Translate.menuItem(
-				"polymesh:two", this, "doDivideEdges"));
-		((BMenu) edgeMenuItem[0]).add(divideMenuItem[1] = Translate.menuItem(
-				"polymesh:three", this, "doDivideEdges"));
-		((BMenu) edgeMenuItem[0]).add(divideMenuItem[2] = Translate.menuItem(
-				"polymesh:four", this, "doDivideEdges"));
-		((BMenu) edgeMenuItem[0]).add(divideMenuItem[3] = Translate.menuItem(
-				"polymesh:five", this, "doDivideEdges"));
-		((BMenu) edgeMenuItem[0]).add(divideMenuItem[4] = Translate.menuItem(
-				"polymesh:specify", this, "doDivideEdges"));
+		((BMenu) edgeMenuItem[0]).add(divideMenuItem[0] = Translate.menuItem("polymesh:two", this, "doDivideEdges"));
+		((BMenu) edgeMenuItem[0]).add(divideMenuItem[1] = Translate.menuItem("polymesh:three", this, "doDivideEdges"));
+		((BMenu) edgeMenuItem[0]).add(divideMenuItem[2] = Translate.menuItem("polymesh:four", this, "doDivideEdges"));
+		((BMenu) edgeMenuItem[0]).add(divideMenuItem[3] = Translate.menuItem("polymesh:five", this, "doDivideEdges"));
+		((BMenu) edgeMenuItem[0]).add(divideMenuItem[4] = Translate.menuItem("polymesh:specify", this, "doDivideEdges"));
 		edgeMenu.add(edgeMenuItem[1] = Translate.menu("polymesh:moveAlong"));
-		((BMenu) edgeMenuItem[1]).add(Translate.menuItem("polymesh:normal", this,
-				"doMoveEdgesNormal"));
-		((BMenu) edgeMenuItem[1]).add(Translate.menuItem("polymesh:x", this,
-				"doMoveEdgesX"));
-		((BMenu) edgeMenuItem[1]).add(Translate.menuItem("polymesh:y", this,
-				"doMoveEdgesY"));
-		((BMenu) edgeMenuItem[1]).add(Translate.menuItem("polymesh:z", this,
-				"doMoveEdgesZ"));
+		((BMenu) edgeMenuItem[1]).add(Translate.menuItem("polymesh:normal", this,"doMoveEdgesNormal"));
+		((BMenu) edgeMenuItem[1]).add(Translate.menuItem("polymesh:x", this,"doMoveEdgesX"));
+		((BMenu) edgeMenuItem[1]).add(Translate.menuItem("polymesh:y", this,"doMoveEdgesY"));
+		((BMenu) edgeMenuItem[1]).add(Translate.menuItem("polymesh:z", this,"doMoveEdgesZ"));
 		edgeMenu.addSeparator();
 		edgeMenu.add(edgeMenuItem[2] = Translate.menu("polymesh:extrude"));
 		extrudeEdgeItem = new BMenuItem[4];
 		extrudeEdgeRegionItem = new BMenuItem[4];
-		((BMenu) edgeMenuItem[2]).add(extrudeEdgeItem[0] = Translate
-				.menuItem("polymesh:extrudeNormal", this, "doExtrudeEdge"));
-		((BMenu) edgeMenuItem[2]).add(extrudeEdgeItem[1] = Translate
-				.menuItem("polymesh:xExtrude", this, "doExtrudeEdge"));
-		((BMenu) edgeMenuItem[2]).add(extrudeEdgeItem[2] = Translate
-				.menuItem("polymesh:yExtrude", this, "doExtrudeEdge"));
-		((BMenu) edgeMenuItem[2]).add(extrudeEdgeItem[3] = Translate
-				.menuItem("polymesh:zExtrude", this, "doExtrudeEdge"));
+		((BMenu) edgeMenuItem[2]).add(extrudeEdgeItem[0] = Translate.menuItem("polymesh:extrudeNormal", this, "doExtrudeEdge"));
+		((BMenu) edgeMenuItem[2]).add(extrudeEdgeItem[1] = Translate.menuItem("polymesh:xExtrude", this, "doExtrudeEdge"));
+		((BMenu) edgeMenuItem[2]).add(extrudeEdgeItem[2] = Translate.menuItem("polymesh:yExtrude", this, "doExtrudeEdge"));
+		((BMenu) edgeMenuItem[2]).add(extrudeEdgeItem[3] = Translate.menuItem("polymesh:zExtrude", this, "doExtrudeEdge"));
 		singleNormalShortcut = extrudeEdgeItem[0].getShortcut();
 		edgeMenu.add(edgeMenuItem[3] = Translate.menu("polymesh:extrudeRegion"));
-		((BMenu) edgeMenuItem[3]).add(extrudeEdgeRegionItem[0] = Translate
-				.menuItem("polymesh:extrudeRegionNormal", this, "doExtrudeEdgeRegion"));
-		((BMenu) edgeMenuItem[3]).add(extrudeEdgeRegionItem[1] = Translate
-				.menuItem("polymesh:xExtrude", this, "doExtrudeEdgeRegion"));
-		((BMenu) edgeMenuItem[3]).add(extrudeEdgeRegionItem[2] = Translate
-				.menuItem("polymesh:yExtrude", this, "doExtrudeEdgeRegion"));
-		((BMenu) edgeMenuItem[3]).add(extrudeEdgeRegionItem[3] = Translate
-				.menuItem("polymesh:zExtrude", this, "doExtrudeEdgeRegion"));
+		((BMenu) edgeMenuItem[3]).add(extrudeEdgeRegionItem[0] = Translate.menuItem("polymesh:extrudeRegionNormal", this, "doExtrudeEdgeRegion"));
+		((BMenu) edgeMenuItem[3]).add(extrudeEdgeRegionItem[1] = Translate.menuItem("polymesh:xExtrude", this, "doExtrudeEdgeRegion"));
+		((BMenu) edgeMenuItem[3]).add(extrudeEdgeRegionItem[2] = Translate.menuItem("polymesh:yExtrude", this, "doExtrudeEdgeRegion"));
+		((BMenu) edgeMenuItem[3]).add(extrudeEdgeRegionItem[3] = Translate.menuItem("polymesh:zExtrude", this, "doExtrudeEdgeRegion"));
 		groupNormalShortcut = extrudeEdgeRegionItem[0].getShortcut();
 		edgeMenu.addSeparator();
-		edgeMenu.add(edgeMenuItem[4] = Translate.menuItem("polymesh:collapse", this,
-				"doCollapseEdges"));
-		edgeMenu.add(edgeMenuItem[5] = Translate.menuItem("polymesh:merge", this,
-				"doMergeEdges"));
-		edgeMenu.add(edgeMenuItem[6] = Translate.menuItem("polymesh:bevel", this,
-				"doBevelEdges"));
+		edgeMenu.add(edgeMenuItem[4] = Translate.menuItem("polymesh:collapse", this,"doCollapseEdges"));
+		edgeMenu.add(edgeMenuItem[5] = Translate.menuItem("polymesh:merge", this,"doMergeEdges"));
+		edgeMenu.add(edgeMenuItem[6] = Translate.menuItem("polymesh:bevel", this,"doBevelEdges"));
 		edgeMenu.addSeparator();
-		edgeMenu.add(edgeMenuItem[7] = Translate.menuItem("polymesh:selectLoop", this,
-				"doSelectLoop"));
+		edgeMenu.add(edgeMenuItem[7] = Translate.menuItem("polymesh:selectLoop", this,"doSelectLoop"));
 		edgeMenu.add(edgeMenuItem[8] = Translate.menu("polymesh:selectRing"));
 		ringMenuItem = new BMenuItem[6];
-		((BMenu) edgeMenuItem[8]).add(ringMenuItem[0] = Translate.menuItem(
-				"polymesh:all", this, "doSelectRing"));
-		((BMenu) edgeMenuItem[8]).add(ringMenuItem[1] = Translate.menuItem(
-				"polymesh:two", this, "doSelectRing"));
-		((BMenu) edgeMenuItem[8]).add(ringMenuItem[2] = Translate.menuItem(
-				"polymesh:three", this, "doSelectRing"));
-		((BMenu) edgeMenuItem[8]).add(ringMenuItem[3] = Translate.menuItem(
-				"polymesh:four", this, "doSelectRing"));
-		((BMenu) edgeMenuItem[8]).add(ringMenuItem[4] = Translate.menuItem(
-				"polymesh:five", this, "doSelectRing"));
-		((BMenu) edgeMenuItem[8]).add(ringMenuItem[5] = Translate.menuItem(
-				"polymesh:specify", this, "doSelectRing"));
-		edgeMenu.add(edgeMenuItem[9] = Translate.menuItem("polymesh:insertLoops",
-				this, "doInsertLoops"));
-		edgeMenu.add(edgeMenuItem[10] = Translate.menuItem("polymesh:selectBoundary",
-				this, "doSelectBoundary"));
-		edgeMenu.add(edgeMenuItem[11] = Translate.menuItem("polymesh:closeBoundary",
-				this, "doCloseBoundary"));
-		edgeMenu.add(edgeMenuItem[12] = Translate.menuItem("polymesh:findSimilar",
-				this, "doFindSimilarEdges"));
-		edgeMenu.add(edgeMenuItem[13] = Translate.menuItem("polymesh:extractToCurve",
-				this, "doExtractToCurve"));
+		((BMenu) edgeMenuItem[8]).add(ringMenuItem[0] = Translate.menuItem("polymesh:all", this, "doSelectRing"));
+		((BMenu) edgeMenuItem[8]).add(ringMenuItem[1] = Translate.menuItem("polymesh:two", this, "doSelectRing"));
+		((BMenu) edgeMenuItem[8]).add(ringMenuItem[2] = Translate.menuItem("polymesh:three", this, "doSelectRing"));
+		((BMenu) edgeMenuItem[8]).add(ringMenuItem[3] = Translate.menuItem("polymesh:four", this, "doSelectRing"));
+		((BMenu) edgeMenuItem[8]).add(ringMenuItem[4] = Translate.menuItem("polymesh:five", this, "doSelectRing"));
+		((BMenu) edgeMenuItem[8]).add(ringMenuItem[5] = Translate.menuItem("polymesh:specify", this, "doSelectRing"));
+		edgeMenu.add(edgeMenuItem[9] = Translate.menuItem("polymesh:insertLoops",this, "doInsertLoops"));
+		edgeMenu.add(edgeMenuItem[10] = Translate.menuItem("polymesh:selectBoundary",this, "doSelectBoundary"));
+		edgeMenu.add(edgeMenuItem[11] = Translate.menuItem("polymesh:closeBoundary",this, "doCloseBoundary"));
+		edgeMenu.add(edgeMenuItem[12] = Translate.menuItem("polymesh:findSimilar",this, "doFindSimilarEdges"));
+		edgeMenu.add(edgeMenuItem[13] = Translate.menuItem("polymesh:extractToCurve",this, "doExtractToCurve"));
 		edgeMenu.addSeparator();
-		edgeMenu.add(edgeMenuItem[14] = Translate.menuItem("polymesh:markSelAsSeams",
-				this, "doMarkSelAsSeams"));
-		edgeMenu.add(edgeMenuItem[15] = Translate.menuItem("polymesh:seamsToSel",
-				this, "doSeamsToSel"));
-		edgeMenu.add(edgeMenuItem[16] = Translate.menuItem("polymesh:addSelToSeams",
-				this, "doAddSelToSeams"));
-		edgeMenu.add(edgeMenuItem[17] = Translate.menuItem(
-				"polymesh:removeSelFromSeams", this, "doRemoveSelFromSeams"));
-		edgeMenu.add(edgeMenuItem[18] = Translate.menuItem("polymesh:openSeams", this,
-				"doOpenSeams"));
-		edgeMenu.add(edgeMenuItem[19] = Translate.menuItem("polymesh:clearSeams",
-				this, "doClearSeams"));
+		edgeMenu.add(edgeMenuItem[14] = Translate.menuItem("polymesh:markSelAsSeams",this, "doMarkSelAsSeams"));
+		edgeMenu.add(edgeMenuItem[15] = Translate.menuItem("polymesh:seamsToSel",this, "doSeamsToSel"));
+		edgeMenu.add(edgeMenuItem[16] = Translate.menuItem("polymesh:addSelToSeams",this, "doAddSelToSeams"));
+		edgeMenu.add(edgeMenuItem[17] = Translate.menuItem("polymesh:removeSelFromSeams", this, "doRemoveSelFromSeams"));
+		edgeMenu.add(edgeMenuItem[18] = Translate.menuItem("polymesh:openSeams", this,"doOpenSeams"));
+		edgeMenu.add(edgeMenuItem[19] = Translate.menuItem("polymesh:clearSeams",this, "doClearSeams"));
 		edgeMenu.addSeparator();
-		edgeMenu.add(edgeMenuItem[20] = Translate.menuItem(
-				"polymesh:selectSmoothnessRange", this, "doSelectEdgeSmoothnessRange"));
+		edgeMenu.add(edgeMenuItem[20] = Translate.menuItem("polymesh:selectSmoothnessRange", this, "doSelectEdgeSmoothnessRange"));
 		edgeMenu.addSeparator();
-		edgeMenu.add(edgeMenuItem[21] = Translate.menuItem("polymesh:bevelProperties",
-				this, "doBevelProperties"));
+		edgeMenu.add(edgeMenuItem[21] = Translate.menuItem("polymesh:bevelProperties",this, "doBevelProperties"));
 
 		edgePopupMenu = new BPopupMenu();
 		edgePopupMenuItem = new MenuWidget[22];
 		edgePopupMenu.add(edgePopupMenuItem[0] = Translate.menu("polymesh:divide"));
 		popupDivideMenuItem = new BMenuItem[5];
-		((BMenu) edgePopupMenuItem[0]).add(popupDivideMenuItem[0] = Translate
-				.menuItem("polymesh:two", this, "doDivideEdges"));
-		((BMenu) edgePopupMenuItem[0]).add(popupDivideMenuItem[1] = Translate
-				.menuItem("polymesh:three", this, "doDivideEdges"));
-		((BMenu) edgePopupMenuItem[0]).add(popupDivideMenuItem[2] = Translate
-				.menuItem("polymesh:four", this, "doDivideEdges"));
-		((BMenu) edgePopupMenuItem[0]).add(popupDivideMenuItem[3] = Translate
-				.menuItem("polymesh:five", this, "doDivideEdges"));
-		((BMenu) edgePopupMenuItem[0]).add(popupDivideMenuItem[4] = Translate
-				.menuItem("polymesh:specify", this, "doDivideEdges"));
+		((BMenu) edgePopupMenuItem[0]).add(popupDivideMenuItem[0] = Translate.menuItem("polymesh:two", this, "doDivideEdges"));
+		((BMenu) edgePopupMenuItem[0]).add(popupDivideMenuItem[1] = Translate.menuItem("polymesh:three", this, "doDivideEdges"));
+		((BMenu) edgePopupMenuItem[0]).add(popupDivideMenuItem[2] = Translate.menuItem("polymesh:four", this, "doDivideEdges"));
+		((BMenu) edgePopupMenuItem[0]).add(popupDivideMenuItem[3] = Translate.menuItem("polymesh:five", this, "doDivideEdges"));
+		((BMenu) edgePopupMenuItem[0]).add(popupDivideMenuItem[4] = Translate.menuItem("polymesh:specify", this, "doDivideEdges"));
 		edgePopupMenu.add(edgePopupMenuItem[1] = Translate.menu("polymesh:moveAlong"));
-		((BMenu) edgePopupMenuItem[1]).add(Translate.menuItem("polymesh:normal", this,
-				"doMoveEdgesNormal"));
-		((BMenu) edgePopupMenuItem[1]).add(Translate.menuItem("polymesh:x", this,
-				"doMoveEdgesX"));
-		((BMenu) edgePopupMenuItem[1]).add(Translate.menuItem("polymesh:y", this,
-				"doMoveEdgesY"));
-		((BMenu) edgePopupMenuItem[1]).add(Translate.menuItem("polymesh:z", this,
-				"doMoveEdgesZ"));
+		((BMenu) edgePopupMenuItem[1]).add(Translate.menuItem("polymesh:normal", this,"doMoveEdgesNormal"));
+		((BMenu) edgePopupMenuItem[1]).add(Translate.menuItem("polymesh:x", this,"doMoveEdgesX"));
+		((BMenu) edgePopupMenuItem[1]).add(Translate.menuItem("polymesh:y", this,"doMoveEdgesY"));
+		((BMenu) edgePopupMenuItem[1]).add(Translate.menuItem("polymesh:z", this,"doMoveEdgesZ"));
 		edgePopupMenu.addSeparator();
 		edgePopupMenu.add(edgePopupMenuItem[2] = Translate.menu("polymesh:extrude"));
 		popupExtrudeEdgeItem = new BMenuItem[4];
 		popupExtrudeEdgeRegionItem = new BMenuItem[4];
-		((BMenu) edgePopupMenuItem[2])
-				.add(popupExtrudeEdgeItem[0] = Translate.menuItem(
-						"polymesh:extrudeNormal", this, "doExtrudeEdge"));
-		((BMenu) edgePopupMenuItem[2])
-				.add(popupExtrudeEdgeItem[1] = Translate.menuItem("polymesh:xExtrude",
-						this, "doExtrudeEdge"));
-		((BMenu) edgePopupMenuItem[2])
-				.add(popupExtrudeEdgeItem[2] = Translate.menuItem("polymesh:yExtrude",
-						this, "doExtrudeEdge"));
-		((BMenu) edgePopupMenuItem[2])
-				.add(popupExtrudeEdgeItem[3] = Translate.menuItem("polymesh:zExtrude",
-						this, "doExtrudeEdge"));
-		edgePopupMenu.add(edgePopupMenuItem[3] = Translate
-				.menu("polymesh:extrudeRegion"));
-		((BMenu) edgePopupMenuItem[3])
-				.add(popupExtrudeEdgeRegionItem[0] = Translate.menuItem(
-						"polymesh:extrudeRegionNormal", this, "doExtrudeEdgeRegion"));
-		((BMenu) edgePopupMenuItem[3])
-				.add(popupExtrudeEdgeRegionItem[1] = Translate.menuItem(
-						"polymesh:xExtrude", this, "doExtrudeEdgeRegion"));
-		((BMenu) edgePopupMenuItem[3])
-				.add(popupExtrudeEdgeRegionItem[2] = Translate.menuItem(
-						"polymesh:yExtrude", this, "doExtrudeEdgeRegion"));
-		((BMenu) edgePopupMenuItem[3])
-				.add(popupExtrudeEdgeRegionItem[3] = Translate.menuItem(
-						"polymesh:zExtrude", this, "doExtrudeEdgeRegion"));
+		((BMenu) edgePopupMenuItem[2]).add(popupExtrudeEdgeItem[0] = Translate.menuItem("polymesh:extrudeNormal", this, "doExtrudeEdge"));
+		((BMenu) edgePopupMenuItem[2]).add(popupExtrudeEdgeItem[1] = Translate.menuItem("polymesh:xExtrude", this, "doExtrudeEdge"));
+		((BMenu) edgePopupMenuItem[2]).add(popupExtrudeEdgeItem[2] = Translate.menuItem("polymesh:yExtrude", this, "doExtrudeEdge"));
+		((BMenu) edgePopupMenuItem[2]).add(popupExtrudeEdgeItem[3] = Translate.menuItem("polymesh:zExtrude", this, "doExtrudeEdge"));
+		edgePopupMenu.add(edgePopupMenuItem[3] = Translate.menu("polymesh:extrudeRegion"));
+		((BMenu) edgePopupMenuItem[3]).add(popupExtrudeEdgeRegionItem[0] = Translate.menuItem("polymesh:extrudeRegionNormal", this, "doExtrudeEdgeRegion"));
+		((BMenu) edgePopupMenuItem[3]).add(popupExtrudeEdgeRegionItem[1] = Translate.menuItem("polymesh:xExtrude", this, "doExtrudeEdgeRegion"));
+		((BMenu) edgePopupMenuItem[3]).add(popupExtrudeEdgeRegionItem[2] = Translate.menuItem("polymesh:yExtrude", this, "doExtrudeEdgeRegion"));
+		((BMenu) edgePopupMenuItem[3]).add(popupExtrudeEdgeRegionItem[3] = Translate.menuItem("polymesh:zExtrude", this, "doExtrudeEdgeRegion"));
 		edgePopupMenu.addSeparator();
-		edgePopupMenu.add(edgePopupMenuItem[4] = Translate.menuItem(
-				"polymesh:collapse", this, "doCollapseEdges"));
-		edgePopupMenu.add(edgePopupMenuItem[5] = Translate.menuItem("polymesh:merge",
-				this, "doMergeEdges"));
-		edgePopupMenu.add(edgePopupMenuItem[6] = Translate.menuItem("polymesh:bevel",
-				this, "doBevelEdges"));
+		edgePopupMenu.add(edgePopupMenuItem[4] = Translate.menuItem("polymesh:collapse", this, "doCollapseEdges"));
+		edgePopupMenu.add(edgePopupMenuItem[5] = Translate.menuItem("polymesh:merge",this, "doMergeEdges"));
+		edgePopupMenu.add(edgePopupMenuItem[6] = Translate.menuItem("polymesh:bevel",this, "doBevelEdges"));
 		
 		edgePopupMenu.addSeparator();
-		edgePopupMenu.add(edgePopupMenuItem[7] = Translate.menuItem(
-				"polymesh:selectLoop", this, "doSelectLoop"));
+		edgePopupMenu.add(edgePopupMenuItem[7] = Translate.menuItem("polymesh:selectLoop", this, "doSelectLoop"));
 		edgePopupMenu.add(edgePopupMenuItem[8] = Translate.menu("polymesh:selectRing"));
 		popupRingMenuItem = new BMenuItem[6];
-		((BMenu) edgePopupMenuItem[8]).add(popupRingMenuItem[0] = Translate.menuItem(
-				"polymesh:all", this, "doSelectRing"));
-		((BMenu) edgePopupMenuItem[8]).add(popupRingMenuItem[1] = Translate.menuItem(
-				"polymesh:two", this, "doSelectRing"));
-		((BMenu) edgePopupMenuItem[8]).add(popupRingMenuItem[2] = Translate.menuItem(
-				"polymesh:three", this, "doSelectRing"));
-		((BMenu) edgePopupMenuItem[8]).add(popupRingMenuItem[3] = Translate.menuItem(
-				"polymesh:four", this, "doSelectRing"));
-		((BMenu) edgePopupMenuItem[8]).add(popupRingMenuItem[4] = Translate.menuItem(
-				"polymesh:five", this, "doSelectRing"));
-		((BMenu) edgePopupMenuItem[8]).add(popupRingMenuItem[5] = Translate.menuItem(
-				"polymesh:specify", this, "doSelectRing"));
-		edgePopupMenu.add(edgePopupMenuItem[9] = Translate.menuItem(
-				"polymesh:insertLoops", this, "doInsertLoops"));
-		edgePopupMenu.add(edgePopupMenuItem[10] = Translate.menuItem(
-				"polymesh:selectBoundary", this, "doSelectBoundary"));
-		edgePopupMenu.add(edgePopupMenuItem[11] = Translate.menuItem(
-				"polymesh:closeBoundary", this, "doCloseBoundary"));
-		edgePopupMenu.add(edgePopupMenuItem[12] = Translate.menuItem(
-				"polymesh:findSimilar", this, "doFindSimilarEdges"));
-		edgePopupMenu.add(edgePopupMenuItem[13] = Translate.menuItem(
-				"polymesh:extractToCurve", this, "doExtractToCurve"));
+		((BMenu) edgePopupMenuItem[8]).add(popupRingMenuItem[0] = Translate.menuItem("polymesh:all", this, "doSelectRing"));
+		((BMenu) edgePopupMenuItem[8]).add(popupRingMenuItem[1] = Translate.menuItem("polymesh:two", this, "doSelectRing"));
+		((BMenu) edgePopupMenuItem[8]).add(popupRingMenuItem[2] = Translate.menuItem("polymesh:three", this, "doSelectRing"));
+		((BMenu) edgePopupMenuItem[8]).add(popupRingMenuItem[3] = Translate.menuItem("polymesh:four", this, "doSelectRing"));
+		((BMenu) edgePopupMenuItem[8]).add(popupRingMenuItem[4] = Translate.menuItem("polymesh:five", this, "doSelectRing"));
+		((BMenu) edgePopupMenuItem[8]).add(popupRingMenuItem[5] = Translate.menuItem("polymesh:specify", this, "doSelectRing"));
+		edgePopupMenu.add(edgePopupMenuItem[9] = Translate.menuItem("polymesh:insertLoops", this, "doInsertLoops"));
+		edgePopupMenu.add(edgePopupMenuItem[10] = Translate.menuItem("polymesh:selectBoundary", this, "doSelectBoundary"));
+		edgePopupMenu.add(edgePopupMenuItem[11] = Translate.menuItem("polymesh:closeBoundary", this, "doCloseBoundary"));
+		edgePopupMenu.add(edgePopupMenuItem[12] = Translate.menuItem("polymesh:findSimilar", this, "doFindSimilarEdges"));
+		edgePopupMenu.add(edgePopupMenuItem[13] = Translate.menuItem("polymesh:extractToCurve", this, "doExtractToCurve"));
 		edgePopupMenu.addSeparator();
-		edgePopupMenu.add(edgePopupMenuItem[14] = Translate.menuItem(
-				"polymesh:markSelAsSeams", this, "doMarkSelAsSeams"));
-		edgePopupMenu.add(edgePopupMenuItem[15] = Translate.menuItem(
-				"polymesh:seamsToSel", this, "doSeamsToSel"));
-		edgePopupMenu.add(edgePopupMenuItem[16] = Translate.menuItem(
-				"polymesh:addSelToSeams", this, "doAddSelToSeams"));
-		edgePopupMenu.add(edgePopupMenuItem[17] = Translate.menuItem(
-				"polymesh:removeSelFromSeams", this, "doRemoveSelFromSeams"));
-		edgePopupMenu.add(edgePopupMenuItem[18] = Translate.menuItem(
-				"polymesh:openSeams", this, "doOpenSeams"));
-		edgePopupMenu.add(edgePopupMenuItem[19] = Translate.menuItem(
-				"polymesh:clearSeams", this, "doClearSeams"));
+		edgePopupMenu.add(edgePopupMenuItem[14] = Translate.menuItem("polymesh:markSelAsSeams", this, "doMarkSelAsSeams"));
+		edgePopupMenu.add(edgePopupMenuItem[15] = Translate.menuItem("polymesh:seamsToSel", this, "doSeamsToSel"));
+		edgePopupMenu.add(edgePopupMenuItem[16] = Translate.menuItem("polymesh:addSelToSeams", this, "doAddSelToSeams"));
+		edgePopupMenu.add(edgePopupMenuItem[17] = Translate.menuItem("polymesh:removeSelFromSeams", this, "doRemoveSelFromSeams"));
+		edgePopupMenu.add(edgePopupMenuItem[18] = Translate.menuItem("polymesh:openSeams", this, "doOpenSeams"));
+		edgePopupMenu.add(edgePopupMenuItem[19] = Translate.menuItem("polymesh:clearSeams", this, "doClearSeams"));
 		edgePopupMenu.addSeparator();
-		edgePopupMenu.add(edgePopupMenuItem[20] = Translate.menuItem(
-				"polymesh:selectSmoothnessRange", this, "doSelectEdgeSmoothnessRange"));
+		edgePopupMenu.add(edgePopupMenuItem[20] = Translate.menuItem("polymesh:selectSmoothnessRange", this, "doSelectEdgeSmoothnessRange"));
 		edgePopupMenu.addSeparator();
-		edgePopupMenu.add(edgePopupMenuItem[21] = Translate.menuItem(
-				"polymesh:bevelProperties", this, "doBevelProperties"));
+		edgePopupMenu.add(edgePopupMenuItem[21] = Translate.menuItem("polymesh:bevelProperties", this, "doBevelProperties"));
 	}
 
 	/**
