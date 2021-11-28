@@ -986,7 +986,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 				mesh.setSelectedSeamColor(selectedSeamColorButton.getColor());
 				mesh.setMeshColor(meshColorButton.getColor());
 				mesh.setSelectedFaceColor(selectedFaceColorButton.getColor());
-				mesh.setHandleSize(((Integer) handleSpinner.getValue()).intValue());
+				mesh.setHandleSize(((Integer) handleSpinner.getValue()));
 			}
 			updateImage();
 		}
@@ -4211,7 +4211,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	}
 
 	private void doLooseSelectionValueChanged() {
-		looseSelectValue = ((Integer) looseSelectSpinner.getValue()).intValue();
+		looseSelectValue = ((Integer) looseSelectSpinner.getValue());
 	}
 
 	@SuppressWarnings("unused")
@@ -4229,7 +4229,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		if (!looseSelectCB.getState()) {
 			return 0;
 		} else {
-			return ((Integer) looseSelectSpinner.getValue()).intValue();
+			return ((Integer) looseSelectSpinner.getValue());
 		}
 	}
 
@@ -4404,7 +4404,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	private void doInteractiveLevel(ValueChangedEvent ev) {
 		((PolyMesh) objInfo.object).setInteractiveSmoothLevel(((Integer) ispin
-				.getValue()).intValue());
+                        .getValue()));
 		objectChanged();
 		updateImage();
 	}
@@ -4483,7 +4483,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	public void doTensionChanged() {
 		lastTensionDistance = tensionDistance = ((Integer) tensionSpin
-				.getValue()).intValue();
+                        .getValue());
 		savePreferences();
 	}
 
@@ -4502,7 +4502,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 				v[j] = (Vec3) curve.get(j);
 				s[j] = 1.0f;
 			}
-			boolean b = ((Boolean) closed.get(i)).booleanValue();
+			boolean b = ((Boolean) closed.get(i));
 			Curve c = new Curve(v, s, mesh.getSmoothingMethod(), b);
 			((LayoutWindow) parentWindow).addObject(c, objInfo.coords,
 					("PMCurve " + i), null);
@@ -4868,7 +4868,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		 * OK button selected
 		 */
 		private void doOK() {
-			num = ((Integer) divideSpinner.getValue()).intValue();
+			num = ((Integer) divideSpinner.getValue());
 			dispose();
 		}
 
@@ -5600,12 +5600,12 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		}
 		
 		private void doMinSliderChanged() {
-			minSmoothnessVF.setValue( ((Integer)minSmoothnessSlider.getValue()).intValue() /100.0);
+			minSmoothnessVF.setValue( ((Integer)minSmoothnessSlider.getValue()) /100.0);
 			updateSelection();
 		}
 		
 		private void doMaxSliderChanged() {
-			maxSmoothnessVF.setValue( ((Integer)maxSmoothnessSlider.getValue()).intValue() /100.0);
+			maxSmoothnessVF.setValue( ((Integer)maxSmoothnessSlider.getValue()) /100.0);
 			updateSelection();
 		}
 		
