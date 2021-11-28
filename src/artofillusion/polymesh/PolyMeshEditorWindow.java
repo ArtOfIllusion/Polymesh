@@ -4652,7 +4652,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 
 	@SuppressWarnings("unused")
 	private void doFindSimilarFaces() {
-		new FindSimilarFacesDialog(selected);
+          new FindSimilarFacesDialog(selected).setVisible(true);
 	}
 
 	@SuppressWarnings("unused")
@@ -4845,78 +4845,49 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 		private boolean ok;
 
 		public FindSimilarFacesDialog(boolean selected[]) {
-			super(PolyMeshEditorWindow.this, Translate
-					.text("polymesh:similarFacesTitle"), true);
-			this.orSelection = selected;
-			InputStream is = null;
-			try {
-				is = getClass().getResource("interfaces/similar.xml")
-						.openStream();
+			super(PolyMeshEditorWindow.this, Translate.text("polymesh:similarFacesTitle"), true);
+			this.orSelection = selected;			 
+			try(InputStream is = getClass().getResource("interfaces/similar.xml").openStream()) {
 				WidgetDecoder decoder = new WidgetDecoder(is);
 				borderContainer1 = (BorderContainer) decoder.getRootObject();
-				BLabel titleTextLabel = ((BLabel) decoder
-						.getObject("titleTextLabel"));
-				titleTextLabel.setText(Translate.text("polymesh:"+titleTextLabel
-						.getText()));
+				BLabel titleTextLabel = ((BLabel) decoder.getObject("titleTextLabel"));
+				titleTextLabel.setText(Translate.text("polymesh:"+titleTextLabel.getText()));
 				normalCB = ((BCheckBox) decoder.getObject("normalCB"));
 				normalCB.setText(Translate.text("polymesh:"+normalCB.getText()));
 				looseShapeCB = ((BCheckBox) decoder.getObject("looseShapeCB"));
 				looseShapeCB.setText(Translate.text("polymesh:"+looseShapeCB.getText()));
 				strictShapeCB = ((BCheckBox) decoder.getObject("strictShapeCB"));
-				strictShapeCB
-						.setText(Translate.text("polymesh:"+strictShapeCB.getText()));
+				strictShapeCB.setText(Translate.text("polymesh:"+strictShapeCB.getText()));
 				tolerance1 = ((BLabel) decoder.getObject("tolerance1"));
 				tolerance2 = ((BLabel) decoder.getObject("tolerance2"));
 				tolerance3 = ((BLabel) decoder.getObject("tolerance3"));
 				tolerance1.setText(Translate.text("polymesh:"+tolerance1.getText()));
 				tolerance2.setText(Translate.text("polymesh:"+tolerance2.getText()));
 				tolerance3.setText(Translate.text("polymesh:"+tolerance3.getText()));
-				BTextField normalCBTF = ((BTextField) decoder
-						.getObject("normalCBTF"));
-				BTextField looseShapeCBTF = ((BTextField) decoder
-						.getObject("looseShapeCBTF"));
-				BTextField strictShapeCBTF = ((BTextField) decoder
-						.getObject("strictShapeCBTF"));
+				BTextField normalCBTF = ((BTextField) decoder.getObject("normalCBTF"));
+				BTextField looseShapeCBTF = ((BTextField) decoder.getObject("looseShapeCBTF"));
+				BTextField strictShapeCBTF = ((BTextField) decoder.getObject("strictShapeCBTF"));
 				normalCBVF = new PMValueField(normalTol, ValueField.NONE);
-				normalCBVF.setTextField((BTextField) decoder
-						.getObject("normalCBTF"));
-				looseShapeCBVF = new PMValueField(looseShapeTol,
-						ValueField.NONE);
-				looseShapeCBVF.setTextField((BTextField) decoder
-						.getObject("looseShapeCBTF"));
-				strictShapeCBVF = new PMValueField(strictShapeTol,
-						ValueField.NONE);
-				strictShapeCBVF.setTextField((BTextField) decoder
-						.getObject("strictShapeCBTF"));
-				GridContainer okCancelGrid = ((GridContainer) decoder
-						.getObject("OkCancelGrid"));
+				normalCBVF.setTextField((BTextField) decoder.getObject("normalCBTF"));
+				looseShapeCBVF = new PMValueField(looseShapeTol,ValueField.NONE);
+				looseShapeCBVF.setTextField((BTextField) decoder.getObject("looseShapeCBTF"));
+				strictShapeCBVF = new PMValueField(strictShapeTol,ValueField.NONE);
+				strictShapeCBVF.setTextField((BTextField) decoder.getObject("strictShapeCBTF"));
+				GridContainer okCancelGrid = ((GridContainer) decoder.getObject("OkCancelGrid"));
 				okButton = ((BButton) decoder.getObject("okButton"));
 				cancelButton = ((BButton) decoder.getObject("cancelButton"));
 				okButton.setText(Translate.text("polymesh:ok"));
 				cancelButton.setText(Translate.text("polymesh:cancel"));
 			} catch (IOException ex) {
-				ex.printStackTrace();
-			} finally {
-				if (is != null)
-					try {
-						is.close();
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
+                          logger.info(() -> "Error creating FindSimilarFacesDialog due " + ex.getLocalizedMessage());
 			}
 			setContent(borderContainer1);
-			normalCBVF.addEventLink(ValueChangedEvent.class, this,
-					"doTolValueChanged");
-			strictShapeCBVF.addEventLink(ValueChangedEvent.class, this,
-					"doTolValueChanged");
-			looseShapeCBVF.addEventLink(ValueChangedEvent.class, this,
-					"doTolValueChanged");
-			normalCB.addEventLink(ValueChangedEvent.class, this,
-					"doCBValueChanged");
-			strictShapeCB.addEventLink(ValueChangedEvent.class, this,
-					"doCBValueChanged");
-			looseShapeCB.addEventLink(ValueChangedEvent.class, this,
-					"doCBValueChanged");
+			normalCBVF.addEventLink(ValueChangedEvent.class, this, "doTolValueChanged");
+			strictShapeCBVF.addEventLink(ValueChangedEvent.class, this, "doTolValueChanged");
+			looseShapeCBVF.addEventLink(ValueChangedEvent.class, this, "doTolValueChanged");
+			normalCB.addEventLink(ValueChangedEvent.class, this, "doCBValueChanged");
+			strictShapeCB.addEventLink(ValueChangedEvent.class, this, "doCBValueChanged");
+			looseShapeCB.addEventLink(ValueChangedEvent.class, this, "doCBValueChanged");
 			okButton.addEventLink(CommandEvent.class, this, "doOK");
 			cancelButton.addEventLink(CommandEvent.class, this, "doCancel");
 			addEventLink(WindowClosingEvent.class, this, "doCancel");
@@ -4924,7 +4895,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 			pack();
 			UIUtilities.centerWindow(this);
 			ok = false;
-			setVisible(true);
+
 		}
 
 		private void doTolValueChanged() {
