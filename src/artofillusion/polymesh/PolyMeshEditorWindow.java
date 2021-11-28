@@ -9,10 +9,6 @@
  */
 package artofillusion.polymesh;
 
-import artofillusion.polymesh.ui.*;
-
-import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Point;
@@ -47,7 +43,6 @@ import artofillusion.SkewMeshTool;
 import artofillusion.TaperMeshTool;
 import artofillusion.TextureParameter;
 import artofillusion.ThickenMeshTool;
-import artofillusion.TriMeshBeveler;
 import artofillusion.UndoRecord;
 import artofillusion.ViewerCanvas;
 import artofillusion.animation.Joint;
@@ -4664,17 +4659,6 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		new FindSimilarEdgesDialog(selected);
 	}
 
-	@SuppressWarnings("unused")
-	private void setSubdivionLevels() {
-		new SubdivisionDialog(this);
-	}
-
-//	@SuppressWarnings("unused")
-//	private void doRenderingLevel(ValueChangedEvent ev) {
-//		((PolyMesh) objInfo.object).setRenderingSmoothLevel(((Integer) rspin
-//				.getValue()).intValue());
-//	}
-
 	private void doInteractiveLevel(ValueChangedEvent ev) {
 		((PolyMesh) objInfo.object).setInteractiveSmoothLevel(((Integer) ispin
 				.getValue()).intValue());
@@ -5538,99 +5522,6 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 		private void doOK() {
 			doApplyVF();
-			setUndoRecord(new UndoRecord(PolyMeshEditorWindow.this, false,
-					UndoRecord.COPY_OBJECT, new Object[] { mesh, prevMesh }));
-			dispose();
-		}
-	}
-
-	private class SubdivisionDialog extends BDialog {
-		private FormContainer formContainer1;
-
-		private BSpinner interactiveSpinner;
-
-		private int backInteractiveSmoothness;
-
-		private PolyMesh prevMesh;
-
-		public SubdivisionDialog(BFrame parent) {
-			super(parent, Translate.text("polymesh:subdivisionLevelDialogTitle"),
-					false);
-			PolyMesh mesh = (PolyMesh) objInfo.object;
-			backInteractiveSmoothness = mesh.getInteractiveSmoothLevel();
-			prevMesh = (PolyMesh) mesh.duplicate();
-			InputStream inputStream = null;
-			try {
-				WidgetDecoder decoder = new WidgetDecoder(getClass()
-						.getResource("interfaces/subdivision.xml").openStream());
-				BorderContainer borderContainer1 = (BorderContainer) decoder
-						.getRootObject();
-				BLabel interactiveLabel = ((BLabel) decoder
-						.getObject("interactiveLabel"));
-				interactiveLabel.setText(Translate.text("polymesh:"+interactiveLabel
-						.getText()));
-				BLabel renderingLabel = ((BLabel) decoder
-						.getObject("renderingLabel"));
-				renderingLabel.setText(Translate.text("polymesh:"+renderingLabel
-						.getText()));
-				interactiveSpinner = ((BSpinner) decoder
-						.getObject("interactiveSpinner"));
-				interactiveSpinner.setValue(new Integer(
-						backInteractiveSmoothness));
-				interactiveSpinner.addEventLink(ValueChangedEvent.class, this,
-						"doInteractiveSpinnerChanged");
-				SpinnerNumberModel model = (SpinnerNumberModel) interactiveSpinner
-						.getModel();
-				model.setMaximum(new Integer(6));
-				BLabel chooseLevelsLabel = ((BLabel) decoder
-						.getObject("chooseLevelsLabel"));
-				chooseLevelsLabel.setText(Translate.text("polymesh:"+chooseLevelsLabel
-						.getText()));
-				GridContainer okCancelGrid = ((GridContainer) decoder
-						.getObject("OkCancelGrid"));
-				BButton okButton = ((BButton) decoder.getObject("okButton"));
-				okButton.addEventLink(CommandEvent.class, this, "doOK");
-				okButton.setText(Translate.text("polymesh:ok"));
-				BButton cancelButton = ((BButton) decoder
-						.getObject("cancelButton"));
-				cancelButton.addEventLink(CommandEvent.class, this, "doCancel");
-				cancelButton.setText(Translate.text("polymesh:cancel"));
-				setContent(borderContainer1);
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			} finally {
-				try {
-					if (inputStream != null)
-						inputStream.close();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-			}
-			pack();
-			addEventLink(WindowClosingEvent.class, this, "doCancel");
-			UIUtilities.centerDialog(this,PolyMeshEditorWindow.this);
-			setVisible(true);
-
-		}
-
-		private void doCancel() {
-			PolyMesh mesh = (PolyMesh) objInfo.object;
-			mesh.setInteractiveSmoothLevel(backInteractiveSmoothness);
-			objectChanged();
-			updateImage();
-			dispose();
-		}
-
-		private void doInteractiveSpinnerChanged() {
-			PolyMesh mesh = (PolyMesh) objInfo.object;
-			mesh.setInteractiveSmoothLevel(((Integer) interactiveSpinner
-					.getValue()).intValue());
-			objectChanged();
-			updateImage();
-		}
-
-		private void doOK() {
-			PolyMesh mesh = (PolyMesh) objInfo.object;
 			setUndoRecord(new UndoRecord(PolyMeshEditorWindow.this, false,
 					UndoRecord.COPY_OBJECT, new Object[] { mesh, prevMesh }));
 			dispose();
