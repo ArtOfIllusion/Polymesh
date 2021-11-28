@@ -545,37 +545,21 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		meshMenu.add(Translate.menuItem("polymesh:centerMesh", this, "doCenterMesh"));
 		meshMenu.add(smoothMenu = Translate.menu("smoothingMethod"));
 		smoothItem = new BCheckBoxMenuItem[2];
-		smoothMenu.add(smoothItem[0] = Translate.checkboxMenuItem("none", this,
-				"smoothingChanged",
-				obj.getSmoothingMethod() == Mesh.NO_SMOOTHING));
-//		smoothMenu.add(smoothItem[1] = Translate.checkboxMenuItem("shading",
-//				this, "smoothingChanged",
-//				obj.getSmoothingMethod() == Mesh.SMOOTH_SHADING));
-		smoothMenu.add(smoothItem[1] = Translate.checkboxMenuItem(
-				"approximating", this, "smoothingChanged", obj
-						.getSmoothingMethod() == Mesh.APPROXIMATING));
+                smoothMenu.add(smoothItem[0] = Translate.checkboxMenuItem("none", this, "smoothingChanged", obj.getSmoothingMethod() == Mesh.NO_SMOOTHING));
+                smoothMenu.add(smoothItem[1] = Translate.checkboxMenuItem("approximating", this, "smoothingChanged", obj.getSmoothingMethod() == Mesh.APPROXIMATING));
 
-		meshMenu.add(meshMenuItem[0] = Translate.menuItem(
-				"polymesh:controlledSmoothing", this, "doControlledSmoothing"));
-		meshMenu.add(meshMenuItem[1] = Translate.menuItem("polymesh:smoothMesh", this,
-				"doSmoothMesh"));
-		meshMenu.add(meshMenuItem[2] = Translate.menuItem("polymesh:subdivideMesh",
-				this, "doSubdivideMesh"));
-		meshMenu.add(meshMenuItem[3] = Translate.menuItem(
-				"polymesh:thickenMeshFaceNormal", this, "doThickenMesh"));
-		meshMenu.add(meshMenuItem[4] = Translate.menuItem(
-				"polymesh:thickenMeshVertexNormal", this, "doThickenMesh"));
+                meshMenu.add(meshMenuItem[0] = Translate.menuItem("polymesh:controlledSmoothing", this, "doControlledSmoothing"));
+                meshMenu.add(meshMenuItem[1] = Translate.menuItem("polymesh:smoothMesh", this, "doSmoothMesh"));
+                meshMenu.add(meshMenuItem[2] = Translate.menuItem("polymesh:subdivideMesh", this, "doSubdivideMesh"));
+                meshMenu.add(meshMenuItem[3] = Translate.menuItem("polymesh:thickenMeshFaceNormal", this, "doThickenMesh"));
+                meshMenu.add(meshMenuItem[4] = Translate.menuItem("polymesh:thickenMeshVertexNormal", this, "doThickenMesh"));
 		BMenu mirrorMenu;
 		meshMenu.add(mirrorMenu = Translate.menu("polymesh:mirrorMesh"));
 		mirrorItem = new BMenuItem[4];
-		mirrorMenu.add(mirrorItem[0] = Translate.menuItem("polymesh:mirrorOff", this,
-				"doMirrorOff"));
-		mirrorMenu.add(mirrorItem[1] = Translate.checkboxMenuItem(
-				"polymesh:mirrorOnXY", this, "doMirrorOn", false));
-		mirrorMenu.add(mirrorItem[2] = Translate.checkboxMenuItem(
-				"polymesh:mirrorOnXZ", this, "doMirrorOn", false));
-		mirrorMenu.add(mirrorItem[3] = Translate.checkboxMenuItem(
-				"polymesh:mirrorOnYZ", this, "doMirrorOn", false));
+		mirrorMenu.add(mirrorItem[0] = Translate.menuItem("polymesh:mirrorOff", this, "doMirrorOff"));
+		mirrorMenu.add(mirrorItem[1] = Translate.checkboxMenuItem( "polymesh:mirrorOnXY", this, "doMirrorOn", false));
+		mirrorMenu.add(mirrorItem[2] = Translate.checkboxMenuItem("polymesh:mirrorOnXZ", this, "doMirrorOn", false));
+		mirrorMenu.add(mirrorItem[3] = Translate.checkboxMenuItem("polymesh:mirrorOnYZ", this, "doMirrorOn", false));
 		if ((mesh.getMirrorState() & PolyMesh.MIRROR_ON_XY) != 0)
 			((BCheckBoxMenuItem) mirrorItem[1]).setState(true);
 		if ((mesh.getMirrorState() & PolyMesh.MIRROR_ON_XZ) != 0)
@@ -584,20 +568,14 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			((BCheckBoxMenuItem) mirrorItem[3]).setState(true);
 		BMenu mirrorWholeMesh;
 		meshMenu.add(mirrorWholeMesh = Translate.menu("polymesh:mirrorWholeMesh"));
-		mirrorWholeMesh.add(Translate.menuItem("polymesh:mirrorOnXY", this,
-				"doMirrorWholeXY"));
-		mirrorWholeMesh.add(Translate.menuItem("polymesh:mirrorOnYZ", this,
-				"doMirrorWholeYZ"));
-		mirrorWholeMesh.add(Translate.menuItem("polymesh:mirrorOnXZ", this,
-				"doMirrorWholeXZ"));
-		meshMenu.add(Translate.menuItem("invertNormals", this,
-				"doInvertNormals"));
-		meshMenu.add(Translate.menuItem("meshTension", this,
-				"setTensionCommand"));
+		mirrorWholeMesh.add(Translate.menuItem("polymesh:mirrorOnXY", this, "doMirrorWholeXY"));
+		mirrorWholeMesh.add(Translate.menuItem("polymesh:mirrorOnYZ", this, "doMirrorWholeYZ"));
+		mirrorWholeMesh.add(Translate.menuItem("polymesh:mirrorOnXZ", this, "doMirrorWholeXZ"));
+		meshMenu.add(Translate.menuItem("invertNormals", this, "doInvertNormals"));
+		meshMenu.add(Translate.menuItem("meshTension", this, "setTensionCommand"));
 		meshMenu.add(Translate.menuItem("polymesh:checkMesh", this, "doCheckMesh"));
 		meshMenu.addSeparator();
-		meshMenu.add(Translate.menuItem("polymesh:saveAsTemplate", this,
-				"doSaveAsTemplate"));
+                meshMenu.add(Translate.menuItem("polymesh:saveAsTemplate", this, "doSaveAsTemplate"));
 	}
 
 	/**
