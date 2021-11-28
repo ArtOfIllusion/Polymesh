@@ -4525,7 +4525,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 				System.out.println(name + i + " selected.");
 			}
 		}
-		new CheckMeshDialog();
+		new CheckMeshDialog().setVisible(true);
 	}
 
 	private void tolerantModeChanged() {
@@ -5173,43 +5173,33 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 	 * @author Francois Guillet
 	 */
 	public class CheckMeshDialog extends BDialog {
-		private BButton dismiss;
-
-		private BTextArea textArea;
 
 		/**
 		 * Constructor for the CheckMeshDialog object
 		 */
 		public CheckMeshDialog() {
-			super(PolyMeshEditorWindow.this, Translate.text("polymesh:checkRepair"),
-					true);
+			super(PolyMeshEditorWindow.this, Translate.text("polymesh:checkRepair"),true);
 
-			BorderContainer borderContainer1 = null;
-			InputStream is = null;
-			try {
-				WidgetDecoder decoder = new WidgetDecoder(is = getClass()
-						.getResource("interfaces/check.xml").openStream());
-				borderContainer1 = (BorderContainer) decoder.getRootObject();
+			BorderContainer borderContainer = null;
+                        BButton dismiss;
+                        BTextArea textArea;
+                        
+			try(InputStream is =  getClass().getResource("interfaces/check.xml").openStream()) {
+				WidgetDecoder decoder = new WidgetDecoder(is);
+				borderContainer = (BorderContainer) decoder.getRootObject();
 				textArea = ((BTextArea) decoder.getObject("TextArea"));
 				dismiss = ((BButton) decoder.getObject("dismiss"));
 				dismiss.setText(Translate.text("polymesh:dismiss"));
 			} catch (IOException ex) {
-				ex.printStackTrace();
-			} finally {
-				if (is != null)
-					try {
-						is.close();
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
+                          logger.info(() -> "Error creating CheckMeshDialog due " + ex.getLocalizedMessage());
 			}
-			setContent(borderContainer1);
+			setContent(borderContainer);
 			dismiss.addEventLink(CommandEvent.class, this, "doDismiss");
 			pack();
 			UIUtilities.centerWindow(this);
 			PolyMesh mesh = (PolyMesh) objInfo.object;
 			textArea.append(mesh.checkMesh());
-			setVisible(true);
+			
 		}
 
 		/**
