@@ -27,7 +27,6 @@ import java.util.Iterator;
 
 import javax.swing.JFormattedTextField;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.JSpinner.NumberEditor;
 
 import artofillusion.ArtOfIllusion;
@@ -114,6 +113,7 @@ import buoy.widget.RowContainer;
 import buoy.widget.Shortcut;
 import buoy.widget.Widget;
 import buoy.xml.WidgetDecoder;
+import java.util.logging.Logger;
 
 /**
  * The PolyMeshEditorWindow class represents the window for editing PolyMesh
@@ -122,10 +122,11 @@ import buoy.xml.WidgetDecoder;
  * @author Francois Guillet
  */
 
-public class PolyMeshEditorWindow extends MeshEditorWindow implements
-		EditingWindow, PopupMenuManager, ValueWidgetOwner {
-	private Scene scene;
-
+public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWindow, PopupMenuManager, ValueWidgetOwner {
+  
+  private static final Logger logger = Logger.getLogger(PolyMeshEditorWindow.class.getName());
+	
+        private Scene scene;
 	private ToolPalette modes;
 
 	private Runnable onClose;
@@ -1137,7 +1138,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	
 	@SuppressWarnings("unused")
 	private void doSelectEdgeSmoothnessRange() {
-		EdgeSmoothnessRangeDialog dlg = new EdgeSmoothnessRangeDialog();
+          new EdgeSmoothnessRangeDialog().setVisible(true);
 	}
 
 	@SuppressWarnings("unused")
@@ -5683,7 +5684,6 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	}
 
 	private class EdgeSmoothnessRangeDialog extends BDialog {
-		private BorderContainer borderContainer1;
 
 		private BTextField minSmoothnessTF;
 		
@@ -5697,45 +5697,31 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 		private BSlider maxSmoothnessSlider;
 
-		private BButton addButton;
-
-		private BButton setButton;
-
-		private BButton cancelButton;
 		
 		private boolean[] orSel, newSel;
 
 		public EdgeSmoothnessRangeDialog() {
-			super(PolyMeshEditorWindow.this, Translate
-					.text("polymesh:smoothnessRange"), true);
+			super(PolyMeshEditorWindow.this, Translate.text("polymesh:smoothnessRange"), true);
 			orSel = new boolean[selected.length];
 			newSel = new boolean[selected.length];
 			for (int i = 0; i < selected.length; i++) {
 				orSel[i] = selected[i];
 			}
 			setSelection(newSel);
-			InputStream inputStream = null;
-			try {
-				WidgetDecoder decoder = new WidgetDecoder(
-						inputStream = getClass().getResource(
-								"interfaces/smoothnessRange.xml").openStream(),
-								PolyMeshPlugin.resources);
-				borderContainer1 = (BorderContainer) decoder.getRootObject();
-				minSmoothnessTF = ((BTextField) decoder
-						.getObject("minSmoothnessTF"));
-				minSmoothnessSlider = ((BSlider) decoder
-						.getObject("minSmoothnessSlider"));
-				maxSmoothnessTF = ((BTextField) decoder
-						.getObject("maxSmoothnessTF"));
-				maxSmoothnessSlider = ((BSlider) decoder
-						.getObject("maxSmoothnessSlider"));
+			try(InputStream inputStream = getClass().getResource("interfaces/smoothnessRange.xml").openStream()) {
+				WidgetDecoder decoder = new WidgetDecoder(inputStream, PolyMeshPlugin.resources);
+				BorderContainer borderContainer = (BorderContainer) decoder.getRootObject();
+				minSmoothnessTF = ((BTextField) decoder.getObject("minSmoothnessTF"));
+				minSmoothnessSlider = ((BSlider) decoder.getObject("minSmoothnessSlider"));
+				maxSmoothnessTF = ((BTextField) decoder.getObject("maxSmoothnessTF"));
+				maxSmoothnessSlider = ((BSlider) decoder.getObject("maxSmoothnessSlider"));
 				minSmoothnessSlider.addEventLink(ValueChangedEvent.class, this, "doMinSliderChanged");
 				maxSmoothnessSlider.addEventLink(ValueChangedEvent.class, this, "doMaxSliderChanged");
-				addButton = ((BButton) decoder.getObject("addButton"));
+				BButton addButton = (BButton) decoder.getObject("addButton");
 				addButton.addEventLink(CommandEvent.class, this, "doAdd");
-				setButton = ((BButton) decoder.getObject("setButton"));
+				BButton setButton = (BButton) decoder.getObject("setButton");
 				setButton.addEventLink(CommandEvent.class, this, "doSet");
-				cancelButton = ((BButton) decoder.getObject("cancelButton"));
+				BButton cancelButton = (BButton) decoder.getObject("cancelButton");
 				cancelButton.addEventLink(CommandEvent.class, this, "doCancel");
 				minSmoothnessVF = new PMValueField(0.0, ValueField.NONNEGATIVE);
 				minSmoothnessVF.setTextField(minSmoothnessTF);
@@ -5746,21 +5732,13 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 				maxSmoothnessSlider.setValue(100);
 				minSmoothnessVF.addEventLink(ValueChangedEvent.class, this, "doValuesChanged");
 				maxSmoothnessVF.addEventLink(ValueChangedEvent.class, this, "doValuesChanged");
-				setContent(borderContainer1);
+				setContent(borderContainer);
 				addEventLink(WindowClosingEvent.class, this, "doCancel");
 			} catch (IOException ex) {
-				ex.printStackTrace();
-			} finally {
-				try {
-					if (inputStream != null)
-						inputStream.close();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
+                          logger.info(() -> "Error creating EdgeSmoothnessRangeDialog due " + ex.getLocalizedMessage());
 			}
 			updateSelection();
 			pack();
-			setVisible(true);
 		}
 		
 		private void doMinSliderChanged() {
