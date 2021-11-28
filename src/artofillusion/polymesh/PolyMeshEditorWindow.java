@@ -1010,6 +1010,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	/**
 	 * Delete the selected points, edges, or faces from the mesh.
 	 */
+        @Override
 	public void deleteCommand() {
 		PolyMesh mesh = (PolyMesh) objInfo.object;
 
@@ -1263,6 +1264,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	/**
 	 * Cancel button selected
 	 */
+        @Override
 	protected void doCancel() {
 		oldMesh = null;
 		eventSource.removeEventLink(CopyEvent.class, this);
@@ -1272,6 +1274,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	/**
 	 * OK button selection
 	 */
+        @Override
 	protected void doOk() {
 		PolyMesh theMesh = (PolyMesh) objInfo.object;
 		if (realView)
@@ -1314,6 +1317,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * @param tool
 	 *                The new tool
 	 */
+        @Override
 	public void setTool(EditingTool tool) {
 		if (tool instanceof GenericTool) {
 			if (selectMode == modes.getSelection())
@@ -1339,6 +1343,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 *                Description of the Parameter
 	 */
 
+        @Override
 	public void adjustDeltas(Vec3 delta[]) {
 		int dist[] = getSelectionDistance();
 		int count[] = new int[delta.length];
@@ -1382,6 +1387,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	/**
 	 * Updates window menus
 	 */
+        @Override
 	public void updateMenus() {
 		super.updateMenus();
 		switch (selectMode) {
@@ -1780,6 +1786,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * @param e
 	 *                The KeyPressedEvent
 	 */
+        @Override
 	protected void keyPressed(KeyPressedEvent e) {
 		((PolyMeshViewer) getView()).keyPressed(e);
 		valueWidget.keyPressed(e);
@@ -2114,6 +2121,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		moveDirection = direction;
 		Runnable callback = new Runnable() {
 
+                        @Override
 			public void run() {
 				doMoveCallback();
 			}
@@ -2153,6 +2161,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		if (valueWidget.isActivated())
 			return;
 		Runnable callback = new Runnable() {
+                        @Override
 			public void run() {
 				doBevelEdgesCallback();
 			}
@@ -2181,6 +2190,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			return;
 		Runnable callback = new Runnable() {
 
+                        @Override
 			public void run() {
 				doBevelVerticesCallback();
 			}
@@ -2204,6 +2214,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	/**
 	 * Validate button selected
 	 */
+        @Override
 	public void doValueWidgetValidate() {
 		valueWidgetDialog.setVisible(false);
 		PolyMesh mesh = (PolyMesh) objInfo.object;
@@ -2213,6 +2224,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	/**
 	 * Cancel button selected
 	 */
+        @Override
 	public void doValueWidgetAbort() {
 		valueWidgetDialog.setVisible(false);
 		PolyMesh mesh = (PolyMesh) objInfo.object;
@@ -2224,11 +2236,13 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		updateImage();
 	}
 
+        @Override
 	public void prepareToShowValueWidget() {
 		priorValueMesh = (PolyMesh)((PolyMesh) objInfo.object).duplicate();
 		valueSelection = selected;
 	}
 	
+        @Override
 	public void showValueWidget() {
 		if (unseenValueWidgetDialog) {
 			Window main = (Window) this.getComponent();
@@ -2273,6 +2287,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			direction = Vec3.vz();
 		Runnable callback = new Runnable() {
 
+                        @Override
 			public void run() {
 				doExtrudeCallback();
 			}
@@ -2301,6 +2316,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			direction = Vec3.vz();
 		Runnable callback = new Runnable() {
 
+                        @Override
 			public void run() {
 				doExtrudeEdgeCallback();
 			}
@@ -2329,6 +2345,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			direction = Vec3.vz();
 		Runnable callback = new Runnable() {
 
+                        @Override
 			public void run() {
 				doExtrudeRegionCallback();
 			}
@@ -2360,6 +2377,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			direction = Vec3.vz();
 		Runnable callback = new Runnable() {
 
+                        @Override
 			public void run() {
 				doExtrudeEdgeRegionCallback();
 			}
@@ -2412,6 +2430,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			thickenFaces = false;
 		Runnable callback = new Runnable() {
 
+                        @Override
 			public void run() {
 				doThickenMeshCallback();
 			}
@@ -2474,6 +2493,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			return;
 		Runnable callback = new Runnable() {
 
+                        @Override
 			public void run() {
 				doInsertLoopsCallback();
 			}
@@ -2542,6 +2562,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			return;
 		Runnable callback = new Runnable() {
 
+                        @Override
 			public void run() {
 				doBringCallback();
 			}
@@ -2680,6 +2701,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			return;
 		Runnable callback = new Runnable() {
 
+                        @Override
 			public void run() {
 				doBringCallback();
 			}
@@ -2751,6 +2773,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			return;
 		Runnable callback = new Runnable() {
 
+                        @Override
 			public void run() {
 				doBringCallback();
 			}
@@ -2847,6 +2870,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			facePopupMenu.show(e);
 	}
 
+        @Override
 	public void showPopupMenu(Widget w, int x, int y) {
 		if (selectMode == POINT_MODE)
 			vertexPopupMenu.show(w, x, y);
@@ -2901,6 +2925,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		smoothness.addEventLink(ValueChangedEvent.class, new Object() {
 			void processEvent() {
 				processor.addEvent(new Runnable() {
+                                        @Override
 					public void run() {
 						float s = (float) smoothness.getValue();
 						if (s < 0)
@@ -2973,6 +2998,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * 
 	 * @return The selectionDistance valueWidget.getValue()
 	 */
+        @Override
 	public int[] getSelectionDistance() {
 		if (maxDistance != getTensionDistance() || selectionDistance == null)
 			findSelectionDistance();
@@ -3079,6 +3105,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * 
 	 * @return The selectionMode valueWidget.getValue()
 	 */
+        @Override
 	public int getSelectionMode() {
 		return selectMode;
 	}
@@ -3091,6 +3118,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * @return The selection valueWidget.getValue()
 	 */
 
+        @Override
 	public boolean[] getSelection() {
 		return selected;
 	}
@@ -3194,6 +3222,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 *                The new selectionMode valueWidget.getValue()
 	 */
 
+        @Override
 	public void setSelectionMode(int mode) {
 		PolyMesh mesh = (PolyMesh) objInfo.object;
 		MeshVertex v[] = (MeshVertex[]) mesh.getVertices();
@@ -3346,6 +3375,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * @param sel
 	 *                The new selection array
 	 */
+        @Override
 	public void setSelection(boolean sel[]) {
 		PolyMesh mesh = (PolyMesh) objInfo.object;
 		Wvertex[] verts = (Wvertex[]) mesh.getVertices();
@@ -3384,6 +3414,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * @param mesh
 	 *                The new mesh valueWidget.getValue()
 	 */
+        @Override
 	public void setMesh(Mesh mesh) {
 		PolyMesh obj = (PolyMesh) mesh;
 		setObject(obj);
@@ -3436,6 +3467,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * When the object changes, we need to rebuild the display.
 	 */
 
+        @Override
 	public void objectChanged() {
 		PolyMesh mesh = (PolyMesh) objInfo.object;
 		((PolyMesh) mesh).resetMesh();
@@ -3474,6 +3506,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	/** Get the extra texture parameter which was added to the mesh to keep track of
     face indices in the editor. */
 
+        @Override
 	public TextureParameter getFaceIndexParameter()
 	{
 		return faceIndexParam;
@@ -3482,6 +3515,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	/** Get the extra texture parameter which was added to the mesh to keep track of
     joint weighting. */
 
+        @Override
 	public TextureParameter getJointWeightParam()
 	{
 		return jointWeightParam;
@@ -3858,6 +3892,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		initSelPoints();
 		Runnable callback = new Runnable() {
 
+                        @Override
 			public void run() {
 				doScaleSelectionCallback();
 			}
@@ -3874,6 +3909,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		initSelPoints();
 		Runnable callback = new Runnable() {
 
+                        @Override
 			public void run() {
 				doScaleNormalSelectionCallback();
 			}
@@ -4160,6 +4196,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * @return The object valueWidget.getValue()
 	 */
 
+        @Override
 	public ObjectInfo getObject() {
 		return objInfo;
 	}
@@ -4422,6 +4459,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	/** Load all the preferences into memory. */
 
+        @Override
 	protected void loadPreferences() {
 		super.loadPreferences();
 		lastFreehand = preferences
@@ -4434,6 +4472,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	/** Save user settings that should be persistent between sessions. */
 
+        @Override
 	protected void savePreferences() {
 		super.savePreferences();
 		preferences.putBoolean("freehandSelection", lastFreehand);
@@ -4441,6 +4480,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		preferences.putBoolean("projectOntoSurface", lastProjectOntoSurface);
 	}
 
+        @Override
 	public void setTensionCommand() {
 		super.setTensionCommand();
 		tensionSpin.setValue(new Integer(tensionDistance));
@@ -5000,6 +5040,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			widget = w;
 		}
 
+                @Override
 		public Widget getWidget() {
 			return widget;
 		}
@@ -5434,6 +5475,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 				progressBar.setVisible(true);
 				pack();
 				unfoldThread = (new Thread() {
+                                        @Override
 					public void run() {
 						doUnfold(UnfoldStatusDialog.this);
 					}
