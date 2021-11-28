@@ -1066,8 +1066,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			}
 			mesh.deleteFaces(indices);
 		}
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 		objectChanged();
 		updateImage();
 
@@ -1077,9 +1076,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * Select the entire mesh.
 	 */
 	void selectAllCommand() {
-		setUndoRecord(new UndoRecord(this, false,
-				UndoRecord.SET_MESH_SELECTION, new Object[] { this,
-						new Integer(selectMode), selected.clone() }));
+		setUndoRecord(new UndoRecord(this, false,UndoRecord.SET_MESH_SELECTION, this, selectMode, selected.clone()));
 		for (int i = 0; i < selected.length; i++)
 			selected[i] = true;
 		setSelection(selected);
@@ -1109,9 +1106,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		boolean selectedVert[] = new boolean[dist.length];
 		Wedge edges[] = theMesh.getEdges();
 
-		setUndoRecord(new UndoRecord(this, false,
-				UndoRecord.SET_MESH_SELECTION, new Object[] { this,
-						new Integer(selectMode), selected.clone() }));
+		setUndoRecord(new UndoRecord(this, false,UndoRecord.SET_MESH_SELECTION, this, selectMode, selected.clone()));
 		for (int i = 0; i < edges.length; i++)
 			if ((dist[edges[i].vertex] == 0 || dist[edges[edges[i].hedge].vertex] == 0))
 				selectedVert[edges[i].vertex] = selectedVert[edges[edges[i].hedge].vertex] = true;
@@ -1324,9 +1319,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			if (selectMode == modes.getSelection())
 				return;
 			if (undoItem != null)
-				setUndoRecord(new UndoRecord(this, false,
-						UndoRecord.SET_MESH_SELECTION, new Object[] { this,
-								new Integer(selectMode), selected }));
+				setUndoRecord(new UndoRecord(this, false, UndoRecord.SET_MESH_SELECTION, this, selectMode, selected));
 			setSelectionMode(modes.getSelection());
 			theView[currentView].getCurrentTool().activate();
 		} else {
@@ -1815,8 +1808,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		if (selectMode == POINT_MODE) {
 			int[] indices = getIndicesFromSelection(selected);
 			theMesh.connectVertices(indices);
-			setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-					new Object[] { theMesh, prevMesh }));
+			setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, theMesh, prevMesh));
 			objectChanged();
 			updateImage();
 
@@ -1874,8 +1866,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			if (num > 0)
 				sel = mesh.divideEdges(selected, num);
 		}
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 		objectChanged();
 		if (sel != null) {
 			modes.selectTool(pointTool);
@@ -1895,8 +1886,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 */
 	private void smoothingChanged(CommandEvent ev) {
 		PolyMesh mesh = (PolyMesh) objInfo.object;
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, mesh.duplicate() }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, mesh.duplicate()));
 		Object source = ev.getWidget();
 		for (int i = 0; i < smoothItem.length; i++)
 			smoothItem[i].setState(false);
@@ -1939,13 +1929,12 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * Smoothes the mesh
 	 */
 	private void doSmoothMesh() {
-		PolyMesh mesh = (PolyMesh) objInfo.object;
-		PolyMesh prevMesh = (PolyMesh) mesh.duplicate();
-		mesh.smoothWholeMesh(-1, false, 1, true);
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
-		objectChanged();
-		updateImage();
+          PolyMesh mesh = (PolyMesh) objInfo.object;
+          PolyMesh prevMesh = (PolyMesh) mesh.duplicate();
+          mesh.smoothWholeMesh(-1, false, 1, true);
+          setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
+          objectChanged();
+          updateImage();
 
 	}
 
@@ -1959,8 +1948,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		for (int i = 0; i < selected.length; ++i)
 			selected[i] = true;
 		mesh.smooth(selected, true);
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 		objectChanged();
 		updateImage();
 
@@ -1973,8 +1961,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		PolyMesh mesh = (PolyMesh) objInfo.object;
 		PolyMesh prevMesh = (PolyMesh) mesh.duplicate();
 		mesh.smooth(selected, false);
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 		objectChanged();
 		updateImage();
 
@@ -1987,8 +1974,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		PolyMesh mesh = (PolyMesh) objInfo.object;
 		PolyMesh prevMesh = (PolyMesh) mesh.duplicate();
 		mesh.smooth(selected, true);
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 		objectChanged();
 		updateImage();
 
@@ -2221,8 +2207,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	public void doValueWidgetValidate() {
 		valueWidgetDialog.setVisible(false);
 		PolyMesh mesh = (PolyMesh) objInfo.object;
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, priorValueMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, priorValueMesh));
 	}
 
 	/**
@@ -2947,8 +2932,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 						.text("Smoothness") });
 		processor.stopProcessing();
 		if (dlg.clickedOk())
-			setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-					new Object[] { theMesh, prevMesh }));
+			setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, theMesh, prevMesh));
 		else {
 			theMesh.copyObject(prevMesh);
 			objectChanged();
@@ -3647,8 +3631,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		setSelectionMode(FACE_MODE);
 		updateMenus();
 		setSelection(newFaceSel);
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 	}
 
 	/**
@@ -3677,8 +3660,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		for (int i = prevMesh.getFaces().length; i < newFaceSel.length; ++i)
 			newFaceSel[i] = true;
 		setSelection(newFaceSel);
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 	}
 
 	/**
@@ -3743,8 +3725,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		}
 		PolyMesh prevMesh = (PolyMesh) mesh.duplicate();
 		mesh.collapseFaces(selected);
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 		objectChanged();
 		updateImage();
 	}
@@ -3762,8 +3743,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		}
 		PolyMesh prevMesh = (PolyMesh) mesh.duplicate();
 		mesh.collapseEdges(selected);
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 		objectChanged();
 		updateImage();
 	}
@@ -3788,8 +3768,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		}
 		PolyMesh prevMesh = (PolyMesh) mesh.duplicate();
 		mesh.collapseVertices(selected);
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 		objectChanged();
 		updateImage();
 	}
@@ -3814,8 +3793,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		}
 		PolyMesh prevMesh = (PolyMesh) mesh.duplicate();
 		mesh.facetVertices(selected);
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 		objectChanged();
 		updateImage();
 	}
@@ -3827,8 +3805,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		PolyMesh mesh = (PolyMesh) objInfo.object;
 		PolyMesh prevMesh = (PolyMesh) mesh.duplicate();
 		boolean[] sel = mesh.mergeEdges(selected);
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 		objectChanged();
 		setSelection(sel);
 		updateImage();
@@ -3841,8 +3818,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		PolyMesh mesh = (PolyMesh) objInfo.object;
 		PolyMesh prevMesh = (PolyMesh) mesh.duplicate();
 		boolean[] sel = mesh.mergeFaces(selected);
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 		objectChanged();
 		setSelection(sel);
 		updateImage();
@@ -3855,8 +3831,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		PolyMesh mesh = (PolyMesh) objInfo.object;
 		PolyMesh prevMesh = (PolyMesh) mesh.duplicate();
 		boolean[] sel = mesh.triangulateFaces(selected);
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 		objectChanged();
 		setSelection(sel);
 		updateImage();
@@ -3870,9 +3845,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		boolean newSel[] = new boolean[selected.length];
 		for (int i = 0; i < newSel.length; i++)
 			newSel[i] = !selected[i];
-		setUndoRecord(new UndoRecord(this, false,
-				UndoRecord.SET_MESH_SELECTION, new Object[] { this,
-						new Integer(selectMode), selected }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.SET_MESH_SELECTION, this, selectMode, selected));
 		setSelection(newSel);
 	}
 
@@ -4019,8 +3992,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		mesh.mirrorWholeMesh(mirrorOrientation);
 		objectChanged();
 		updateMenus();
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 	}
 
 	/**
@@ -4033,8 +4005,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		objectChanged();
 		updateMenus();
 		updateImage();
-		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT,
-				new Object[] { mesh, prevMesh }));
+		setUndoRecord(new UndoRecord(this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 	}
 
 	/**
@@ -5259,8 +5230,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 		private void doOK() {
 			doApplyVF();
-			setUndoRecord(new UndoRecord(PolyMeshEditorWindow.this, false,
-					UndoRecord.COPY_OBJECT, new Object[] { mesh, prevMesh }));
+			setUndoRecord(new UndoRecord(PolyMeshEditorWindow.this, false, UndoRecord.COPY_OBJECT, mesh, prevMesh));
 			dispose();
 		}
 	}
