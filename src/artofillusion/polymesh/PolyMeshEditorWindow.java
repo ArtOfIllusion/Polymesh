@@ -4966,7 +4966,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 	private class FindSimilarEdgesDialog extends BDialog {
 		private boolean[] orSelection;
 
-		private BorderContainer borderContainer1;
+		private BorderContainer borderContainer;
 
 		private BButton okButton;
 
@@ -4980,7 +4980,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 			
 			try(InputStream is = getClass().getResource("interfaces/similaredges.xml").openStream()) {
 				WidgetDecoder decoder = new WidgetDecoder(is);
-				borderContainer1 = (BorderContainer) decoder.getRootObject();
+				borderContainer = (BorderContainer) decoder.getRootObject();
 				BLabel tolerance1 = ((BLabel) decoder.getObject("tolerance1"));
 				tolerance1.setText(Translate.text("polymesh:"+tolerance1.getText()));
 				okButton = ((BButton) decoder.getObject("okButton"));
@@ -4993,9 +4993,9 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 				okButton.setText(Translate.text("polymesh:ok"));
 				cancelButton.setText(Translate.text("polymesh:cancel"));
 			} catch (IOException ex) {
-				ex.printStackTrace();
+                          logger.info(() -> "Error creating FindSimilarEdgesDialog due " + ex.getLocalizedMessage());
 			}
-			setContent(borderContainer1);
+			setContent(borderContainer);
 			toleranceVF.addEventLink(ValueChangedEvent.class, this, "doTolValueChanged");
 			okButton.addEventLink(CommandEvent.class, this, "doOK");
 			cancelButton.addEventLink(CommandEvent.class, this, "doCancel");
