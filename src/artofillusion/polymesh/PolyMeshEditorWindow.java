@@ -504,50 +504,29 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		editMenu = Translate.menu("edit");
 		menubar.add(editMenu);
 		editMenuItem = new BMenuItem[12];
-		editMenu
-				.add(undoItem = Translate.menuItem("undo", this, "undoCommand"));
-		editMenu
-				.add(redoItem = Translate.menuItem("redo", this, "redoCommand"));
+		editMenu.add(undoItem = Translate.menuItem("undo", this, "undoCommand"));
+		editMenu.add(redoItem = Translate.menuItem("redo", this, "redoCommand"));
 		editMenu.addSeparator();
 		editMenu.add(Translate.menuItem("polymesh:copy", this, "doCopy"));
-		editMenu
-				.add(pasteItem = Translate.menuItem("polymesh:paste", this, "doPaste"));
+		editMenu.add(pasteItem = Translate.menuItem("polymesh:paste", this, "doPaste"));
 		if (clipboardMesh == null)
 			pasteItem.setEnabled(false);
 		editMenu.addSeparator();
-		editMenu.add(editMenuItem[0] = Translate.menuItem("clear", this,
-				"deleteCommand"));
-		editMenu.add(editMenuItem[1] = Translate.menuItem("selectAll", this,
-				"selectAllCommand"));
-		editMenu.add(editMenuItem[2] = Translate.menuItem("polymesh:showNormal", this,
-				"bringNormal"));
-		editMenu.add(editMenuItem[3] = Translate.menuItem("extendSelection",
-				this, "extendSelectionCommand"));
-		editMenu.add(Translate.menuItem("invertSelection", this,
-				"invertSelectionCommand"));
-		editMenu.add(editMenuItem[4] = Translate.menuItem("polymesh:scaleSelection",
-				this, "scaleSelectionCommand"));
-		editMenu.add(editMenuItem[5] = Translate.menuItem("polymesh:scaleNormal",
-				this, "scaleNormalSelectionCommand"));
-		editMenu
-				.add(editMenuItem[6] = Translate.checkboxMenuItem(
-						"tolerantSelection", this, "tolerantModeChanged",
-						lastTolerant));
-		editMenu
-				.add(editMenuItem[7] = Translate.checkboxMenuItem(
-						"freehandSelection", this, "freehandModeChanged",
-						lastFreehand));
-		editMenu.add(editMenuItem[8] = Translate.checkboxMenuItem(
-				"projectOntoSurface", this, "projectModeChanged",
-				lastProjectOntoSurface));
+                editMenu.add(editMenuItem[0] = Translate.menuItem("clear", this, "deleteCommand"));
+                editMenu.add(editMenuItem[1] = Translate.menuItem("selectAll", this, "selectAllCommand"));
+                editMenu.add(editMenuItem[2] = Translate.menuItem("polymesh:showNormal", this, "bringNormal"));
+                editMenu.add(editMenuItem[3] = Translate.menuItem("extendSelection", this, "extendSelectionCommand"));
+                editMenu.add(Translate.menuItem("invertSelection", this, "invertSelectionCommand"));
+                editMenu.add(editMenuItem[4] = Translate.menuItem("polymesh:scaleSelection", this, "scaleSelectionCommand"));
+                editMenu.add(editMenuItem[5] = Translate.menuItem("polymesh:scaleNormal", this, "scaleNormalSelectionCommand"));
+                editMenu.add(editMenuItem[6] = Translate.checkboxMenuItem("tolerantSelection", this, "tolerantModeChanged", lastTolerant));
+                editMenu.add(editMenuItem[7] = Translate.checkboxMenuItem("freehandSelection", this, "freehandModeChanged", lastFreehand));
+                editMenu.add(editMenuItem[8] = Translate.checkboxMenuItem("projectOntoSurface", this, "projectModeChanged", lastProjectOntoSurface));
 		editMenu.addSeparator();
-		editMenu.add(editMenuItem[9] = Translate.menuItem("hideSelection",
-				this, "doHideSelection"));
-		editMenu.add(editMenuItem[10] = Translate.menuItem("showAll", this,
-				"doShowAll"));
+		editMenu.add(editMenuItem[9] = Translate.menuItem("hideSelection", this, "doHideSelection"));
+		editMenu.add(editMenuItem[10] = Translate.menuItem("showAll", this, "doShowAll"));
 		editMenu.addSeparator();
-		editMenu.add(Translate.menuItem("polymesh:editDisplayProperties", this,
-				"doEditProperties"));
+		editMenu.add(Translate.menuItem("polymesh:editDisplayProperties", this, "doEditProperties"));
 	}
 
 	/**
