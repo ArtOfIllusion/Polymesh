@@ -3251,7 +3251,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 	 * Bevel properties settings
 	 */
 	private void doBevelProperties() {
-		BevelPropertiesDialog dlg = new BevelPropertiesDialog();
+          new BevelPropertiesDialog().setVisible(true);
 	}
 
 	/**
@@ -5106,13 +5106,9 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 	private class BevelPropertiesDialog extends BDialog {
 		private BorderContainer borderContainer1;
 
-		private FormContainer formContainer1;
-
 		private PMValueField areaLimitFieldVF;
 
 		private BCheckBox applyCB;
-
-		private GridContainer gridContainer1;
 
 		private BButton okButton;
 
@@ -5123,38 +5119,27 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 		 */
 		public BevelPropertiesDialog() {
 			super(PolyMeshEditorWindow.this, Translate.text("polymesh:bevelPropertiesTitle"), true);
-			InputStream is = null;
-			try {
-				WidgetDecoder decoder = new WidgetDecoder(getClass()
-						.getResource("interfaces/bevelArea.xml").openStream());
+			
+			try(InputStream is = getClass().getResource("interfaces/bevelArea.xml").openStream()) {
+				WidgetDecoder decoder = new WidgetDecoder(is);
 				borderContainer1 = (BorderContainer) decoder.getRootObject();
 				BLabel areaLimit = ((BLabel) decoder.getObject("areaLimit"));
 				areaLimit.setText(Translate.text("polymesh:"+areaLimit.getText()));
-				areaLimitFieldVF = new PMValueField(PolyMesh.edgeLengthLimit,
-						ValueField.NONE);
-				areaLimitFieldVF.setTextField((BTextField) decoder
-						.getObject("areaLimitField"));
+				areaLimitFieldVF = new PMValueField(PolyMesh.edgeLengthLimit,ValueField.NONE);
+				areaLimitFieldVF.setTextField((BTextField) decoder.getObject("areaLimitField"));
 				applyCB = ((BCheckBox) decoder.getObject("applyCB"));
 				applyCB.setText(Translate.text("polymesh:"+applyCB.getText()));
 				applyCB.setState(PolyMesh.applyEdgeLengthLimit);
-				BLabel bevelAreaLabel = ((BLabel) decoder
-						.getObject("bevelAreaLabel"));
-				bevelAreaLabel.setText(Translate.text("polymesh:"+bevelAreaLabel
-						.getText()));
+				BLabel bevelAreaLabel = ((BLabel) decoder.getObject("bevelAreaLabel"));
+				bevelAreaLabel.setText(Translate.text("polymesh:"+bevelAreaLabel.getText()));
 				okButton = ((BButton) decoder.getObject("okButton"));
 				okButton.setText(Translate.text("polymesh:ok"));
 				cancelButton = ((BButton) decoder.getObject("cancelButton"));
 				cancelButton.setText(Translate.text("polymesh:cancel"));
 			} catch (IOException ex) {
-				ex.printStackTrace();
-			} finally {
-				if (is != null)
-					try {
-						is.close();
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
+                          logger.info(() -> "Error creating BevelPropertiesDialog due " + ex.getLocalizedMessage());
 			}
+                        
 			setContent(borderContainer1);
 			okButton.addEventLink(CommandEvent.class, this, "doOK");
 			cancelButton.addEventLink(CommandEvent.class, this, "doCancel");
