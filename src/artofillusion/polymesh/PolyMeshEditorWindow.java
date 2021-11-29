@@ -254,11 +254,11 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	private BDialog valueWidgetDialog;
 
 	private final BMenuItem extrudeItem = Translate.menuItem("polymesh:extrudeNormal", this, "doExtrudeNormal");
-        private BMenuItem[] extrudeEdgeItem;
+        private final BMenuItem extrudeEdgeItem = Translate.menuItem("polymesh:extrudeNormal", this, "doExtrudeEdgeNormal");
         
 	private BMenuItem[] extrudeRegionItem, extrudeEdgeRegionItem;
 
-	private BMenuItem[] popupExtrudeEdgeItem;
+	private final BMenuItem popupExtrudeEdgeItem = Translate.menuItem("polymesh:extrudeNormal", this, "doExtrudeEdgeNormal");
 
 	private BMenuItem[] popupExtrudeRegionItem, popupExtrudeEdgeRegionItem;
 
@@ -663,14 +663,16 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		((BMenu) edgeMenuItem[1]).add(Translate.menuItem("polymesh:z", this,"doMoveEdgesZ"));
 		edgeMenu.addSeparator();
 		edgeMenu.add(edgeMenuItem[2] = Translate.menu("polymesh:extrude"));
-		extrudeEdgeItem = new BMenuItem[4];
-		extrudeEdgeRegionItem = new BMenuItem[4];
-		((BMenu) edgeMenuItem[2]).add(extrudeEdgeItem[0] = Translate.menuItem("polymesh:extrudeNormal", this, "doExtrudeEdge"));
-		((BMenu) edgeMenuItem[2]).add(extrudeEdgeItem[1] = Translate.menuItem("polymesh:xExtrude", this, "doExtrudeEdge"));
-		((BMenu) edgeMenuItem[2]).add(extrudeEdgeItem[2] = Translate.menuItem("polymesh:yExtrude", this, "doExtrudeEdge"));
-		((BMenu) edgeMenuItem[2]).add(extrudeEdgeItem[3] = Translate.menuItem("polymesh:zExtrude", this, "doExtrudeEdge"));
-		singleNormalShortcut = extrudeEdgeItem[0].getShortcut();
+		
+                		
+		((BMenu) edgeMenuItem[2]).add(extrudeEdgeItem);
+		((BMenu) edgeMenuItem[2]).add(Translate.menuItem("polymesh:xExtrude", this, "doExtrudeEdgeX"));
+		((BMenu) edgeMenuItem[2]).add(Translate.menuItem("polymesh:yExtrude", this, "doExtrudeEdgeY"));
+		((BMenu) edgeMenuItem[2]).add(Translate.menuItem("polymesh:zExtrude", this, "doExtrudeEdgeZ"));
+		singleNormalShortcut = extrudeEdgeItem.getShortcut();
+                
 		edgeMenu.add(edgeMenuItem[3] = Translate.menu("polymesh:extrudeRegion"));
+                extrudeEdgeRegionItem = new BMenuItem[4];
 		((BMenu) edgeMenuItem[3]).add(extrudeEdgeRegionItem[0] = Translate.menuItem("polymesh:extrudeRegionNormal", this, "doExtrudeEdgeRegion"));
 		((BMenu) edgeMenuItem[3]).add(extrudeEdgeRegionItem[1] = Translate.menuItem("polymesh:xExtrude", this, "doExtrudeEdgeRegion"));
 		((BMenu) edgeMenuItem[3]).add(extrudeEdgeRegionItem[2] = Translate.menuItem("polymesh:yExtrude", this, "doExtrudeEdgeRegion"));
@@ -723,12 +725,13 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		((BMenu) edgePopupMenuItem[1]).add(Translate.menuItem("polymesh:z", this,"doMoveEdgesZ"));
 		edgePopupMenu.addSeparator();
 		edgePopupMenu.add(edgePopupMenuItem[2] = Translate.menu("polymesh:extrude"));
-		popupExtrudeEdgeItem = new BMenuItem[4];
+		
 		popupExtrudeEdgeRegionItem = new BMenuItem[4];
-		((BMenu) edgePopupMenuItem[2]).add(popupExtrudeEdgeItem[0] = Translate.menuItem("polymesh:extrudeNormal", this, "doExtrudeEdge"));
-		((BMenu) edgePopupMenuItem[2]).add(popupExtrudeEdgeItem[1] = Translate.menuItem("polymesh:xExtrude", this, "doExtrudeEdge"));
-		((BMenu) edgePopupMenuItem[2]).add(popupExtrudeEdgeItem[2] = Translate.menuItem("polymesh:yExtrude", this, "doExtrudeEdge"));
-		((BMenu) edgePopupMenuItem[2]).add(popupExtrudeEdgeItem[3] = Translate.menuItem("polymesh:zExtrude", this, "doExtrudeEdge"));
+		((BMenu) edgePopupMenuItem[2]).add(popupExtrudeEdgeItem);
+		((BMenu) edgePopupMenuItem[2]).add(Translate.menuItem("polymesh:xExtrude", this, "doExtrudeEdgeX"));
+		((BMenu) edgePopupMenuItem[2]).add(Translate.menuItem("polymesh:yExtrude", this, "doExtrudeEdgeY"));
+		((BMenu) edgePopupMenuItem[2]).add(Translate.menuItem("polymesh:zExtrude", this, "doExtrudeEdgeZ"));
+                
 		edgePopupMenu.add(edgePopupMenuItem[3] = Translate.menu("polymesh:extrudeRegion"));
 		((BMenu) edgePopupMenuItem[3]).add(popupExtrudeEdgeRegionItem[0] = Translate.menuItem("polymesh:extrudeRegionNormal", this, "doExtrudeEdgeRegion"));
 		((BMenu) edgePopupMenuItem[3]).add(popupExtrudeEdgeRegionItem[1] = Translate.menuItem("polymesh:xExtrude", this, "doExtrudeEdgeRegion"));
@@ -1403,7 +1406,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		case EDGE_MODE:
 			vertexMenu.setEnabled(false);
 			edgeMenu.setEnabled(true);
-			extrudeEdgeItem[0].setShortcut(singleNormalShortcut);
+			extrudeEdgeItem.setShortcut(singleNormalShortcut);
 			extrudeEdgeRegionItem[0].setShortcut(groupNormalShortcut);
 			extrudeItem.setShortcut(null);
 			extrudeRegionItem[0].setShortcut(null);
@@ -1415,7 +1418,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			faceMenu.setEnabled(true);
 			extrudeItem.setShortcut(singleNormalShortcut);
 			extrudeRegionItem[0].setShortcut(groupNormalShortcut);
-			extrudeEdgeItem[0].setShortcut(null);
+			extrudeEdgeItem.setShortcut(null);
 			extrudeEdgeRegionItem[0].setShortcut(null);
 			break;
 		}
@@ -2275,28 +2278,38 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
         }
         
 	/**
-	 * Edge extrusion
-	 * 
-	 * @param ev
-	 *                The command event
+	 * Edge extrusion along normal
 	 */
-	private void doExtrudeEdge(CommandEvent ev) {
-
-		if (valueWidget.isActivated())
-			return;
-		Widget w = ev.getWidget();
-		if (w == extrudeEdgeItem[0] || w == popupExtrudeEdgeItem[0])
-			direction = null;
-		else if (w == extrudeEdgeItem[1] || w == popupExtrudeEdgeItem[1])
-			direction = Vec3.vx();
-		else if (w == extrudeEdgeItem[2] || w == popupExtrudeEdgeItem[2])
-			direction = Vec3.vy();
-		else if (w == extrudeEdgeItem[3] || w == popupExtrudeEdgeItem[3])
-			direction = Vec3.vz();
-		
-		valueWidget.activate(this::doExtrudeEdgeCallback);
+	private void doExtrudeEdgeNormal() {
+          if (valueWidget.isActivated()) return;
+          direction = null;
+          valueWidget.activate(this::doExtrudeEdgeCallback);
 	}
-
+	/**
+	 * Edge extrusion along X axis
+	 */
+	private void doExtrudeEdgeX() {
+          if (valueWidget.isActivated()) return;
+          direction = Vec3.vx();
+          valueWidget.activate(this::doExtrudeEdgeCallback);
+	}
+	/**
+	 * Edge extrusion along Y axis
+	 */
+	private void doExtrudeEdgY() {
+          if (valueWidget.isActivated()) return;
+          direction = Vec3.vy();
+          valueWidget.activate(this::doExtrudeEdgeCallback);
+	}
+	/**
+	 * Edge extrusion along Z axis
+	 */
+	private void doExtrudeEdgeZ() {
+          if (valueWidget.isActivated()) return;
+          direction = Vec3.vz();
+          valueWidget.activate(this::doExtrudeEdgeCallback);
+	}
+        
 	/**
 	 * Region extrusion
 	 * 
