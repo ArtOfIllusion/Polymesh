@@ -828,7 +828,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
                 facePopupMenu.add(facePopupMenuItem[7] = Translate.menuItem("polymesh:triangulate", this, "doTriangulateFaces"));
                 facePopupMenu.add(facePopupMenuItem[8] = Translate.menuItem("polymesh:outlineFaces", this, "doOutlineFaces"));
                 facePopupMenu.addSeparator();
-                facePopupMenu.add(facePopupMenuItem[9] = Translate.menuItem("polymesh:parameters", this, "setParametersCommand"));
+                facePopupMenu.add(facePopupMenuItem[9] = Translate.menuItem("parameters", this, "setParametersCommand"));
                 facePopupMenu.add(facePopupMenuItem[10] = Translate.menuItem("polymesh:findSimilar", this, "doFindSimilarFaces"));
 	}
 
