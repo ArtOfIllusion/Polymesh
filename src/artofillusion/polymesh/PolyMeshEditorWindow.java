@@ -1186,7 +1186,9 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
         public void doSelectRingInteractive() {
           PolyMesh mesh = (PolyMesh) objInfo.object;
           DivideDialog dlg = new DivideDialog();
-          boolean[] ring = mesh.findEdgeStrips(selected, dlg.getNumber());
+          int counter = dlg.getNumber();
+          if(counter < 0) return;
+          boolean[] ring = mesh.findEdgeStrips(selected, counter);
           if(ring != null) setSelection(ring);
           
         }
