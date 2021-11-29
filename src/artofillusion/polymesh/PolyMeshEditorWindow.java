@@ -144,7 +144,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	private BMenu vertexMenu;
 
-	private BPopupMenu vertexPopupMenu;
+	private final BPopupMenu vertexPopupMenu = new BPopupMenu();
 
 	private MenuWidget[] vertexMenuItem;
 
@@ -152,7 +152,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	private BMenu edgeMenu;
 
-	private BPopupMenu edgePopupMenu;
+	private final BPopupMenu edgePopupMenu = new BPopupMenu();
 
 	private MenuWidget[] edgeMenuItem;
 
@@ -162,7 +162,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	private BMenu faceMenu;
 
-	private BPopupMenu facePopupMenu;
+	private final BPopupMenu facePopupMenu = new BPopupMenu();
 
 	private MenuWidget[] faceMenuItem;
 
@@ -610,7 +610,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
                 vertexMenu.add(vertexMenuItem[14] = Translate.menuItem("parameters", this, "setParametersCommand"));
                 vertexMenu.addSeparator();
                 vertexMenu.add(vertexMenuItem[15] = Translate.menuItem("polymesh:selectCorners", this, "doSelectCorners"));
-                vertexPopupMenu = new BPopupMenu();
+                
                 vertexPopupMenuItem = new MenuWidget[16];
                 vertexPopupMenu.add(vertexPopupMenuItem[0] = Translate.menuItem("polymesh:connect", this, "doConnectVertices"));
                 vertexPopupMenu.add(vertexPopupMenuItem[1] = Translate.menu("polymesh:moveAlong"));
@@ -706,7 +706,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		edgeMenu.addSeparator();
 		edgeMenu.add(edgeMenuItem[21] = Translate.menuItem("polymesh:bevelProperties",this, "doBevelProperties"));
 
-		edgePopupMenu = new BPopupMenu();
+		
 		edgePopupMenuItem = new MenuWidget[22];
 		edgePopupMenu.add(edgePopupMenuItem[0] = Translate.menu("polymesh:divide"));
 		popupDivideMenuItem = new BMenuItem[5];
@@ -801,7 +801,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
                 faceMenu.add(faceMenuItem[9] = Translate.menuItem("parameters", this, "setParametersCommand"));
                 faceMenu.add(faceMenuItem[10] = Translate.menuItem("polymesh:findSimilar", this, "doFindSimilarFaces"));
                 menubar.add(faceMenu);
-                facePopupMenu = new BPopupMenu();
+                
                 facePopupMenuItem = new MenuWidget[11];
                 facePopupMenu.add(facePopupMenuItem[0] = Translate.menu("polymesh:moveAlong"));
                 ((BMenu) facePopupMenuItem[0]).add(Translate.menuItem("polymesh:normal", this, "doMoveFacesNormal"));
@@ -2747,24 +2747,16 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		updateImage();
 
 	}
-
-	public void triggerPopupEvent(WidgetMouseEvent e) {
-		if (selectMode == POINT_MODE)
-			vertexPopupMenu.show(e);
-		else if (selectMode == EDGE_MODE)
-			edgePopupMenu.show(e);
-		else
-			facePopupMenu.show(e);
+        
+        private final Map<Integer, BPopupMenu> modeToMenu = Map.of(POINT_MODE, vertexPopupMenu, EDGE_MODE, edgePopupMenu, FACE_MODE, facePopupMenu);
+        
+	public void triggerPopupEvent(WidgetMouseEvent event) {
+          modeToMenu.get(selectMode).show(event);
 	}
 
         @Override
-	public void showPopupMenu(Widget w, int x, int y) {
-		if (selectMode == POINT_MODE)
-			vertexPopupMenu.show(w, x, y);
-		else if (selectMode == EDGE_MODE)
-			edgePopupMenu.show(w, x, y);
-		else
-			facePopupMenu.show(w, x, y);
+	public void showPopupMenu(Widget widget, int x, int y) {
+          modeToMenu.get(selectMode).show(widget, x, y);;
 	}
 
 	/**
