@@ -142,7 +142,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	private BMenuItem[] mirrorItem;
 
-	private BMenu vertexMenu;
+	private final BMenu vertexMenu = Translate.menu("polymesh:vertex");
 
 	private final BPopupMenu vertexPopupMenu = new BPopupMenu();
 
@@ -150,7 +150,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	private MenuWidget[] vertexPopupMenuItem;
 
-	private BMenu edgeMenu;
+	private final BMenu edgeMenu = Translate.menu("polymesh:edge");
 
 	private final BPopupMenu edgePopupMenu = new BPopupMenu();
 
@@ -160,13 +160,13 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	private BMenuItem[] divideMenuItem, popupDivideMenuItem;
 
-	private BMenu faceMenu;
+	private BMenu faceMenu = Translate.menu("polymesh:face");
 
 	private final BPopupMenu facePopupMenu = new BPopupMenu();
 
-	private MenuWidget[] faceMenuItem;
+	private BMenuItem faceFindSimilarMenuItem;
 
-	private MenuWidget[] facePopupMenuItem;
+	private BMenuItem faceFindSimilarPopupMenuItem;
 
 	private BMenu skeletonMenu;
 
@@ -576,7 +576,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * Builds the vertex menu
 	 */
 	void createVertexMenu() {
-                vertexMenu = Translate.menu("polymesh:vertex");
+                
                 menubar.add(vertexMenu);
                 vertexMenuItem = new MenuWidget[16];
                 vertexMenu.add(vertexMenuItem[0] = Translate.menuItem("polymesh:connect", this, "doConnectVertices"));
@@ -639,7 +639,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * 
 	 */
 	void createEdgeMenu() {
-		edgeMenu = Translate.menu("polymesh:edge");
+		
 		menubar.add(edgeMenu);
 		edgeMenuItem = new MenuWidget[22];
 		edgeMenu.add(edgeMenuItem[0] = Translate.menu("polymesh:divide"));
@@ -769,68 +769,73 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * 
 	 */
 	void createFaceMenu() {
-		faceMenu = Translate.menu("polymesh:face");
-		faceMenuItem = new MenuWidget[11];
-		faceMenu.add(faceMenuItem[0] = Translate.menu("polymesh:moveAlong"));
-                ((BMenu) faceMenuItem[0]).add(Translate.menuItem("polymesh:normal", this, "doMoveFacesNormal"));
-                ((BMenu) faceMenuItem[0]).add(Translate.menuItem("polymesh:x", this, "doMoveFacesX"));
-                ((BMenu) faceMenuItem[0]).add(Translate.menuItem("polymesh:y", this, "doMoveFacesY"));
-                ((BMenu) faceMenuItem[0]).add(Translate.menuItem("polymesh:z", this, "doMoveFacesZ"));
-                faceMenu.add(faceMenuItem[1] = Translate.menu("polymesh:extrude"));
+
+                BMenu moveAlong = Translate.menu("polymesh:moveAlong");
+                moveAlong.add(Translate.menuItem("polymesh:normal", this, "doMoveFacesNormal"));
+                moveAlong.add(Translate.menuItem("polymesh:x", this, "doMoveFacesX"));
+                moveAlong.add(Translate.menuItem("polymesh:y", this, "doMoveFacesY"));
+                moveAlong.add(Translate.menuItem("polymesh:z", this, "doMoveFacesZ"));
+                faceMenu.add(moveAlong);
                 
-                                
-                ((BMenu) faceMenuItem[1]).add(extrudeItem);
-                ((BMenu) faceMenuItem[1]).add(Translate.menuItem("polymesh:xExtrude", this, "doExtrudeX"));
-                ((BMenu) faceMenuItem[1]).add(Translate.menuItem("polymesh:yExtrude", this, "doExtrudeY"));
-                ((BMenu) faceMenuItem[1]).add(Translate.menuItem("polymesh:zExtrude", this, "doExtrudeZ"));
-                faceMenu.add(faceMenuItem[2] = Translate.menu("polymesh:extrudeRegion"));
+                BMenu extrude = Translate.menu("polymesh:extrude");                
+                extrude.add(extrudeItem);
+                extrude.add(Translate.menuItem("polymesh:xExtrude", this, "doExtrudeX"));
+                extrude.add(Translate.menuItem("polymesh:yExtrude", this, "doExtrudeY"));
+                extrude.add(Translate.menuItem("polymesh:zExtrude", this, "doExtrudeZ"));
+                faceMenu.add(extrude);
                 
-                ((BMenu) faceMenuItem[2]).add(extrudeRegionItem);
-                ((BMenu) faceMenuItem[2]).add(Translate.menuItem("polymesh:xExtrude", this, "doExtrudeRegionX"));
-                ((BMenu) faceMenuItem[2]).add(Translate.menuItem("polymesh:yExtrude", this, "doExtrudeRegionY"));
-                ((BMenu) faceMenuItem[2]).add(Translate.menuItem("polymesh:zExtrude", this, "doExtrudeRegionZ"));
+                BMenu extrudeRegion = Translate.menu("polymesh:extrudeRegion");
+                extrudeRegion.add(extrudeRegionItem);
+                extrudeRegion.add(Translate.menuItem("polymesh:xExtrude", this, "doExtrudeRegionX"));
+                extrudeRegion.add(Translate.menuItem("polymesh:yExtrude", this, "doExtrudeRegionY"));
+                extrudeRegion.add(Translate.menuItem("polymesh:zExtrude", this, "doExtrudeRegionZ"));
+                
+                faceMenu.add(extrudeRegion);
                 faceMenu.addSeparator();
                 
-                faceMenu.add(faceMenuItem[3] = Translate.menuItem("polymesh:smoothFaces", this, "doSmoothFaces"));
-                faceMenu.add(faceMenuItem[4] = Translate.menuItem("polymesh:subdivideFaces", this, "doSubdivideFaces"));
-                faceMenu.add(faceMenuItem[5] = Translate.menuItem("polymesh:collapse", this, "doCollapseFaces"));
-                faceMenu.add(faceMenuItem[6] = Translate.menuItem("polymesh:merge", this, "doMergeFaces"));
-                faceMenu.add(faceMenuItem[7] = Translate.menuItem("polymesh:triangulate", this, "doTriangulateFaces"));
-                faceMenu.add(faceMenuItem[8] = Translate.menuItem("polymesh:outlineFaces", this, "doOutlineFaces"));
+                faceMenu.add(Translate.menuItem("polymesh:smoothFaces", this, "doSmoothFaces"));
+                faceMenu.add(Translate.menuItem("polymesh:subdivideFaces", this, "doSubdivideFaces"));
+                faceMenu.add(Translate.menuItem("polymesh:collapse", this, "doCollapseFaces"));
+                faceMenu.add(Translate.menuItem("polymesh:merge", this, "doMergeFaces"));
+                faceMenu.add(Translate.menuItem("polymesh:triangulate", this, "doTriangulateFaces"));
+                faceMenu.add(Translate.menuItem("polymesh:outlineFaces", this, "doOutlineFaces"));
                 faceMenu.addSeparator();
-                faceMenu.add(faceMenuItem[9] = Translate.menuItem("parameters", this, "setParametersCommand"));
-                faceMenu.add(faceMenuItem[10] = Translate.menuItem("polymesh:findSimilar", this, "doFindSimilarFaces"));
+                faceMenu.add(Translate.menuItem("parameters", this, "setParametersCommand"));
+                faceMenu.add(faceFindSimilarMenuItem = Translate.menuItem("polymesh:findSimilar", this, "doFindSimilarFaces"));
                 menubar.add(faceMenu);
                 
-                facePopupMenuItem = new MenuWidget[11];
-                facePopupMenu.add(facePopupMenuItem[0] = Translate.menu("polymesh:moveAlong"));
-                ((BMenu) facePopupMenuItem[0]).add(Translate.menuItem("polymesh:normal", this, "doMoveFacesNormal"));
-                ((BMenu) facePopupMenuItem[0]).add(Translate.menuItem("polymesh:x", this, "doMoveFacesX"));
-                ((BMenu) facePopupMenuItem[0]).add(Translate.menuItem("polymesh:y", this, "doMoveFacesY"));
-                ((BMenu) facePopupMenuItem[0]).add(Translate.menuItem("polymesh:z", this, "doMoveFacesZ"));
-                facePopupMenu.add(facePopupMenuItem[1] = Translate.menu("polymesh:extrude"));
+                moveAlong = Translate.menu("polymesh:moveAlong");
+                moveAlong.add(Translate.menuItem("polymesh:normal", this, "doMoveFacesNormal"));
+                moveAlong.add(Translate.menuItem("polymesh:x", this, "doMoveFacesX"));
+                moveAlong.add(Translate.menuItem("polymesh:y", this, "doMoveFacesY"));
+                moveAlong.add(Translate.menuItem("polymesh:z", this, "doMoveFacesZ"));
+                facePopupMenu.add(moveAlong);
                 
-                ((BMenu) facePopupMenuItem[1]).add(Translate.menuItem("polymesh:extrudeNormal", this, "doExtrudeNormal"));
-                ((BMenu) facePopupMenuItem[1]).add(Translate.menuItem("polymesh:xExtrude", this, "doExtrudeX"));
-                ((BMenu) facePopupMenuItem[1]).add(Translate.menuItem("polymesh:yExtrude", this, "doExtrudeY"));
-                ((BMenu) facePopupMenuItem[1]).add(Translate.menuItem("polymesh:zExtrude", this, "doExtrudeZ"));
+                extrude = Translate.menu("polymesh:extrude");                
+                extrude.add(extrudeItem);
+                extrude.add(Translate.menuItem("polymesh:xExtrude", this, "doExtrudeX"));
+                extrude.add(Translate.menuItem("polymesh:yExtrude", this, "doExtrudeY"));
+                extrude.add(Translate.menuItem("polymesh:zExtrude", this, "doExtrudeZ"));
+                facePopupMenu.add(extrude);
                 
-                facePopupMenu.add(facePopupMenuItem[2] = Translate.menu("polymesh:extrudeRegion"));
-                ((BMenu) facePopupMenuItem[2]).add(Translate.menuItem("polymesh:extrudeRegionNormal", this, "doExtrudeRegionNormal"));
-                ((BMenu) facePopupMenuItem[2]).add(Translate.menuItem("polymesh:xExtrude", this, "doExtrudeRegionX"));
-                ((BMenu) facePopupMenuItem[2]).add(Translate.menuItem("polymesh:yExtrude", this, "doExtrudeRegionY"));
-                ((BMenu) facePopupMenuItem[2]).add(Translate.menuItem("polymesh:zExtrude", this, "doExtrudeRegionZ"));
+                extrudeRegion = Translate.menu("polymesh:extrudeRegion");
+                extrudeRegion.add(extrudeRegionItem);
+                extrudeRegion.add(Translate.menuItem("polymesh:xExtrude", this, "doExtrudeRegionX"));
+                extrudeRegion.add(Translate.menuItem("polymesh:yExtrude", this, "doExtrudeRegionY"));
+                extrudeRegion.add(Translate.menuItem("polymesh:zExtrude", this, "doExtrudeRegionZ"));
+                
+                facePopupMenu.add(extrudeRegion);
                 
                 facePopupMenu.addSeparator();
-                facePopupMenu.add(facePopupMenuItem[3] = Translate.menuItem("polymesh:smoothFaces", this, "doSmoothFaces"));
-                facePopupMenu.add(facePopupMenuItem[4] = Translate.menuItem("polymesh:subdivideFaces", this, "doSubdivideFaces"));
-                facePopupMenu.add(facePopupMenuItem[5] = Translate.menuItem("polymesh:collapse", this, "doCollapseFaces"));
-                facePopupMenu.add(facePopupMenuItem[6] = Translate.menuItem("polymesh:merge", this, "doMergeFaces"));
-                facePopupMenu.add(facePopupMenuItem[7] = Translate.menuItem("polymesh:triangulate", this, "doTriangulateFaces"));
-                facePopupMenu.add(facePopupMenuItem[8] = Translate.menuItem("polymesh:outlineFaces", this, "doOutlineFaces"));
+                facePopupMenu.add(Translate.menuItem("polymesh:smoothFaces", this, "doSmoothFaces"));
+                facePopupMenu.add(Translate.menuItem("polymesh:subdivideFaces", this, "doSubdivideFaces"));
+                facePopupMenu.add(Translate.menuItem("polymesh:collapse", this, "doCollapseFaces"));
+                facePopupMenu.add(Translate.menuItem("polymesh:merge", this, "doMergeFaces"));
+                facePopupMenu.add(Translate.menuItem("polymesh:triangulate", this, "doTriangulateFaces"));
+                facePopupMenu.add(Translate.menuItem("polymesh:outlineFaces", this, "doOutlineFaces"));
                 facePopupMenu.addSeparator();
-                facePopupMenu.add(facePopupMenuItem[9] = Translate.menuItem("parameters", this, "setParametersCommand"));
-                facePopupMenu.add(facePopupMenuItem[10] = Translate.menuItem("polymesh:findSimilar", this, "doFindSimilarFaces"));
+                facePopupMenu.add(Translate.menuItem("parameters", this, "setParametersCommand"));
+                facePopupMenu.add(faceFindSimilarPopupMenuItem = Translate.menuItem("polymesh:findSimilar", this, "doFindSimilarFaces"));
 	}
 
 	/**
@@ -1545,9 +1550,9 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			if (selCount == selected.length) {
 				editMenuItem[1].setEnabled(false);
 				editMenuItem[2].setEnabled(false);
-				((BMenuItem) faceMenuItem[10]).setEnabled(false);
+				faceFindSimilarMenuItem.setEnabled(false);
 				((BMenuItem) edgeMenuItem[12]).setEnabled(false);
-				((BMenuItem) facePopupMenuItem[10]).setEnabled(false);
+				faceFindSimilarPopupMenuItem.setEnabled(false);
 				((BMenuItem) edgePopupMenuItem[12]).setEnabled(false);
 			} else {
 				editMenuItem[1].setEnabled(true);
