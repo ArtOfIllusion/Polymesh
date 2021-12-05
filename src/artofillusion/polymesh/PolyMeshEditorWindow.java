@@ -604,7 +604,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
                 vertexMenu.add(vertexMenuItem[14] = Translate.menuItem("parameters", this, "setParametersCommand"));
                 vertexMenu.addSeparator();
                 vertexMenu.add(vertexMenuItem[15] = Translate.menuItem("polymesh:selectCorners", this, "doSelectCorners"));
-                
+
                 vertexPopupMenuItem = new MenuWidget[16];
                 vertexPopupMenu.add(vertexPopupMenuItem[0] = Translate.menuItem("polymesh:connect", this, "doConnectVertices"));
                 vertexPopupMenu.add(vertexPopupMenuItem[1] = Translate.menu("polymesh:moveAlong"));
@@ -1450,18 +1450,13 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		if (selCount > 0) {
 			//((RotateViewTool) altTool).setUseSelectionCenter(true);
 			any = true;
-			for (int j = 0; j < vertexMenuItem.length; ++j) {
-				((Widget) vertexMenuItem[j]).setEnabled(true);
-				((Widget) vertexPopupMenuItem[j]).setEnabled(true);
-			}
-			for (int j = 0; j < edgeMenuItem.length; ++j) {
-				((Widget) edgeMenuItem[j]).setEnabled(true);
-				((Widget) edgePopupMenuItem[j]).setEnabled(true);
-			}
-			for (int j = 0; j < faceMenuItem.length; ++j) {
-				((Widget) faceMenuItem[j]).setEnabled(true);
-				((Widget) facePopupMenuItem[j]).setEnabled(true);
-			}
+                        vertexMenu.getChildren().forEach(widget -> widget.setEnabled(true));
+                        vertexPopupMenu.getChildren().forEach(widget -> widget.setEnabled(true));
+                        edgeMenu.getChildren().forEach(widget -> widget.setEnabled(true));
+                        edgePopupMenu.getChildren().forEach(widget -> widget.setEnabled(true));
+                        faceMenu.getChildren().forEach(widget -> widget.setEnabled(true));
+                        facePopupMenu.getChildren().forEach(widget -> widget.setEnabled(true));
+                        
 			editMenuItem[0].setEnabled(true);
 			editMenuItem[2].setEnabled(true);
 			editMenuItem[3].setEnabled(true);
@@ -1514,19 +1509,14 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 				break;
 			}
 		} else {
-			//((RotateViewTool) altTool).setUseSelectionCenter(false);
-			for (int j = 0; j < vertexMenuItem.length; ++j) {
-				((Widget) vertexMenuItem[j]).setEnabled(false);
-				((Widget) vertexPopupMenuItem[j]).setEnabled(false);
-			}
-			for (int j = 0; j < edgeMenuItem.length; ++j) {
-				((Widget) edgeMenuItem[j]).setEnabled(false);
-				((Widget) edgePopupMenuItem[j]).setEnabled(false);
-			}
-			for (int j = 0; j < faceMenuItem.length; ++j) {
-				((Widget) faceMenuItem[j]).setEnabled(false);
-				((Widget) facePopupMenuItem[j]).setEnabled(false);
-			}
+			
+                        vertexMenu.getChildren().forEach(widget -> widget.setEnabled(false));
+                        vertexPopupMenu.getChildren().forEach(widget -> widget.setEnabled(false));
+                        edgeMenu.getChildren().forEach(widget -> widget.setEnabled(false));
+                        edgePopupMenu.getChildren().forEach(widget -> widget.setEnabled(false));
+                        faceMenu.getChildren().forEach(widget -> widget.setEnabled(false));
+                        facePopupMenu.getChildren().forEach(widget -> widget.setEnabled(false));
+                        
 			editMenuItem[0].setEnabled(false);
 			editMenuItem[2].setEnabled(false);
 			editMenuItem[3].setEnabled(false);
@@ -1605,13 +1595,11 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 			}
 		}
 		// ( (BMenuItem) edgeMenuItem[4] ).setEnabled( false );
-		templateItem
-				.setEnabled(theView[currentView].getTemplateImage() != null);
+		templateItem.setEnabled(theView[currentView].getTemplateImage() != null);
 		Skeleton s = mesh.getSkeleton();
 		Joint selJoint = s.getJoint(view.getSelectedJoint());
 		((BMenuItem) skeletonMenuItem[0]).setEnabled(selJoint != null);
-		((BMenuItem) skeletonMenuItem[1]).setEnabled(selJoint != null
-				&& selJoint.children.length == 0);
+		((BMenuItem) skeletonMenuItem[1]).setEnabled(selJoint != null && selJoint.children.length == 0);
 		((BMenuItem) skeletonMenuItem[2]).setEnabled(selJoint != null);
 		((BMenuItem) skeletonMenuItem[4]).setEnabled(any);
 		((BMenuItem) edgeMenuItem[14]).setEnabled(true);
@@ -2814,7 +2802,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
         @Override
 	public void showPopupMenu(Widget widget, int x, int y) {
-          modeToMenu.get(selectMode).show(widget, x, y);;
+          modeToMenu.get(selectMode).show(widget, x, y);
 	}
 
 	/**
