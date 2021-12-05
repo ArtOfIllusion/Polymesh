@@ -188,49 +188,49 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	private BCheckBox cornerCB;
 
-	private EditingTool reshapeMeshTool;
+	private EditingTool reshapeMeshTool = new MeshStandardTool(this, this);
 
 	public final static int RESHAPE_TOOL = 0;
 
 	private EditingTool altTool;
 
-	private EditingTool skewMeshTool;
+	private EditingTool skewMeshTool = new SkewMeshTool(this, this);
 
 	public final static int SKEW_TOOL = 1;
 
-	private EditingTool taperMeshTool;
+	private EditingTool taperMeshTool = new TaperMeshTool(this, this);
 
 	public final static int TAPER_TOOL = 2;
 
-	private EditingTool bevelTool;
+	private EditingTool bevelTool = new AdvancedBevelExtrudeTool(this, this);
 
 	public final static int BEVEL_TOOL = 3;
 
-	private EditingTool thickenMeshTool;
+	private EditingTool thickenMeshTool = new ThickenMeshTool(this, this);
 
 	public final static int THICKEN_TOOL = 4;
 
-	private EditingTool extrudeTool;
+	private EditingTool extrudeTool = new AdvancedExtrudeTool(this, this);
 
 	public final static int EXTRUDE_TOOL = 5;
 
-	private EditingTool knifeTool;
+	private EditingTool knifeTool = new PMKnifeTool(this, this);
 
 	public final static int KNIFE_TOOL = 6;
 
-	private EditingTool createFaceTool;
+	private EditingTool createFaceTool = new PMCreateFaceTool(this, this);
 
 	public final static int CREATE_FACE_TOOL = 7;
 
-	private EditingTool extrudeCurveTool;
+	private EditingTool extrudeCurveTool = new PMExtrudeCurveTool(this, this);
 
 	public final static int EXTRUDE_CURVE_TOOL = 8;
 
-	private EditingTool sewTool;
+	private EditingTool sewTool = new PMSewTool(this, this);
 
 	public final static int SEW_TOOL = 9;
 
-	private EditingTool skeletonTool;
+	private EditingTool skeletonTool = new SkeletonTool(this, true);
 
 	public final static int SKELETON_TOOL = 10;
 
@@ -327,6 +327,22 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	private boolean unseenValueWidgetDialog;
 
+        private final Map<Integer, EditingTool> toolsMap = new HashMap<>() {
+          {
+            put(RESHAPE_TOOL, reshapeMeshTool);
+            put(SKEW_TOOL, skewMeshTool);
+            put(TAPER_TOOL, taperMeshTool);
+            put(BEVEL_TOOL, bevelTool);
+            put(EXTRUDE_TOOL, extrudeTool);
+            put(EXTRUDE_CURVE_TOOL, extrudeCurveTool);
+            put(THICKEN_TOOL, thickenMeshTool);
+            put(CREATE_FACE_TOOL, createFaceTool);
+            put(KNIFE_TOOL, knifeTool);
+            put(SEW_TOOL, sewTool);
+            put(SKELETON_TOOL, skeletonTool);
+          }
+        };
+        
 	/**
 	 * Constructor for the PolyMeshEditorWindow object
 	 * 
@@ -366,12 +382,9 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		vertexContainer = new RowContainer();
 		edgeContainer = new RowContainer();
 		faceContainer = new RowContainer();
-		meshContainer.add(looseSelectCB = new BCheckBox(Translate
-				.text("polymesh:looseSelect"), looseSelect));
-		looseSelectCB.addEventLink(ValueChangedEvent.class, this,
-				"doLooseSelectionChanged");
-		meshContainer.add(looseSelectSpinner = new BSpinner(looseSelectValue,
-				1, 100, 1));
+		meshContainer.add(looseSelectCB = new BCheckBox(Translate.text("polymesh:looseSelect"), looseSelect));
+		looseSelectCB.addEventLink(ValueChangedEvent.class, this, "doLooseSelectionChanged");
+		meshContainer.add(looseSelectSpinner = new BSpinner(looseSelectValue,1, 100, 1));
 		looseSelectSpinner.addEventLink(ValueChangedEvent.class, this,
 				"doLooseSelectionValueChanged");
 		meshContainer.add(frontSelectCB = new BCheckBox(Translate
@@ -422,18 +435,17 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 				LayoutInfo.BOTH));
 		content.add(toolsContainer, 0, 0);
 		toolsContainer.add(tools = new ToolPalette(1, 12), 0, 0);
-		tools.addTool(defaultTool = reshapeMeshTool = new MeshStandardTool(
-				this, this));
-		tools.addTool(skewMeshTool = new SkewMeshTool(this, this));
-		tools.addTool(taperMeshTool = new TaperMeshTool(this, this));
-		tools.addTool(bevelTool = new AdvancedBevelExtrudeTool(this, this));
-		tools.addTool(extrudeTool = new AdvancedExtrudeTool(this, this));
-		tools.addTool(thickenMeshTool = new ThickenMeshTool(this, this));
-		tools.addTool(knifeTool = new PMKnifeTool(this, this));
-		tools.addTool(createFaceTool = new PMCreateFaceTool(this, this));
-		tools.addTool(extrudeCurveTool = new PMExtrudeCurveTool(this, this));
-		tools.addTool(sewTool = new PMSewTool(this, this));
-		tools.addTool(skeletonTool = new SkeletonTool(this, true));
+		tools.addTool(defaultTool = reshapeMeshTool);
+		tools.addTool(skewMeshTool);
+		tools.addTool(taperMeshTool);
+		tools.addTool(bevelTool);
+		tools.addTool(extrudeTool);
+		tools.addTool(thickenMeshTool);
+		tools.addTool(knifeTool);
+		tools.addTool(createFaceTool);
+		tools.addTool(extrudeCurveTool);
+		tools.addTool(sewTool);
+		tools.addTool(skeletonTool);
 		EditingTool metaTool;
 		tools.addTool(metaTool = new MoveViewTool(this));
 		tools.addTool(altTool = new RotateViewTool(this));
@@ -1626,7 +1638,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		level = mesh.getInteractiveSmoothLevel();
 		if (level + amount > 0) {
 			mesh.setInteractiveSmoothLevel(level + amount);
-			ispin.setValue(new Integer(level + amount));
+			ispin.setValue(level + amount);
 			objectChanged();
 			updateImage();
 		}
@@ -1668,42 +1680,11 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	}
 
+        /*
+         * Method runs from Polymesh keystrokes script
+        */
 	public void selectTool(int tool) {
-		switch (tool) {
-		case RESHAPE_TOOL:
-			tools.selectTool(reshapeMeshTool);
-			break;
-		case SKEW_TOOL:
-			tools.selectTool(skewMeshTool);
-			break;
-		case TAPER_TOOL:
-			tools.selectTool(taperMeshTool);
-			break;
-		case BEVEL_TOOL:
-			tools.selectTool(bevelTool);
-			break;
-		case EXTRUDE_TOOL:
-			tools.selectTool(extrudeTool);
-			break;
-		case EXTRUDE_CURVE_TOOL:
-			tools.selectTool(extrudeCurveTool);
-			break;
-		case THICKEN_TOOL:
-			tools.selectTool(thickenMeshTool);
-			break;
-		case CREATE_FACE_TOOL:
-			tools.selectTool(createFaceTool);
-			break;
-		case KNIFE_TOOL:
-			tools.selectTool(knifeTool);
-			break;
-		case SEW_TOOL:
-			tools.selectTool(sewTool);
-			break;
-		case SKELETON_TOOL:
-			tools.selectTool(skeletonTool);
-			break;
-		}
+          tools.selectTool(toolsMap.get(tool));
 	}
 
 	/**
