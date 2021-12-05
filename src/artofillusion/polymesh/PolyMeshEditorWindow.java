@@ -381,8 +381,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		meshContainer.add(new BLabel(Translate.text("polymesh:meshTension") + ": "));
 		tensionSpin = new BSpinner(tensionDistance, 0, 999, 1);
 		setSpinnerColumns(tensionSpin, 3);
-		tensionSpin.addEventLink(ValueChangedEvent.class, this,
-				"doTensionChanged");
+		tensionSpin.addEventLink(ValueChangedEvent.class, this, "doTensionChanged");
 		meshContainer.add(tensionSpin);
 //		levelContainer.add(new BLabel(Translate.text("polymesh:subdivisionLevels")
 //				+ ": "));
@@ -1920,16 +1919,9 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	}
 
 	private void doLevelContainerEnable() {
-		boolean enable = false;
-		PolyMesh mesh = (PolyMesh) objInfo.object;
-		if (mesh.getSmoothingMethod() == Mesh.APPROXIMATING)
-			enable = true;
-		Iterator iter = levelContainer.getChildren().iterator();
-		Widget w;
-		while (iter.hasNext()) {
-			w = (Widget) iter.next();
-			w.setEnabled(enable);
-		}
+          PolyMesh mesh = (PolyMesh) objInfo.object;		
+          boolean enable = mesh.getSmoothingMethod() == Mesh.APPROXIMATING;
+          levelContainer.getChildren().forEach(widget -> widget.setEnabled(enable));
 	}
 
 	/**
