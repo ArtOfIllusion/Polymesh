@@ -1766,16 +1766,13 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * Reloads keystroke scripts shipped with the PolyMesh plugin
 	 */
 	public void reloadKeystrokes() {
-		cleanKeystrokes();
-		try {
-			InputStream in = getClass()
-					.getResourceAsStream("/PMkeystrokes.xml");
-			KeystrokeManager.addRecordsFromXML(in);
-			in.close();
-			KeystrokeManager.saveRecords();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+          cleanKeystrokes();
+          try(InputStream in = getClass().getResourceAsStream("/PMkeystrokes.xml")) {
+            KeystrokeManager.addRecordsFromXML(in);
+            KeystrokeManager.saveRecords();
+          } catch (Exception ex) {
+            logger.info(() -> "Error reload Keystrokes due " + ex.getLocalizedMessage());
+          }
 	}
 
 	/**
