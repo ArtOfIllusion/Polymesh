@@ -2388,15 +2388,9 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * Mesh thickening
 	 */
 	private void doThickenMesh(CommandEvent ev) {
-
-		if (valueWidget.isActivated())
-			return;
-		if (ev.getWidget() == meshMenuItem[3])
-			thickenFaces = true;
-		else
-			thickenFaces = false;
-		
-		valueWidget.activate(this::doThickenMeshCallback);
+          if (valueWidget.isActivated()) return;
+          thickenFaces = ev.getWidget() == meshMenuItem[3];
+          valueWidget.activate(this::doThickenMeshCallback);
 	}
 
 	/**
