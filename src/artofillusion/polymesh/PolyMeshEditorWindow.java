@@ -586,11 +586,13 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
                 menubar.add(vertexMenu);
                 vertexMenuItem = new MenuWidget[16];
                 vertexMenu.add(vertexMenuItem[0] = Translate.menuItem("polymesh:connect", this, "doConnectVertices"));
-                vertexMenu.add(vertexMenuItem[1] = Translate.menu("polymesh:moveAlong"));
-                ((BMenu) vertexMenuItem[1]).add(Translate.menuItem("polymesh:normal", this, "doMoveVerticesNormal"));
-                ((BMenu) vertexMenuItem[1]).add(Translate.menuItem("polymesh:x", this, "doMoveVerticesX"));
-                ((BMenu) vertexMenuItem[1]).add(Translate.menuItem("polymesh:y", this, "doMoveVerticesY"));
-                ((BMenu) vertexMenuItem[1]).add(Translate.menuItem("polymesh:z", this, "doMoveVerticesZ"));
+                BMenu local = Translate.menu("polymesh:moveAlong");
+                local.add(Translate.menuItem("polymesh:normal", this, "doMoveVerticesNormal"));
+                local.add(Translate.menuItem("polymesh:x", this, "doMoveVerticesX"));
+                local.add(Translate.menuItem("polymesh:y", this, "doMoveVerticesY"));
+                local.add(Translate.menuItem("polymesh:z", this, "doMoveVerticesZ"));
+                vertexMenu.add(vertexMenuItem[1] = local);
+
                 vertexMenu.add(vertexMenuItem[2] = Translate.menuItem("polymesh:collapse", this, "doCollapseVertices"));
                 vertexMenu.add(vertexMenuItem[3] = Translate.menuItem("polymesh:facet", this, "doFacetVertices"));
                 vertexMenu.add(vertexMenuItem[4] = Translate.menuItem("polymesh:bevel", this, "doBevelVertices"));
@@ -613,11 +615,13 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
                 vertexPopupMenuItem = new MenuWidget[16];
                 vertexPopupMenu.add(vertexPopupMenuItem[0] = Translate.menuItem("polymesh:connect", this, "doConnectVertices"));
-                vertexPopupMenu.add(vertexPopupMenuItem[1] = Translate.menu("polymesh:moveAlong"));
-                ((BMenu) vertexPopupMenuItem[1]).add(Translate.menuItem("polymesh:normal", this, "doMoveVerticesNormal"));
-                ((BMenu) vertexPopupMenuItem[1]).add(Translate.menuItem("polymesh:x", this, "doMoveVerticesX"));
-                ((BMenu) vertexPopupMenuItem[1]).add(Translate.menuItem("polymesh:y", this, "doMoveVerticesY"));
-                ((BMenu) vertexPopupMenuItem[1]).add(Translate.menuItem("polymesh:z", this, "doMoveVerticesZ"));
+                local = Translate.menu("polymesh:moveAlong");
+                local.add(Translate.menuItem("polymesh:normal", this, "doMoveVerticesNormal"));
+                local.add(Translate.menuItem("polymesh:x", this, "doMoveVerticesX"));
+                local.add(Translate.menuItem("polymesh:y", this, "doMoveVerticesY"));
+                local.add(Translate.menuItem("polymesh:z", this, "doMoveVerticesZ"));
+                vertexPopupMenu.add(vertexPopupMenuItem[1] = local);
+                
                 vertexPopupMenu.add(vertexPopupMenuItem[2] = Translate.menuItem("polymesh:collapse", this, "doCollapseVertices"));
                 vertexPopupMenu.add(vertexPopupMenuItem[3] = Translate.menuItem("polymesh:facet", this, "doFacetVertices"));
                 vertexPopupMenu.add(vertexPopupMenuItem[4] = Translate.menuItem("polymesh:bevel", this, "doBevelVertices"));
