@@ -57,10 +57,10 @@ import buoy.xml.WidgetDecoder;
  */
 public class UVMappingEditorDialog extends BDialog {
 
-    private UVMappingCanvas mappingCanvas; // the mapping canvas displayed at window center
-    private BList pieceList; // the list of mesh pieces
+    private final UVMappingCanvas mappingCanvas; // the mapping canvas displayed at window center
+    private final BList pieceList; // the list of mesh pieces
     private UVMappingData mappingData; // mapping data associated to the unfolded mesh
-    private MeshPreviewer preview; // 3D textutring preview
+    private final MeshPreviewer preview; // 3D texturing preview
     protected ActionProcessor mouseProcessor;
     protected UVMappingManipulator manipulator;
     private ObjectInfo objInfo;
@@ -87,7 +87,7 @@ public class UVMappingEditorDialog extends BDialog {
 
     /* Interface variables */
 
-    private BorderContainer borderContainer1;
+   
     private BLabel componentLabel;
     private BComboBox componentCB;
     private BLabel uMinValue;
@@ -102,7 +102,7 @@ public class UVMappingEditorDialog extends BDialog {
     private BCheckBox meshTensionCB;
     private BSpinner distanceSpinner;
     private BComboBox tensionCB;
-    private BMenuBar menuBar;
+    
     private BMenuItem undoMenuItem;
     private BMenuItem redoMenuItem;
     private BMenu sendTexToMappingMenu;
@@ -195,7 +195,7 @@ public class UVMappingEditorDialog extends BDialog {
         
         try(InputStream is = getClass().getResource("interfaces/unfoldEditor.xml").openStream()) {
             WidgetDecoder decoder = new WidgetDecoder(is, PolyMeshPlugin.resources);
-            borderContainer1 = (BorderContainer) decoder.getRootObject();
+            BorderContainer borderContainer = (BorderContainer) decoder.getRootObject();
             uMinValue = ((BLabel) decoder.getObject("uMinValue"));
             uMaxValue = ((BLabel) decoder.getObject("uMaxValue"));
             vMinValue = ((BLabel) decoder.getObject("vMinValue"));
@@ -210,7 +210,7 @@ public class UVMappingEditorDialog extends BDialog {
             textureCB.addEventLink(ValueChangedEvent.class, this, "doTextureChanged");
             componentLabel = ((BLabel) decoder.getObject("componentLabel"));
             componentCB = ((BComboBox) decoder.getObject("componentCB"));
-            content.add(borderContainer1, 
+            content.add(borderContainer, 
                         BorderContainer.WEST, 
                         new LayoutInfo(LayoutInfo.CENTER, 
                                        LayoutInfo.BOTH, 
@@ -284,7 +284,7 @@ public class UVMappingEditorDialog extends BDialog {
         mappingCanvas.addEventLink(MouseScrolledEvent.class, this, "processMouseScrolled");
         manipulator = new UVMappingManipulator(mappingCanvas, this);
 
-        menuBar = new BMenuBar();
+        BMenuBar menuBar = new BMenuBar();
 
         BMenu menu = Translate.menu("polymesh:edit");
         menu.add(undoMenuItem = Translate.menuItem("undo", this, "doUndo"));
