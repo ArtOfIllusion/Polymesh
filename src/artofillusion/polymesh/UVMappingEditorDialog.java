@@ -717,20 +717,12 @@ public class UVMappingEditorDialog extends BDialog {
 
     private void processMouseDragged(final WidgetMouseEvent ev) {
         if (mouseProcessor != null)
-            mouseProcessor.addEvent(new Runnable() {
-                public void run() {
-                    doMouseDragged(ev);
-                }
-            });
+            mouseProcessor.addEvent(() -> doMouseDragged(ev));
     }
 
     private void processMouseMoved(final WidgetMouseEvent ev) {
         if (mouseProcessor != null)
-            mouseProcessor.addEvent(new Runnable() {
-                public void run() {
-                    doMouseMoved(ev);
-                }
-            });
+            mouseProcessor.addEvent(() -> doMouseMoved(ev));
     }
 
     private void processMouseReleased(WidgetMouseEvent ev) {
@@ -877,11 +869,6 @@ public class UVMappingEditorDialog extends BDialog {
         tensionDistance = ((Integer) distanceSpinner.getValue()).intValue();
         mappingCanvas.findSelectionDistance();
     }
-
-    //private void doAutoScale() {
-    //    mappingCanvas.fitRangeToAll();
-    //    mappingCanvas.repaint();
-    //}
 
     private void openImageExportDialog()
     {
