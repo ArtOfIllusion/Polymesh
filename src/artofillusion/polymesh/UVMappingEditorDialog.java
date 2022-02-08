@@ -814,15 +814,11 @@ public class UVMappingEditorDialog extends BDialog {
 
     //for debugging purposes
     private void dumpTextureIDs() {
-        ArrayList<UVMeshMapping> mappings = mappingData.getMappings();
-        UVMeshMapping mapping;
-        for (int i = 0; i < mappings.size(); i++) {
-            mapping = mappings.get(i);
-            System.out.print(i + ": ");
-            for (int j = 0; j < mapping.textures.size(); j++)
-                System.out.print(mapping.textures.get(j) + " ");
-            System.out.println("");
-        }
+        mappingData.getMappings().forEach(mapping -> {
+          mapping.textures.forEach(tex -> {
+            System.out.println("Mapping " + mapping.name + " Texture Id: " + tex);
+          });
+        });
     }
 
     /**
@@ -1306,9 +1302,7 @@ public class UVMappingEditorDialog extends BDialog {
     {
         BSpinner resolutionSpinner;
         BButton exportButton;
-        BButton closeButton;
-        BButton cancelButton;
-        RadioButtonGroup bgButtons, colorButtons;
+        
         BRadioButton transparentButton, whiteButton, texturedButton, useMappingButton, blackButton;
         BCheckBox antialiasBox, textureOnlyBox;
         ColumnContainer content, leftBox, rightBox;
@@ -1321,8 +1315,7 @@ public class UVMappingEditorDialog extends BDialog {
         ExportImageDialog(WindowWidget parent)
         {
             super(parent, true);
-            addEventLink(WindowClosingEvent.class, new Object()
-                        {void processEvent(WindowClosingEvent e) {dispose();}});
+            addEventLink(WindowClosingEvent.class, this, "dispose");
             
             LayoutInfo labelLayout  = new LayoutInfo(LayoutInfo.WEST,      LayoutInfo.NONE,       new Insets(10, 10, 0,  2), null);
             LayoutInfo valueLayout  = new LayoutInfo(LayoutInfo.WEST,      LayoutInfo.HORIZONTAL, new Insets(10,  0, 2, 10), null);
@@ -1342,7 +1335,7 @@ public class UVMappingEditorDialog extends BDialog {
             resoContainer.add(new BLabel(Translate.text("polymesh:imageResolution")), labelLayout);
             resoContainer.add(resolutionSpinner = new BSpinner(), valueLayout);
 
-            bgButtons = new RadioButtonGroup();
+            RadioButtonGroup bgButtons = new RadioButtonGroup();
             leftBox.add(new BLabel(Translate.text("polymesh:backgroundType")), headerLayout);
             leftBox.add(transparentButton = new BRadioButton(Translate.text("polymesh:transparent"), true,  bgButtons), radioLayout);
             leftBox.add(whiteButton       = new BRadioButton(Translate.text("polymesh:white"),       false, bgButtons), radioLayout);
@@ -1350,21 +1343,21 @@ public class UVMappingEditorDialog extends BDialog {
             leftBox.add(textureOnlyBox    = new BCheckBox   (Translate.text("polymesh:textureOnly"), false), radioLayout);
             textureOnlyBox.setEnabled(false);
 
-            colorButtons = new RadioButtonGroup();
+            RadioButtonGroup colorButtons = new RadioButtonGroup();
             rightBox.add(new BLabel(Translate.text("polymesh:lineProperties")), headerLayout);
             rightBox.add(antialiasBox     = new BCheckBox   (Translate.text("polymesh:softLines"),       true), radioLayout);
             rightBox.add(useMappingButton = new BRadioButton(Translate.text("polymesh:useMappingColor"), true,  colorButtons), radioLayout);
             rightBox.add(blackButton      = new BRadioButton(Translate.text("polymesh:useBlack"),        false, colorButtons), radioLayout);
 
             actionContainer.add(exportButton = new BButton(Translate.text("polymesh:exportImage")));
-            actionContainer.add(cancelButton = new BButton(Translate.text("polymesh:cancel")));
+            actionContainer.add(Translate.button("cancel", this, "close"));
 
             transparentButton.addEventLink(ValueChangedEvent.class, this, "updateDialogState");
             whiteButton.addEventLink      (ValueChangedEvent.class, this, "updateDialogState");
             texturedButton.addEventLink   (ValueChangedEvent.class, this, "updateDialogState");
             textureOnlyBox.addEventLink   (ValueChangedEvent.class, this, "updateDialogState");
 
-            cancelButton.addEventLink(CommandEvent.class, this, "close");
+            
             exportButton.addEventLink(CommandEvent.class, new Object()
             {
                 void processEvent()
