@@ -538,22 +538,20 @@ public class UVMappingEditorDialog extends BDialog {
     }
 
     private void initializeMappingsTextures() {
-        ArrayList<UVMeshMapping> mappings = mappingData.getMappings();
-        for (int i = 0; i < mappings.size(); i++) {
-            UVMeshMapping mapping = mappings.get(i);
-            int t;
-            if (mapping.textures.size() > 0) {
-                for (int j = mapping.textures.size() - 1; j >= 0; j--) {
-                    t = getTextureFromID(mapping.textures.get(j));
-                    if (t < 0)
-                        mapping.textures.remove(j);
-                }
+        for (UVMeshMapping mapping: mappingData.getMappings()) {
+            if(mapping.textures.isEmpty()) continue;
+
+            for (int j = mapping.textures.size() - 1; j >= 0; j--) {
+                int t = getTextureFromID(mapping.textures.get(j));
+                if (t < 0)
+                    mapping.textures.remove(j);
             }
+
         }
     }
 
     private int getTextureFromID(Integer id) {
-        if (texList == null || texList.size() == 0)
+        if (texList == null || texList.isEmpty())
             return -1;
         for (int i = 0; i < texList.size(); i++)
             if (texList.get(i).getID() == id)
@@ -577,12 +575,12 @@ public class UVMappingEditorDialog extends BDialog {
     private void changeMapping(int index) {
         currentMapping = mappingData.mappings.get(index);
         setTexturesForMapping(currentMapping);
-        if (currentMapping.textures.size() > 0) {
-            currentTexture = getTextureFromID(currentMapping.textures.get(0));
-            textureCB.setSelectedIndex(0);
-        }
+        if (currentMapping.textures.isEmpty()) currentTexture = -1;
         else
-            currentTexture = -1;
+        {
+          currentTexture = getTextureFromID(currentMapping.textures.get(0));
+          textureCB.setSelectedIndex(0);
+        }
         if (currentTexture >= 0)
             mappingCanvas.setTexture(texList.get(currentTexture), mappingList.get(currentTexture));
         else
