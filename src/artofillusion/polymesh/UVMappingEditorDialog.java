@@ -1243,8 +1243,8 @@ public class UVMappingEditorDialog extends BDialog {
      */
     public class SelectPieceCommand implements Command {
 
-        private int oldPiece;
-        private int newPiece;
+        private final int oldPiece;
+        private final int newPiece;
 
         public SelectPieceCommand(int oldPiece, int newPiece) {
             super();
@@ -1274,9 +1274,9 @@ public class UVMappingEditorDialog extends BDialog {
      */
     public class RenamePieceCommand implements Command {
 
-        private int piece;
-        private String oldName;
-        private String newName;
+        private final int piece;
+        private final String oldName;
+        private final String newName;
 
         public RenamePieceCommand(int piece, String oldName, String newName) {
             super();
