@@ -1,6 +1,7 @@
 /*
  *  Copyright (C) 2007 by François Guillet
  *  Modifications Copyright (C) 2019 by Petri Ihalainen
+ *  Changes copyright (C) 2022 by Maksim Khramov
  *
  *  This program is free software; you can redistribute it and/or modify it under the 
  *  terms of the GNU General Public License as published by the Free Software 
@@ -12,7 +13,6 @@
 
 package artofillusion.polymesh;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -28,11 +28,9 @@ import java.awt.BasicStroke;
 import artofillusion.TextureParameter;
 import artofillusion.math.BoundingBox;
 import artofillusion.math.Vec2;
-import artofillusion.math.Vec3;
 import artofillusion.object.FacetedMesh;
 import artofillusion.object.Mesh;
 import artofillusion.object.MeshVertex;
-import artofillusion.object.TriangleMesh;
 import artofillusion.polymesh.UVMappingData.UVMeshMapping;
 import artofillusion.polymesh.UnfoldedMesh.UnfoldedEdge;
 import artofillusion.polymesh.UnfoldedMesh.UnfoldedFace;
@@ -1159,7 +1157,6 @@ public class UVMappingCanvas extends CustomWidget {
         }
 
         public MappingPositionsCommand(Vec2[][] oldPos, Vec2[][] newPos) {
-            super();
             this.oldPos = oldPos;
             this.newPos = newPos;
         }
@@ -1216,10 +1213,7 @@ public class UVMappingCanvas extends CustomWidget {
             }
         }
 
-        public void execute() {
-            redo();
-        }
-
+        @Override
         public void redo() {
             for (int i = 0; i < mapping.v.length; i++)
                 for (int j = 0; j < mapping.v[i].length; j++)
@@ -1230,6 +1224,7 @@ public class UVMappingCanvas extends CustomWidget {
             repaint();
         }
 
+        @Override
         public void undo() {
             for (int i = 0; i < mapping.v.length; i++)
                 for (int j = 0; j < mapping.v[i].length; j++)
@@ -1248,14 +1243,10 @@ public class UVMappingCanvas extends CustomWidget {
         public int[] selection;
 
         public PinCommand(int[] selection) {
-            super();
             this.selection = selection;
         }
 
-        public void execute() {
-            redo();
-        }
-
+        @Override
         public void redo() {
             for (int i = 0; i < selection.length; i++) {
                 mappingData.meshes[currentPiece].vertices[mappingData.verticesTable[currentPiece][selection[i]]].pinned = 
@@ -1264,6 +1255,7 @@ public class UVMappingCanvas extends CustomWidget {
             repaint();
         }
 
+        @Override
         public void undo() {
             redo();
         }
@@ -1281,10 +1273,7 @@ public class UVMappingCanvas extends CustomWidget {
             this.selection = selection;
         }
 
-        public void execute() {
-            redo();
-        }
-
+        @Override
         public void redo() {
             for (int i = 0; i < selection.length; i++)
                 selected[selection[i]] = !selected[selection[i]];
@@ -1292,6 +1281,7 @@ public class UVMappingCanvas extends CustomWidget {
             repaint();
         }
 
+        @Override
         public void undo() {
             redo();
         }
@@ -1323,7 +1313,6 @@ public class UVMappingCanvas extends CustomWidget {
                                           Vec2[] redoPositions, 
                                           UVMeshMapping mapping, 
                                           int piece) {
-            super();
             this.vertIndices = vertIndexes;
             this.undoPositions = undoPositions;
             this.redoPositions = redoPositions;
@@ -1331,10 +1320,7 @@ public class UVMappingCanvas extends CustomWidget {
             this.piece = piece;
         }
 
-        public void execute() {
-            redo();
-        }
-
+        @Override
         public void redo() {
             Vec2[] v = mapping.v[piece];
             for (int i = 0; i < vertIndices.length; i++)
@@ -1344,6 +1330,7 @@ public class UVMappingCanvas extends CustomWidget {
             repaint();
         }
 
+        @Override
         public void undo() {
             Vec2[] v = mapping.v[piece];
             for (int i = 0; i < vertIndices.length; i++)

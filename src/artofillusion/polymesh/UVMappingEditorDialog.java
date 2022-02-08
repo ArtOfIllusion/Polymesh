@@ -1,6 +1,7 @@
 /*
  *  Copyright (C) 2007 by François Guillet
  *  Modifications Copyright (C) 2019 by Petri Ihalainen
+ *  Changes copyright (C) 2022 by Maksim Khramov
  *
  *  This program is free software; you can redistribute it and/or modify it under the 
  *  terms of the GNU General Public License as published by the Free Software 
@@ -15,7 +16,6 @@ package artofillusion.polymesh;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.awt.Window;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -25,11 +25,8 @@ import java.awt.geom.Line2D;
 import java.awt.BasicStroke;
 import java.awt.Rectangle;
 
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
@@ -1065,20 +1062,18 @@ public class UVMappingEditorDialog extends BDialog {
         int oldTexture, newTexture;
 
         public ChangeTextureCommand(int oldTexture, int newTexture) {
-            super();
             this.oldTexture = oldTexture;
             this.newTexture = newTexture;
         }
 
-        public void execute() {
-            redo();
-        }
 
+        @Override
         public void redo() {
             textureCB.setSelectedIndex(newTexture);
             doTextureChanged();
         }
 
+        @Override
         public void undo() {
             textureCB.setSelectedIndex(oldTexture);
             doTextureChanged();
@@ -1099,14 +1094,12 @@ public class UVMappingEditorDialog extends BDialog {
             this.newMapping = newMapping;
         }
 
-        public void execute() {
-            redo();
-        }
-
+        @Override
         public void redo() {
             sendToMapping(oldMapping, newMapping);
         }
 
+        @Override
         public void undo() {
             sendToMapping(newMapping, oldMapping);
         }
@@ -1142,14 +1135,13 @@ public class UVMappingEditorDialog extends BDialog {
             this.newMapping = newMapping;
         }
 
-        public void execute() {
-            redo();
-        }
 
+        @Override
         public void redo() {
             changeMapping(newMapping);
         }
 
+        @Override
         public void undo() {
             changeMapping(oldMapping);
         }
@@ -1164,15 +1156,11 @@ public class UVMappingEditorDialog extends BDialog {
         int index;
 
         public RemoveMappingCommand(UVMeshMapping mapping, int index) {
-            super();
             this.mapping = mapping.duplicate();
             this.index = index;
         }
 
-        public void execute() {
-            redo();
-        }
-
+        @Override
         public void redo() 
         {
             ArrayList<UVMeshMapping> mappings = mappingData.getMappings();
@@ -1198,6 +1186,7 @@ public class UVMappingEditorDialog extends BDialog {
             mappingCanvas.repaint();
         }
 
+        @Override
         public void undo() {
             ArrayList<UVMeshMapping> mappings = mappingData.getMappings();
             UVMeshMapping newMapping = mapping.duplicate();
@@ -1233,15 +1222,11 @@ public class UVMappingEditorDialog extends BDialog {
         int selected;
 
         public AddMappingCommand(UVMeshMapping mapping, int selected){
-            super();
             this.mapping = mapping.duplicate();
             this.selected = selected;
         }
 
-        public void execute() {
-            redo();
-        }
-
+        @Override
         public void redo() {
             UVMeshMapping newMapping = mapping.duplicate();
             mappingData.mappings.add(newMapping);
@@ -1255,6 +1240,7 @@ public class UVMappingEditorDialog extends BDialog {
             updateState();
         }
 
+        @Override
         public void undo() {
             ArrayList<UVMeshMapping> mappings = mappingData.getMappings();
             int index = mappings.size() - 1;
@@ -1277,21 +1263,18 @@ public class UVMappingEditorDialog extends BDialog {
         private int newPiece;
 
         public SelectPieceCommand(int oldPiece, int newPiece) {
-            super();
             this.oldPiece = oldPiece;
             this.newPiece = newPiece;
         }
 
-        public void execute() {
-            redo();
-        }
-
+        @Override
         public void redo() {
             mappingCanvas.setSelectedPiece(newPiece);
             pieceList.setSelected(newPiece, true);
             repaint();
         }
 
+        @Override
         public void undo() {
             mappingCanvas.setSelectedPiece(oldPiece);
             pieceList.setSelected(oldPiece, true);
@@ -1309,21 +1292,19 @@ public class UVMappingEditorDialog extends BDialog {
         private String newName;
 
         public RenamePieceCommand(int piece, String oldName, String newName) {
-            super();
             this.piece = piece;
             this.oldName = oldName;
             this.newName = newName;
         }
 
-        public void execute() {
-            redo();
-        }
 
+        @Override
         public void redo() {
             setPieceName(piece, newName);
             repaint();
         }
 
+        @Override
         public void undo() {
             setPieceName(piece, oldName);
         }
