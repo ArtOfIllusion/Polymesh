@@ -1,7 +1,8 @@
 /*
  *  Copyright (C) 2007 by François Guillet
  *  Modifications Copyright (C) 2019 by Petri Ihalainen
- *
+ *  Changes copyright (C) 2022 by Maksim Khramov
+
  *  This program is free software; you can redistribute it and/or modify it under the 
  *  terms of the GNU General Public License as published by the Free Software 
  *  Foundation; either version 2 of the License, or (at your option) any later version. 
@@ -15,7 +16,6 @@ package artofillusion.polymesh;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.awt.Window;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -25,11 +25,8 @@ import java.awt.geom.Line2D;
 import java.awt.BasicStroke;
 import java.awt.Rectangle;
 
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
@@ -93,7 +90,6 @@ public class UVMappingEditorDialog extends BDialog {
     private BLabel uMaxValue;
     private BLabel vMinValue;
     private BLabel vMaxValue;
-    private BButton autoButton;
     private BLabel resLabel;
     private BSpinner resSpinner;
     private BComboBox mappingCB;
@@ -116,9 +112,9 @@ public class UVMappingEditorDialog extends BDialog {
      *  Construct a new UVMappingEditorDialog
      */
 
-    public UVMappingEditorDialog(String title, ObjectInfo objInfo, boolean initialize, BFrame parent) {
+    public UVMappingEditorDialog(ObjectInfo objInfo, boolean initialize, BFrame parent) {
 
-        super(parent, title, true);
+        super(parent, Translate.text("uvCoordsTitle"), true);
         this.objInfo = objInfo;
         PolyMesh mesh = (PolyMesh) objInfo.object;
         mappingData = mesh.getMappingData();
@@ -197,12 +193,9 @@ public class UVMappingEditorDialog extends BDialog {
                                    LayoutInfo.NONE, 
                                    new Insets(2, 2, 2, 2), 
                                    new Dimension(0, 0)));
-        InputStream inputStream = null;
-        try {
-            WidgetDecoder decoder = 
-                          new WidgetDecoder(inputStream = 
-                          getClass().getResource("interfaces/unfoldEditor.xml").openStream(), 
-                          PolyMeshPlugin.resources);
+        
+        try(InputStream is = getClass().getResource("interfaces/unfoldEditor.xml").openStream()) {
+            WidgetDecoder decoder = new WidgetDecoder(is, PolyMeshPlugin.resources);
             borderContainer1 = (BorderContainer) decoder.getRootObject();
             uMinValue = ((BLabel) decoder.getObject("uMinValue"));
             uMaxValue = ((BLabel) decoder.getObject("uMaxValue"));
@@ -255,14 +248,7 @@ public class UVMappingEditorDialog extends BDialog {
         } catch (IOException ex) {
             ex.printStackTrace();
         } 
-        finally {
-            try {
-                if (inputStream != null)
-                    inputStream.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
+
         BSplitPane meshViewPanel = new BSplitPane(BSplitPane.VERTICAL, 
                                                   new BScrollPane(pieceList = new BList()), 
                                                   preview = new MeshPreviewer(objInfo, 200, 200));
