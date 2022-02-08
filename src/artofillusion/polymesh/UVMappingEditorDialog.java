@@ -229,7 +229,7 @@ public class UVMappingEditorDialog extends BDialog {
                                                   Translate.text("Emissive") });
             componentCB.addEventLink(ValueChangedEvent.class, this, "doChangeComponent");
             resSpinner = ((BSpinner) decoder.getObject("resSpinner"));
-            resSpinner.setValue(new Integer(mappingData.sampling));
+            resSpinner.setValue(mappingData.sampling);
             resSpinner.addEventLink(ValueChangedEvent.class, this, "doSamplingChanged");
             meshTensionCB = ((BCheckBox) decoder.getObject("meshTensionCB"));
             meshTensionCB.addEventLink(ValueChangedEvent.class, this, "doTensionChanged");
@@ -705,7 +705,7 @@ public class UVMappingEditorDialog extends BDialog {
     }
 
     private void doSamplingChanged() {
-        mappingCanvas.setSampling(((Integer) resSpinner.getValue()).intValue());
+        mappingCanvas.setSampling((Integer) resSpinner.getValue());
     }
 
     private void processMousePressed(WidgetMouseEvent ev) {
@@ -866,7 +866,7 @@ public class UVMappingEditorDialog extends BDialog {
     }
 
     private void doMaxDistanceValueChanged() {
-        tensionDistance = ((Integer) distanceSpinner.getValue()).intValue();
+        tensionDistance = ((Integer) distanceSpinner.getValue());
         mappingCanvas.findSelectionDistance();
     }
 
@@ -1087,13 +1087,13 @@ public class UVMappingEditorDialog extends BDialog {
             UVMeshMapping fromMapping = mappingData.mappings.get(from);
             UVMeshMapping toMapping = mappingData.mappings.get(to);
             for (int j = 0; j < fromMapping.textures.size(); j++)
-                if (texture == fromMapping.textures.get(j).intValue()) {
+                if (texture == fromMapping.textures.get(j)) {
                     fromMapping.textures.remove(j);
                     break;
                 }
 
             mappingMenuItems[from].setState(false);
-            toMapping.textures.add(new Integer(texture));
+            toMapping.textures.add(texture);
             mappingMenuItems[from].setState(false);
             mappingMenuItems[to].setState(true);
             changeMapping(to);
@@ -1378,10 +1378,10 @@ public class UVMappingEditorDialog extends BDialog {
             if (currentTexture == -1)
                 texturedButton.setEnabled(false);
             
-            resolutionSpinner.setValue(new Integer(123456)); 
+            resolutionSpinner.setValue(123456); 
             Dimension d = resolutionSpinner.getPreferredSize();
             resolutionSpinner.getComponent().setPreferredSize(d);
-            resolutionSpinner.setValue(new Integer(640)); 
+            resolutionSpinner.setValue(640); 
 
             setContent(content);
             pack();
@@ -1407,7 +1407,7 @@ public class UVMappingEditorDialog extends BDialog {
 
         int getResolution()
         {
-            return ((Integer) resolutionSpinner.getValue()).intValue();
+            return (Integer) resolutionSpinner.getValue();
         }
         
         boolean useAntialias()
