@@ -70,16 +70,20 @@ public class UVMappingEditorDialog extends BDialog {
     private ArrayList<UVMapping> mappingList; // the corresponding mapping  list
     private ArrayList<Vec2[][]> oldCoordList; // the old texture coordinates for undoing changes
     private UVMappingData oldMappingData; // the original mapping data for undoing changes
-    private PMUndoRedoStack undoRedoStack; // the Undo/Redo stack
+    
     private boolean clickedOk; // true if the user clicked the ok button
+
     private boolean tension;
-    private int tensionValue;
+    private int tensionValue = 2;
+    private int tensionDistance = 3;
 
      // This is not pretty. 3.0 --> 3.5 or maybe a geometric sequence
 
     protected static final double[] tensionArray = { 5.0, 3.0, 2.0, 1.0, 0.5 };
-    private int tensionDistance;
-    private int undoLevels;
+    
+    
+    private int undoLevels = 20;
+    private PMUndoRedoStack undoRedoStack = new PMUndoRedoStack(undoLevels); // the Undo/Redo stack
 
     /* Interface variables */
 
@@ -119,11 +123,6 @@ public class UVMappingEditorDialog extends BDialog {
         PolyMesh mesh = (PolyMesh) objInfo.object;
         mappingData = mesh.getMappingData();
         oldMappingData = mappingData.duplicate();
-        undoLevels = 20;
-        undoRedoStack = new PMUndoRedoStack(undoLevels);
-        tension = false;
-        tensionValue = 2;
-        tensionDistance = 3;
 
         // find out the UVMapped texture on parFacePerVertex basis
         // record current coordinates in order to undo if the user cancels
