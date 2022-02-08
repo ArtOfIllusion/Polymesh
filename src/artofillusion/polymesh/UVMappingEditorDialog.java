@@ -902,7 +902,7 @@ public class UVMappingEditorDialog extends BDialog {
 
         // Good to go
 
-        new ExportImageDialog();
+        new ExportImageDialog(this);
     }
 
     private void createAndExportMapImage(ExportImageDialog exportDialog, File outputFile)
@@ -1318,9 +1318,9 @@ public class UVMappingEditorDialog extends BDialog {
         // - Selection for line width? More choices for antialiased image?
         // - Option to export the texture image only
 
-        ExportImageDialog()
+        ExportImageDialog(WindowWidget parent)
         {
-            super(UVMappingEditorDialog.this, true);
+            super(parent, true);
             addEventLink(WindowClosingEvent.class, new Object()
                         {void processEvent(WindowClosingEvent e) {dispose();}});
             
@@ -1328,7 +1328,7 @@ public class UVMappingEditorDialog extends BDialog {
             LayoutInfo valueLayout  = new LayoutInfo(LayoutInfo.WEST,      LayoutInfo.HORIZONTAL, new Insets(10,  0, 2, 10), null);
             LayoutInfo headerLayout = new LayoutInfo(LayoutInfo.NORTHWEST, LayoutInfo.NONE,       new Insets(10, 10, 5, 10), null);
             LayoutInfo radioLayout  = new LayoutInfo(LayoutInfo.NORTHWEST, LayoutInfo.NONE,       new Insets( 0, 25, 0, 10), null);
-            LayoutInfo actionLayout = new LayoutInfo(LayoutInfo.SOUTHEAST, LayoutInfo.NONE,       new Insets(10,  0, 0, 10), null);
+            
             LayoutInfo boxLayout    = new LayoutInfo(LayoutInfo.NORTHWEST, LayoutInfo.NONE,       new Insets( 0,  0, 0,  0), null);
             LayoutInfo actboxLayout = new LayoutInfo(LayoutInfo.SOUTHEAST, LayoutInfo.NONE,       new Insets( 15, 0, 0, 10), null);
 
