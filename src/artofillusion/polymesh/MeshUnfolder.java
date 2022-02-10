@@ -291,7 +291,7 @@ public class MeshUnfolder {
 		// now let's build the unfolded meshes
 		textArea.append("Rebuilding 2D mesh.\n");
 		Vertex[] verts = (Vertex[]) trimesh.getVertices();
-		ArrayList<UnfoldedMesh> unfoldedMeshesList = new ArrayList<UnfoldedMesh>();
+		ArrayList<UnfoldedMesh> unfoldedMeshesList = new ArrayList<>();
 		UnfoldedEdge[] uedges = new UnfoldedEdge[nedges];
 		UnfoldedFace[] ufaces = new UnfoldedFace[trimesh.getFaces().length];
 		UnfoldedVertex[] uverts = new UnfoldedVertex[trimesh.getVertices().length];
@@ -377,10 +377,10 @@ public class MeshUnfolder {
 		boolean[] unfoldedFace = new boolean[ufaces.length];
 		boolean[] unfoldedVerts = new boolean[uverts.length];
 		boolean done = false;
-		Stack<Integer> edgeStack = new Stack<Integer>();
-		ArrayList<Integer> vertList = new ArrayList<Integer>();
-		ArrayList<Integer> edgeList = new ArrayList<Integer>();
-		ArrayList<Integer> faceList = new ArrayList<Integer>();
+		Stack<Integer> edgeStack = new Stack<>();
+		ArrayList<Integer> vertList = new ArrayList<>();
+		ArrayList<Integer> edgeList = new ArrayList<>();
+		ArrayList<Integer> faceList = new ArrayList<>();
 		int index;
 		int pieceCount = 0;
 		while (!done) {
