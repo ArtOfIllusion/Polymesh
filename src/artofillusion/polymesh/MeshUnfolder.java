@@ -92,8 +92,7 @@ public class MeshUnfolder {
 	 *                assigned a vertex index of -1. They won't be displayed
 	 *                by the UVMappingCanvas widget.
 	 */
-	public MeshUnfolder(FacetedMesh mesh, TriangleMesh trimesh,
-			int[] vertexTable, int[] faceTable) {
+	public MeshUnfolder(FacetedMesh mesh, TriangleMesh trimesh, int[] vertexTable, int[] faceTable) {
 		this.mesh = mesh;
 		this.trimesh = trimesh;
 		this.vertexTable = vertexTable;
@@ -201,8 +200,7 @@ public class MeshUnfolder {
 				} else if (v == faces[tri].v3) {
 					angleTable[i][j] = 3 * tri + 2;
 				} else {
-					System.out
-							.println("pb setting angle tables: vertex not in face");
+					System.out.println("pb setting angle tables: vertex not in face");
 				}
 			}
 		}
@@ -224,8 +222,8 @@ public class MeshUnfolder {
 
 		//set up matrix and constraints
 		//System.out.println(ntri+2*nint);
-		FlexCompRowMatrix newMat = new FlexCompRowMatrix(ntri + 2*nint, 3*ntri);
-		FlexCompRowMatrix newMatTMat = new FlexCompRowMatrix( 2*nint + ntri, 2*nint + ntri);
+		FlexCompRowMatrix newMat = new FlexCompRowMatrix(ntri + 2 * nint, 3 * ntri);
+                FlexCompRowMatrix newMatTMat = new FlexCompRowMatrix(2 * nint + ntri, 2 * nint + ntri);
 		double[] newConstraints = new double[ntri + 2 * nint];
 		for (int i = 0; i < ntri; i++) {
 			newConstraints[i]  = Math.PI;
@@ -234,12 +232,14 @@ public class MeshUnfolder {
 			newConstraints[i]  = 2*Math.PI;
 		}
 		for (int i = 0; i < faces.length; i++) {
-			addToConstraints(newConstraints, i, faces[i].v1, faces[i].v2, faces[i].v3, 3*i,ntri, nint);
-			addToConstraints(newConstraints, i, faces[i].v2, faces[i].v3, faces[i].v1, 3*i+1, ntri, nint);
-			addToConstraints(newConstraints, i, faces[i].v3, faces[i].v1, faces[i].v2, 3*i+2, ntri, nint);
-			addToMatTMat(newMat, newMatTMat, i, faces[i].v1, faces[i].v2, faces[i].v3, 3*i,ntri, nint);
-			addToMatTMat(newMat, newMatTMat, i, faces[i].v2, faces[i].v3, faces[i].v1, 3*i+1, ntri, nint);
-			addToMatTMat(newMat, newMatTMat, i, faces[i].v3, faces[i].v1, faces[i].v2, 3*i+2, ntri, nint);
+                    TriangleMesh.Face face = faces[i];
+                    addToConstraints(newConstraints, i, face.v1, face.v2, face.v3, 3 * i, ntri, nint);
+                    addToConstraints(newConstraints, i, face.v2, face.v3, face.v1, 3 * i + 1, ntri, nint);
+                    addToConstraints(newConstraints, i, face.v3, face.v1, face.v2, 3 * i + 2, ntri, nint);
+                    
+                    addToMatTMat(newMat, newMatTMat, i, face.v1, face.v2, face.v3, 3 * i, ntri, nint);
+                    addToMatTMat(newMat, newMatTMat, i, face.v2, face.v3, face.v1, 3 * i + 1, ntri, nint);
+                    addToMatTMat(newMat, newMatTMat, i, face.v3, face.v1, face.v2, 3 * i + 2, ntri, nint);
 		}
 		/*for (int i = 0; i < ntri + 2*nint; i++) {
 			System.out.println("c " + i + " : " + newConstraints[i]);
@@ -250,15 +250,15 @@ public class MeshUnfolder {
 			}
 			System.out.println(" ");
 		}*/
-		DenseVector sol = new DenseVector(ntri + 2*nint);
+                DenseVector sol = new DenseVector(ntri + 2 * nint);
 		CG cg = new CG(sol);
 		DenseVector newcons = new DenseVector(newConstraints);
 		try {
-			cg.solve(newMatTMat, newcons, sol);
+                    cg.solve(newMatTMat, newcons, sol);
 		} catch (IterativeSolverNotConvergedException e) {
-			textArea.append("Failure : unfolding did not converge");
-			e.printStackTrace();
-			return false;
+                    textArea.append("Failure : unfolding did not converge");
+                    e.printStackTrace();
+                    return false;
 		}
 		double[] soldata = sol.getData();
 		/*for (int i = 0; i < ntri + 2*nint; i++) {
@@ -287,8 +287,7 @@ public class MeshUnfolder {
 		}
 		//System.out.println(" ");	
 		totaltime = new Date().getTime() - totaltime;
-		textArea.append("Mesh unfolded : "
-				+ Math.round(totaltime / 1000.0) + "s\n");
+		textArea.append("Mesh unfolded: " + Math.round(totaltime / 1000.0) + "s\n");
 		totaltime = new Date().getTime();
 		// now let's build the unfolded meshes
 		textArea.append("Rebuilding 2D mesh.\n");
@@ -403,8 +402,7 @@ public class MeshUnfolder {
 				textArea.append("Building piece #" + pieceCount + "...\n");
 				totaltime = new Date().getTime();
 				edgeStack.push(ufaces[index].e1);
-				double dist = verts[ufaces[index].v1].r
-						.distance(verts[ufaces[index].v2].r);
+				double dist = verts[ufaces[index].v1].r.distance(verts[ufaces[index].v2].r);
 				uverts[ufaces[index].v1].r = new Vec2(0, 0);
 				uverts[ufaces[index].v2].r = new Vec2(dist, 0);
 				unfoldedVerts[ufaces[index].v1] = true;
@@ -418,9 +416,7 @@ public class MeshUnfolder {
 					f1 = uedges[ed].f1;
 					f2 = uedges[ed].f2;
 					if (f1 != -1 && !unfoldedFace[f1]) {
-						computeFace(ed, f1, uverts, uedges, ufaces,
-								unfoldedFace, unfoldedVerts, vertList,
-								edgeList, faceList);
+						computeFace(ed, f1, uverts, uedges, ufaces, unfoldedFace, unfoldedVerts, vertList, edgeList, faceList);
 						if (ufaces[f1].e1 != ed) {
 							edgeList.add(ufaces[f1].e1);
 							edgeStack.push(ufaces[f1].e1);
@@ -435,9 +431,7 @@ public class MeshUnfolder {
 						}
 					}
 					if (f2 != -1 && !unfoldedFace[f2]) {
-						computeFace(ed, f2, uverts, uedges, ufaces,
-								unfoldedFace, unfoldedVerts, vertList,
-								edgeList, faceList);
+						computeFace(ed, f2, uverts, uedges, ufaces, unfoldedFace, unfoldedVerts, vertList, edgeList, faceList);
 						if (ufaces[f2].e1 != ed) {
 							edgeList.add(ufaces[f2].e1);
 							edgeStack.push(ufaces[f2].e1);
@@ -453,16 +447,14 @@ public class MeshUnfolder {
 					}
 				}
 				try {
-					unfoldedMeshesList.add(computeUnfoldedMesh(vertList,
-							edgeList, faceList, uverts, uedges, ufaces));
+					unfoldedMeshesList.add(computeUnfoldedMesh(vertList, edgeList, faceList, uverts, uedges, ufaces));
 				} catch (IterativeSolverNotConvergedException e) {
 					textArea.append("Failure : unfolding did not converge");
 					e.printStackTrace();
 					return false;
 				}
 				totaltime = new Date().getTime() - totaltime;
-				textArea.append("reconstruction done in "
-						+ Math.round(totaltime / 1000) + "s\n");
+				textArea.append("reconstruction done in " + Math.round(totaltime / 1000) + "s\n");
 				++pieceCount;
 			}
 		}
@@ -474,8 +466,7 @@ public class MeshUnfolder {
 		return true;
 	}
 
-	private void addToConstraints(double[] constraints, int f, int v1, int v2, int v3,
-			int a1, int ntri, int nint) {
+	private void addToConstraints(double[] constraints, int f, int v1, int v2, int v3, int a1, int ntri, int nint) {
 		double alpha1 = angles[a1];
 		double lsana1 = Math.log(Math.sin(alpha1));
 		int interiorVertV1 = invInteriorTable[v1];
@@ -492,9 +483,8 @@ public class MeshUnfolder {
 			constraints[ntri+nint+interiorVertV3] -= lsana1;
 		}
 	}
-	
-	private void addToMatTMat(FlexCompRowMatrix mat, FlexCompRowMatrix matTmat, int f, int v1, int v2, int v3,
-			int a1, int ntri, int nint) {
+
+	private void addToMatTMat(FlexCompRowMatrix mat, FlexCompRowMatrix matTmat, int f, int v1, int v2, int v3, int a1, int ntri, int nint) {
 		double alpha1 = angles[a1];
 		double tana1 = alpha1/Math.tan(alpha1);
 		int interiorVertV1 = invInteriorTable[v1];
@@ -634,7 +624,7 @@ public class MeshUnfolder {
 		int v1, v2, v3;
 		double a1, a2, a3;
 		double tmp;
-		for (int i = 0; i < faces.length; i++) for (int j = 0; j < 3; j++) { 
+		for (int i = 0; i < faces.length; i++) for (int j = 0; j < 3; j++) {
 			fi = faceList.get(i);
 			switch (j) {
 			default:
@@ -688,23 +678,17 @@ public class MeshUnfolder {
 			m3yx = 0;
 			m3yy = -Math.sin(a3);
 			if (v1 == 0 || v1 == 1) {
-				b.add(6 * i + j, -m1xx * vertices[v1].r.x - m1xy
-								* vertices[v1].r.y);
-				b.add(6 * i + j + 3, -m1yx * vertices[v1].r.x - m1yy
-						* vertices[v1].r.y);
+				b.add(6 * i + j, -m1xx * vertices[v1].r.x - m1xy * vertices[v1].r.y);
+				b.add(6 * i + j + 3, -m1yx * vertices[v1].r.x - m1yy * vertices[v1].r.y);
 			} else {
 				mat.set(i * 6 + j, 2 * (v1 - 2), m1xx);
 				mat.set(i * 6 + j, 2 * (v1 - 2) + 1, m1xy);
 				mat.set(i * 6 + j + 3, 2 * (v1 - 2), m1yx);
 				mat.set(i * 6 + j + 3, 2 * (v1 - 2) + 1, m1yy);
-				matTmat.add(2 * (v1 - 2), 2 * (v1 - 2), m1xx * m1xx + m1yx
-						* m1yx);
-				matTmat.add(2 * (v1 - 2), 2 * (v1 - 2) + 1, m1xx * m1xy + m1yx
-						* m1yy);
-				matTmat.add(2 * (v1 - 2) + 1, 2 * (v1 - 2), m1xx * m1xy + m1yx
-						* m1yy);
-				matTmat.add(2 * (v1 - 2) + 1, 2 * (v1 - 2) + 1, m1xy * m1xy
-						+ m1yy * m1yy);
+				matTmat.add(2 * (v1 - 2), 2 * (v1 - 2), m1xx * m1xx + m1yx * m1yx);
+				matTmat.add(2 * (v1 - 2), 2 * (v1 - 2) + 1, m1xx * m1xy + m1yx * m1yy);
+				matTmat.add(2 * (v1 - 2) + 1, 2 * (v1 - 2), m1xx * m1xy + m1yx * m1yy);
+				matTmat.add(2 * (v1 - 2) + 1, 2 * (v1 - 2) + 1, m1xy * m1xy + m1yy * m1yy);
 				if (v2 != 0 && v2 != 1) {
 					tmp = m1xx * m2xx + m1yx * m2yx;
 					matTmat.add(2 * (v1 - 2), 2 * (v2 - 2), tmp);
@@ -735,23 +719,17 @@ public class MeshUnfolder {
 				}
 			}
 			if (v2 == 0 || v2 == 1) {
-				b.add(6 * i + j, -m2xx * vertices[v2].r.x - m2xy
-								* vertices[v2].r.y);
-				b.add(6 * i + j + 3, -m2yx * vertices[v2].r.x - m2yy
-						* vertices[v2].r.y);
+				b.add(6 * i + j, -m2xx * vertices[v2].r.x - m2xy * vertices[v2].r.y);
+				b.add(6 * i + j + 3, -m2yx * vertices[v2].r.x - m2yy * vertices[v2].r.y);
 			} else {
 				mat.set(i * 6 + j, 2 * (v2 - 2), m2xx);
 				mat.set(i * 6 + j, 2 * (v2 - 2) + 1, m2xy);
 				mat.set(i * 6 + j + 3, 2 * (v2 - 2), m2yx);
 				mat.set(i * 6 + j + 3, 2 * (v2 - 2) + 1, m2yy);
-				matTmat.add(2 * (v2 - 2), 2 * (v2 - 2), m2xx * m2xx + m2yx
-						* m2yx);
-				matTmat.add(2 * (v2 - 2), 2 * (v2 - 2) + 1, m2xx * m2xy + m2yx
-						* m2yy);
-				matTmat.add(2 * (v2 - 2) + 1, 2 * (v2 - 2), m2xx * m2xy + m2yx
-						* m2yy);
-				matTmat.add(2 * (v2 - 2) + 1, 2 * (v2 - 2) + 1, m2xy * m2xy
-						+ m2yy * m2yy);
+				matTmat.add(2 * (v2 - 2), 2 * (v2 - 2), m2xx * m2xx + m2yx * m2yx);
+				matTmat.add(2 * (v2 - 2), 2 * (v2 - 2) + 1, m2xx * m2xy + m2yx * m2yy);
+				matTmat.add(2 * (v2 - 2) + 1, 2 * (v2 - 2), m2xx * m2xy + m2yx * m2yy);
+				matTmat.add(2 * (v2 - 2) + 1, 2 * (v2 - 2) + 1, m2xy * m2xy + m2yy * m2yy);
 				if (v3 != 0 && v3 != 1) {
 					tmp = m2xx * m3xx + m2yx * m3yx;
 					matTmat.add(2 * (v2 - 2), 2 * (v3 - 2), tmp);
@@ -768,24 +746,17 @@ public class MeshUnfolder {
 				}
 			}
 			if (v3 == 0 || v3 == 1) {
-				b
-						.add(6 * i + j, -m3xx * vertices[v3].r.x - m3xy
-								* vertices[v3].r.y);
-				b.add(6 * i + j + 3, -m3yx * vertices[v3].r.x - m3yy
-						* vertices[v3].r.y);
+				b.add(6 * i + j, -m3xx * vertices[v3].r.x - m3xy * vertices[v3].r.y);
+				b.add(6 * i + j + 3, -m3yx * vertices[v3].r.x - m3yy * vertices[v3].r.y);
 			} else {
 				mat.set(i * 6 + j, 2 * (v3 - 2), m3xx);
 				mat.set(i * 6 + j, 2 * (v3 - 2) + 1, m3xy);
 				mat.set(i * 6 + j + 3, 2 * (v3 - 2), m3yx);
 				mat.set(i * 6 + j + 3, 2 * (v3 - 2) + 1, m3yy);
-				matTmat.add(2 * (v3 - 2), 2 * (v3 - 2), m3xx * m3xx + m3yx
-						* m3yx);
-				matTmat.add(2 * (v3 - 2), 2 * (v3 - 2) + 1, m3xx * m3xy + m3yx
-						* m3yy);
-				matTmat.add(2 * (v3 - 2) + 1, 2 * (v3 - 2), m3xx * m3xy + m3yx
-						* m3yy);
-				matTmat.add(2 * (v3 - 2) + 1, 2 * (v3 - 2) + 1, m3xy * m3xy
-						+ m3yy * m3yy);
+				matTmat.add(2 * (v3 - 2), 2 * (v3 - 2), m3xx * m3xx + m3yx * m3yx);
+				matTmat.add(2 * (v3 - 2), 2 * (v3 - 2) + 1, m3xx * m3xy + m3yx * m3yy);
+				matTmat.add(2 * (v3 - 2) + 1, 2 * (v3 - 2), m3xx * m3xy + m3yx * m3yy);
+				matTmat.add(2 * (v3 - 2) + 1, 2 * (v3 - 2) + 1, m3xy * m3xy + m3yy * m3yy);
 			}
 		}
 		DenseVector vsol = new DenseVector(nvars);
@@ -844,15 +815,13 @@ public class MeshUnfolder {
 		v1 = ufaces[f].v1;
 		v2 = ufaces[f].v2;
 		v3 = ufaces[f].v3;
-		if ((uedges[e].v1 == v1 && uedges[e].v2 == v2)
-				|| (uedges[e].v1 == v2 && uedges[e].v2 == v1)) {
+		if ((uedges[e].v1 == v1 && uedges[e].v2 == v2) || (uedges[e].v1 == v2 && uedges[e].v2 == v1)) {
 			// add v3
 			if (!unfoldedVerts[ufaces[f].v3]) {
 				unfoldedVerts[ufaces[f].v3] = true;
 				vertList.add(v3);
 			}
-		} else if ((uedges[e].v1 == v2 && uedges[e].v2 == v3)
-				|| (uedges[e].v1 == v3 && uedges[e].v2 == v2)) {
+		} else if ((uedges[e].v1 == v2 && uedges[e].v2 == v3) || (uedges[e].v1 == v3 && uedges[e].v2 == v2)) {
 			if (!unfoldedVerts[ufaces[f].v1]) {
 				// add v1
 				unfoldedVerts[ufaces[f].v1] = true;
