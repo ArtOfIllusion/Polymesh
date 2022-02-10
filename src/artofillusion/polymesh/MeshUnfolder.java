@@ -28,6 +28,7 @@ import artofillusion.polymesh.UnfoldedMesh.UnfoldedEdge;
 import artofillusion.polymesh.UnfoldedMesh.UnfoldedFace;
 import artofillusion.polymesh.UnfoldedMesh.UnfoldedVertex;
 import artofillusion.ui.Translate;
+import java.util.List;
 import no.uib.cipr.matrix.DenseVector;
 import no.uib.cipr.matrix.sparse.CG;
 import no.uib.cipr.matrix.sparse.*;
@@ -134,13 +135,12 @@ public class MeshUnfolder {
 		}
 		// setup interior vertices table
 		invInteriorTable = new int[vertices.length];
-		Vector interiorVerticesTable = new Vector();
+		List<Integer> interiorVerticesTable = new Vector<>();
 		int count = 0;
 		for (int i = 0; i < vertices.length; i++) {
-			if (edges[vertices[i].firstEdge].f1 != -1
-					&& edges[vertices[i].firstEdge].f2 != -1) {
+			if (edges[vertices[i].firstEdge].f1 != -1 && edges[vertices[i].firstEdge].f2 != -1) {
 				// not a boundary edge
-				interiorVerticesTable.add(new Integer(i));
+				interiorVerticesTable.add(i);
 				invInteriorTable[i] = count++;
 			} else
 				invInteriorTable[i] = -1;
@@ -150,8 +150,7 @@ public class MeshUnfolder {
 		// interior vertices array
 		int[] interiorVertices = new int[nint];
 		for (int i = 0; i < nint; i++) {
-			interiorVertices[i] = ((Integer) interiorVerticesTable.get(i))
-					.intValue();
+                  interiorVertices[i] = interiorVerticesTable.get(i);
 		}
 		interiorVerticesTable = null;
 		// angle references for each interior vertex
