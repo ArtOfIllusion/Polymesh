@@ -13,10 +13,7 @@
 
 package artofillusion.polymesh;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Stack;
-import java.util.Vector;
+import java.util.*;
 
 import buoy.widget.BTextArea;
 import artofillusion.math.Vec2;
@@ -28,7 +25,6 @@ import artofillusion.polymesh.UnfoldedMesh.UnfoldedEdge;
 import artofillusion.polymesh.UnfoldedMesh.UnfoldedFace;
 import artofillusion.polymesh.UnfoldedMesh.UnfoldedVertex;
 import artofillusion.ui.Translate;
-import java.util.List;
 import no.uib.cipr.matrix.DenseVector;
 import no.uib.cipr.matrix.sparse.CG;
 import no.uib.cipr.matrix.sparse.*;
@@ -204,9 +200,8 @@ public class MeshUnfolder {
 			}
 		}
 		var = new double[nangles];
-		for (int i = 0; i < nangles; i++) {
-			var[i] = angles[i]; // start from current angle values
-		}
+		// start from current angle values
+		System.arraycopy(angles, 0, var, 0, nangles);
 		double anglesum;
 		for (int i = 0; i < nint; i++) {
 			anglesum = 0;
@@ -263,9 +258,7 @@ public class MeshUnfolder {
 		/*for (int i = 0; i < ntri + 2*nint; i++) {
 			System.out.println("sol " + i + " : " + soldata[i]);
 		}*/
-		for (int i = 0; i < var.length; i++) {
-			var[i] = 0;
-		}
+		Arrays.fill(var, 0);
 		SparseVector matVecI;
 		int[] ind;
 		double[] idata;
@@ -540,21 +533,15 @@ public class MeshUnfolder {
 		int[] edgeTrans = new int[uedges.length];
 		int[] faceTrans = new int[ufaces.length];
 		// first, translate the indexes
-		for (int i = 0; i < vertTrans.length; i++) {
-			vertTrans[i] = -1;
-		}
+		Arrays.fill(vertTrans, -1);
 		for (int i = 0; i < vertices.length; i++) {
 			vertTrans[vertList.get(i)] = i;
 		}
-		for (int i = 0; i < edgeTrans.length; i++) {
-			edgeTrans[i] = -1;
-		}
+		Arrays.fill(edgeTrans, -1);
 		for (int i = 0; i < edges.length; i++) {
 			edgeTrans[edgeList.get(i)] = i;
 		}
-		for (int i = 0; i < faceTrans.length; i++) {
-			faceTrans[i] = -1;
-		}
+		Arrays.fill(faceTrans, -1);
 		for (int i = 0; i < faces.length; i++) {
 			faceTrans[faceList.get(i)] = i;
 		}
