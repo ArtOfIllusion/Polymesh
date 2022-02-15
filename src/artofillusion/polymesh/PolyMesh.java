@@ -922,6 +922,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * Get the number of faces in this mesh.
 	 */
 
+        @Override
 	public int getFaceCount() {
 		return faces.length;
 	}
@@ -933,6 +934,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 *            the index of the face
 	 */
 
+        @Override
 	public int getFaceVertexCount(int face) {
 		return getFaceVertices(faces[face]).length;
 	}
@@ -948,6 +950,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * @return the index of the corresponding vertex in the list returned by
 	 *         getVertices()
 	 */
+        @Override
 	public int getFaceVertexIndex(int face, int vertex) {
 		return getFaceVertices(faces[face])[vertex];
 	}
@@ -1199,6 +1202,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * @return The bounds value
 	 */
 
+        @Override
 	public BoundingBox getBounds() {
 		if (bounds == null)
 			findBounds();
@@ -1214,6 +1218,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 *            Object to copy
 	 */
 
+        @Override
 	public void copyObject(Object3D obj) {
 		PolyMesh mesh = (PolyMesh) obj;
 
@@ -1301,6 +1306,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * @return A duplicate of the winged mesh object
 	 */
 
+        @Override
 	public Object3D duplicate() {
 		PolyMesh mesh = new PolyMesh();
 		mesh.copyObject(this);
@@ -1312,6 +1318,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * 
 	 * @return The wireframe mesh
 	 */
+        @Override
 	public WireframeMesh getWireframeMesh() {
 		Vec3 point[];
 		int from[];
@@ -1348,6 +1355,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 *            The object info holding this mesh
 	 * @return The rendering mesh
 	 */
+        @Override
 	public RenderingMesh getRenderingMesh(double tol, boolean interactive,
 			ObjectInfo info) {
 		if (interactive && cachedMesh != null)
@@ -2602,6 +2610,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * @return The vertices value
 	 */
 
+        @Override
 	public MeshVertex[] getVertices() {
 		return vertices;
 	}
@@ -2612,6 +2621,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * @return The vertexPositions value
 	 */
 
+        @Override
 	public Vec3[] getVertexPositions() {
 		Vec3 v[] = new Vec3[vertices.length];
 		for (int i = 0; i < v.length; i++)
@@ -2626,6 +2636,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 *            The new vertexPositions value
 	 */
 
+        @Override
 	public void setVertexPositions(Vec3 v[]) {
 		for (int i = 0; i < v.length; i++)
 			vertices[i].r = v[i];
@@ -2637,6 +2648,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * 
 	 * @return The normals value
 	 */
+        @Override
 	public Vec3[] getNormals() {
 		if (cachedNormals != null)
 			return cachedNormals;
@@ -2894,6 +2906,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * @return The skeleton value
 	 */
 
+        @Override
 	public Skeleton getSkeleton() {
 		return skeleton;
 	}
@@ -2905,6 +2918,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 *            The new skeleton value
 	 */
 
+        @Override
 	public void setSkeleton(Skeleton s) {
 		skeleton = s;
 	}
@@ -2961,6 +2975,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * @param zsize
 	 *            The new size value
 	 */
+        @Override
 	public void setSize(double xsize, double ysize, double zsize) {
 		Vec3 size = getBounds().getSize();
 		double xscale;
@@ -2996,6 +3011,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * @return The editable value
 	 */
 
+        @Override
 	public boolean isEditable() {
 		return true;
 	}
@@ -3005,6 +3021,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * 
 	 * @return Returns EXACTLY
 	 */
+        @Override
 	public int canConvertToTriangleMesh() {
 		if (smoothingMethod == APPROXIMATING) {
 			return APPROXIMATELY;
@@ -3021,6 +3038,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 *            Tolerance - ignored
 	 * @return The triangle mesh
 	 */
+        @Override
 	public TriangleMesh convertToTriangleMesh(double tol) {
 		
 		if (smoothingMethod == Mesh.APPROXIMATING) {
@@ -3286,6 +3304,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 *            the user cancels the operation, it will not be called.
 	 */
 
+        @Override
 	public void edit(EditingWindow parent, ObjectInfo info, Runnable cb) {
 		PolyMeshEditorWindow ed = new PolyMeshEditorWindow(parent, "PolyMesh '"
 				+ info.name + "'", info, cb);
@@ -5493,6 +5512,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * 
 	 * @return The closed value
 	 */
+        @Override
 	public boolean isClosed() {
 
 		if (mirrorState != NO_MIRROR) {
@@ -12370,6 +12390,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 *            The new texture value
 	 */
 
+        @Override
 	public void setTexture(Texture tex, TextureMapping mapping) {
 		super.setTexture(tex, mapping);
 		cachedMesh = null;
@@ -12383,6 +12404,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 *            The new parameterValues value
 	 */
 
+        @Override
 	public void setParameterValues(ParameterValue val[]) {
 		super.setParameterValues(val);
 		cachedMesh = null;
@@ -12398,6 +12420,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 *            The new parameterValue value
 	 */
 
+        @Override
 	public void setParameterValue(TextureParameter param, ParameterValue val) {
 		super.setParameterValue(param, val);
 		cachedMesh = null;
@@ -12513,10 +12536,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		resetMesh();
 	}
 
+        @Override
 	public Property[] getProperties() {
 		return (Property[]) PROPERTIES.clone();
 	}
 
+        @Override
 	public Object getPropertyValue(int index) {
 		switch (index) {
 		case 0:
@@ -12526,6 +12551,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		}
 	}
 
+        @Override
 	public void setPropertyValue(int index, Object value) {
 		int val = ((Integer) value);
 		if (index == 0)
@@ -12542,6 +12568,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * @exception IOException
 	 *                I/O exception
 	 */
+        @Override
 	public void writeToFile(DataOutputStream out, Scene theScene)
 			throws IOException {
 		if (theScene != null)
@@ -12643,6 +12670,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * @return The poseKeyframe value
 	 */
 
+        @Override
 	public Keyframe getPoseKeyframe() {
 		return new PolyMeshKeyframe(this);
 	}
@@ -12654,6 +12682,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 *            Description of the Parameter
 	 */
 
+        @Override
 	public void applyPoseKeyframe(Keyframe k) {
 		PolyMeshKeyframe key = (PolyMeshKeyframe) k;
 
@@ -12683,6 +12712,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * @return Description of the Return Value
 	 */
 
+        @Override
 	public boolean canConvertToActor() {
 		return true;
 	}
@@ -12695,6 +12725,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * @return The posableObject value
 	 */
 
+        @Override
 	public Object3D getPosableObject() {
 		PolyMesh m = (PolyMesh) duplicate();
 		return new Actor(m);
@@ -12754,6 +12785,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 * @return The mesh value
 		 */
 
+                @Override
 		protected Mesh getMesh() {
 			return mesh;
 		}
@@ -12764,6 +12796,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 * @return The vertexPositions value
 		 */
 
+                @Override
 		protected Vec3[] getVertexPositions() {
 			return vertPos;
 		}
@@ -12775,6 +12808,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 *            The new vertexPositions value
 		 */
 
+                @Override
 		protected void setVertexPositions(Vec3 pos[]) {
 			vertPos = pos;
 		}
@@ -12785,6 +12819,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 * @return The skeleton value
 		 */
 
+                @Override
 		public Skeleton getSkeleton() {
 			return skeleton;
 		}
@@ -12796,6 +12831,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 *            The new skeleton value
 		 */
 
+                @Override
 		public void setSkeleton(Skeleton s) {
 			skeleton = s;
 		}
@@ -12806,6 +12842,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 * @return Description of the Return Value
 		 */
 
+                @Override
 		public Keyframe duplicate() {
 			return duplicate(mesh);
 		}
@@ -12817,6 +12854,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 *            Description of the Parameter
 		 * @return Description of the Return Value
 		 */
+                @Override
 		public Keyframe duplicate(Object owner) {
 			PolyMeshKeyframe k = new PolyMeshKeyframe();
 			k.mesh = (PolyMesh) owner;
@@ -12842,6 +12880,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 * @return The graphValues value
 		 */
 
+                @Override
 		public double[] getGraphValues() {
 			return new double[0];
 		}
@@ -12853,6 +12892,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 *            The new graphValues value
 		 */
 
+                @Override
 		public void setGraphValues(double values[]) {
 		}
 
@@ -12871,6 +12911,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 * @return Description of the Return Value
 		 */
 
+                @Override
 		public Keyframe blend(Keyframe o2, double weight1, double weight2) {
 			return null;
 		}
@@ -12890,6 +12931,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 *            Description of the Parameter
 		 * @return Description of the Return Value
 		 */
+                @Override
 		public Keyframe blend(Keyframe o2, Keyframe o3, double weight1,
 				double weight2, double weight3) {
 			return null;
@@ -12914,6 +12956,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 *            Description of the Parameter
 		 * @return Description of the Return Value
 		 */
+                @Override
 		public Keyframe blend(Keyframe o2, Keyframe o3, Keyframe o4,
 				double weight1, double weight2, double weight3, double weight4) {
 			return null;
@@ -12934,6 +12977,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 *            the weights for the different Gestures
 		 */
 
+                @Override
 		public void blendSurface(MeshGesture average, MeshGesture p[],
 				double weight[]) {
 			super.blendSurface(average, p, weight);
@@ -12971,6 +13015,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 * @return Description of the Return Value
 		 */
 
+                @Override
 		public boolean equals(Keyframe k) {
 			if (!(k instanceof PolyMeshKeyframe))
 				return false;
@@ -13001,6 +13046,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 *            Description of the Parameter
 		 */
 
+                @Override
 		public void textureChanged(TextureParameter oldParams[],
 				TextureParameter newParams[]) {
 			ParameterValue newval[] = new ParameterValue[newParams.length];
@@ -13036,6 +13082,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 * @return The textureParameter value
 		 */
 
+                @Override
 		public ParameterValue getTextureParameter(TextureParameter p) {
 			// Determine which parameter to get.
 
@@ -13054,6 +13101,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 *            The new textureParameter value
 		 */
 
+                @Override
 		public void setTextureParameter(TextureParameter p, ParameterValue value) {
 			// Determine which parameter to set.
 
@@ -13075,6 +13123,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 *                Description of the Exception
 		 */
 
+                @Override
 		public void writeToStream(DataOutputStream out) throws IOException {
 			out.writeShort(2);
 			// version
@@ -13297,6 +13346,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		 * 
 		 * @return Description of the Return Value
 		 */
+                @Override
 		public String toString() {
 			return ("vertex:" + vertex + " hedge:" + hedge + " face:" + face
 					+ " next:" + next + " smoothness:" + smoothness);
