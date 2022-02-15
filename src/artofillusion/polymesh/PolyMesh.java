@@ -1862,8 +1862,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		int faceCount;
 		int face;
 		int[] vf;
-		Vector faceTable = new Vector();
-		Vector vertTable = new Vector();
+		List<Integer> faceTable = new Vector<>();
+		List<Integer> vertTable = new Vector<>();
 		HashMap facesTextureIndexMap = null;
 
 		// dumpMesh();
@@ -1897,7 +1897,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 					newVertices[j] = new Wvertex(vert.get(j), -1);
 					// newVertices[j].smoothness =
 					// faces[i].centerSmoothness;
-					vertTable.add(new Integer(edges[faces[i].edge].vertex));
+					vertTable.add(edges[faces[i].edge].vertex);
 				}
 				// System.out.println( v1.size() );
 				for (int j = 0; j < v1.size(); ++j) {
@@ -2000,7 +2000,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
 						newFaces[faceCount] = new Wface(faces[i]);
 						newFaces[faceCount].edge = e1;
-						faceTable.addElement(new Integer(i));
+						faceTable.add(new Integer(i));
 						++faceCount;
 					}
 					newVertices[vert1].edge = e1;
@@ -2047,18 +2047,15 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 					for (int j = 0; j < oldval.length; j++)
 						newval[j] = oldval[j];
 					for (int j = oldval.length; j < newval.length; j++)
-						newval[j] = oldval[((Integer) faceTable.elementAt(j
-                                                        - oldval.length))];
+						newval[j] = oldval[faceTable.get(j - oldval.length)];
 					newParamVal[k] = new FaceParameterValue(newval);
 				} else if (oldParamVal[k] instanceof VertexParameterValue) {
-					double oldval[] = ((VertexParameterValue) oldParamVal[k])
-							.getValue();
+					double oldval[] = ((VertexParameterValue) oldParamVal[k]).getValue();
 					double newval[] = new double[vertices.length];
 					for (int j = 0; j < oldval.length; j++)
 						newval[j] = oldval[j];
 					for (int j = oldval.length; j < newval.length; j++)
-						newval[j] = oldval[((Integer) vertTable.elementAt(j
-                                                        - oldval.length))];
+						newval[j] = oldval[(vertTable.get(j - oldval.length))];
 					newParamVal[k] = new VertexParameterValue(newval);
 				} else if (oldParamVal[k] instanceof FaceVertexParameterValue) {
 					FaceVertexParameterValue fvpv = (FaceVertexParameterValue) oldParamVal[k];
@@ -2074,11 +2071,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 							if (j < oldFaceCount)
 								faceRef = j;
 							else
-								faceRef = ((Integer) faceTable.elementAt(j
-                                                                        - oldFaceCount));
+								faceRef = faceTable.get(j - oldFaceCount);
 							int[] newIndices = getFaceVertices(faces[j]);
-							int[] oldIndices = (int[]) facesTextureIndexMap
-									.get(faceRef);
+							int[] oldIndices = (int[]) facesTextureIndexMap.get(faceRef);
 							for (int m = 0; m < 2; m++) {
 								if (newIndices[m] >= vertCount) {
 									double meanVal = 0;
@@ -2089,8 +2084,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 								} else
 									for (int l = 0; l < oldIndices.length; l++) {
 										if (newIndices[m] == oldIndices[l]) {
-											newval[j][m] = fvpv.getValue(
-													faceRef, l);
+											newval[j][m] = fvpv.getValue(faceRef, l);
 										}
 									}
 							}
@@ -2125,8 +2119,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 					facesTextureIndexMap = new HashMap();
 					for (int i = 0; i < faces.length; i++) {
 						if (selected == null || selected[i])
-							facesTextureIndexMap.put(new Integer(i),
-									getFaceVertices(faces[i]));
+							facesTextureIndexMap.put(new Integer(i), getFaceVertices(faces[i]));
 					}
 					break;
 				}
