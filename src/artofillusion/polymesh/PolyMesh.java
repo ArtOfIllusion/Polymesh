@@ -2435,24 +2435,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
 	}
 
-	/**
-	 * Given an array, finds the edge that shares two vertices.
-	 * 
-	 * @param fe
-	 *            Edges array
-	 * @param v1
-	 *            First vertex
-	 * @param v2
-	 *            Second vertex
-	 * @return The edge value (-1 if no satisfying edge is found)
-	 */
-	private int getEdge(int[] fe, int v1, int v2) {
-		for (int j = 0; j < fe.length; ++j)
-			if ((v1 == edges[fe[j]].vertex && v2 == edges[edges[fe[j]].hedge].vertex)
-					|| (v2 == edges[fe[j]].vertex && v1 == edges[edges[fe[j]].hedge].vertex))
-				return fe[j];
-		return -1;
-	}
 
 	/**
 	 * Finds the edge that shares two vertices among the current edges array.
@@ -2481,59 +2463,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		return -1;
 	}
 
-	/**
-	 * Adds triangle smoothness to the smoothness vectors
-	 * 
-	 * @param fe
-	 *            The face edges
-	 * @param s1
-	 *            The vector for first triangle edge smoothnesses
-	 * @param s2
-	 *            The vector for second triangle edge smoothnesses
-	 * @param s3
-	 *            The vector for third triangle edge smoothnesses
-	 * @param i1
-	 *            First vertex index
-	 * @param i2
-	 *            Second vertex index
-	 * @param i3
-	 *            Third vertex index
-	 * @param s
-	 *            The face edge smoothness
-	 */
-	private void addSmoothness(int[] fe, Vector s1, Vector s2, Vector s3,
-			int i1, int i2, int i3, float s) {
-		if (s1 != null) {
-			int e = getEdge(fe, i1, i2);
-			if (e != -1) {
-				s1.add(new Float(edges[e].smoothness));
-				if (edges[e].smoothness != edges[edges[e].hedge].smoothness)
-					System.out.println("Pb smoothness");
-			} else {
-				s1.add(new Float(s));
-			}
-		}
-		if (s2 != null) {
-			int e = getEdge(fe, i2, i3);
-			if (e != -1) {
-				s2.add(new Float(edges[e].smoothness));
-				if (edges[e].smoothness != edges[edges[e].hedge].smoothness)
-					System.out.println("Pb smoothness");
-			} else {
-				s2.add(new Float(s));
-			}
-		}
-		if (s3 != null) {
-			int e = getEdge(fe, i3, i1);
-			if (e != -1) {
-				s3.add(new Float(edges[e].smoothness));
-				if (edges[e].smoothness != edges[edges[e].hedge].smoothness)
-					System.out.println("Pb smoothness");
-			} else {
-				s3.add(new Float(s));
-			}
-		}
-	}
 
 	/**
 	 * Gets the previous vertex of polygon, given the fact that some vertices
