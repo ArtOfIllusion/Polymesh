@@ -65,6 +65,7 @@ import artofillusion.ui.UIUtilities;
 import buoy.widget.BStandardDialog;
 import buoy.widget.RowContainer;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Winged edge mesh implementation for Art of Illusion.
@@ -1864,7 +1865,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		int[] vf;
 		List<Integer> faceTable = new Vector<>();
 		List<Integer> vertTable = new Vector<>();
-		HashMap facesTextureIndexMap = null;
+		Map<Integer, int[]> facesTextureIndexMap = null;
 
 		// dumpMesh();
 		// first let's record any per face per vertex texture parameter
@@ -1916,10 +1917,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 					} else {
 						e1 = edgeCount++;
 						e1p = -1;
-						newEdges[e1] = new Wedge(vert2, e1 + newEdges.length
-								/ 2, faceCount, -1);
-						newEdges[e1 + newEdges.length / 2] = new Wedge(vert1,
-								e1, -1, -1);
+						newEdges[e1] = new Wedge(vert2, e1 + newEdges.length/ 2, faceCount, -1);
+						newEdges[e1 + newEdges.length / 2] = new Wedge(vert1, e1, -1, -1);
 						newEdges[e1].smoothness = 1.0f;
 						newEdges[e1 + newEdges.length / 2].smoothness = 1.0f;
 					}
@@ -1932,10 +1931,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 					} else {
 						e2 = edgeCount++;
 						e2p = -1;
-						newEdges[e2] = new Wedge(vert3, e2 + newEdges.length
-								/ 2, faceCount, -1);
-						newEdges[e2 + newEdges.length / 2] = new Wedge(vert2,
-								e2, -1, -1);
+						newEdges[e2] = new Wedge(vert3, e2 + newEdges.length/ 2, faceCount, -1);
+						newEdges[e2 + newEdges.length / 2] = new Wedge(vert2, e2, -1, -1);
 						newEdges[e2].smoothness = 1.0f;
 						newEdges[e2 + newEdges.length / 2].smoothness = 1.0f;
 					}
@@ -1948,10 +1945,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 					} else {
 						e3 = edgeCount++;
 						e3p = -1;
-						newEdges[e3] = new Wedge(vert1, e3 + newEdges.length
-								/ 2, faceCount, -1);
-						newEdges[e3 + newEdges.length / 2] = new Wedge(vert3,
-								e3, -1, -1);
+						newEdges[e3] = new Wedge(vert1, e3 + newEdges.length/ 2, faceCount, -1);
+						newEdges[e3 + newEdges.length / 2] = new Wedge(vert3, e3, -1, -1);
 						newEdges[e3].smoothness = 1.0f;
 						newEdges[e3 + newEdges.length / 2].smoothness = 1.0f;
 					}
@@ -2000,7 +1995,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
 						newFaces[faceCount] = new Wface(faces[i]);
 						newFaces[faceCount].edge = e1;
-						faceTable.add(new Integer(i));
+						faceTable.add(i);
 						++faceCount;
 					}
 					newVertices[vert1].edge = e1;
@@ -2110,22 +2105,22 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	 * 
 	 * @return a HashMap containing for each face the list of vertices
 	 */
-	private HashMap recordFacesTexture(boolean[] selected) {
-		HashMap facesTextureIndexMap = null;
-		ParameterValue oldParamVal[] = getParameterValues();
-		if (oldParamVal != null) {
-			for (int k = 0; k < oldParamVal.length; k++) {
-				if (oldParamVal[k] instanceof FaceVertexParameterValue) {
-					facesTextureIndexMap = new HashMap();
-					for (int i = 0; i < faces.length; i++) {
-						if (selected == null || selected[i])
-							facesTextureIndexMap.put(new Integer(i), getFaceVertices(faces[i]));
-					}
-					break;
-				}
-			}
-		}
-		return facesTextureIndexMap;
+	private Map<Integer, int[]> recordFacesTexture(boolean[] selected) {
+            Map<Integer, int[]> facesTextureIndexMap = null;
+            ParameterValue oldParamVal[] = getParameterValues();
+            if (oldParamVal != null) {
+                    for (int k = 0; k < oldParamVal.length; k++) {
+                            if (oldParamVal[k] instanceof FaceVertexParameterValue) {
+                                    facesTextureIndexMap = new HashMap<>();
+                                    for (int i = 0; i < faces.length; i++) {
+                                            if (selected == null || selected[i])
+                                                    facesTextureIndexMap.put(i, getFaceVertices(faces[i]));
+                                    }
+                                    break;
+                            }
+                    }
+            }
+            return facesTextureIndexMap;
 	}
 
 	/**
