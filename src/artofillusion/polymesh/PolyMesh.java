@@ -105,9 +105,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
 	private List<Integer> v3;
 
-	private Vector vert;
+	private List<Vec3> vert;
 
-	private Vector vertInfo;
+	private List<VertexParamInfo> vertInfo;
 
 	private Vector faceInfo;
 
@@ -1413,7 +1413,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		vertInfo = new Vector();
 		faceInfo = new Vector();
 		for (int i = 0; i < vertices.length; ++i) {
-			vert.addElement(vertices[i].r);
+			vert.add(vertices[i].r);
 			vertInfo.add(new VertexParamInfo(new int[] { i },
 					new double[] { 1.0 }));
 		}
@@ -1431,7 +1431,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		}
 		Vec3[] vertArray = new Vec3[vert.size()];
 		for (int i = 0; i < vertArray.length; ++i)
-			vertArray[i] = (Vec3) vert.elementAt(i);
+			vertArray[i] = vert.get(i);
 
 			RenderingTriangle[] tri = new RenderingTriangle[v1.size()];
 			for (int i = 0; i < v1.size(); ++i)
@@ -1442,21 +1442,18 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 				ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
 				for (int i = 0; i < oldParamVal.length; i++) {
 					if (oldParamVal[i] instanceof VertexParameterValue) {
-						double oldval[] = ((VertexParameterValue) oldParamVal[i])
-								.getValue();
+						double oldval[] = ((VertexParameterValue) oldParamVal[i]).getValue();
 						double newval[] = new double[vert.size()];
 						for (int j = 0; j < vert.size(); ++j) {
-							int[] vf = ((VertexParamInfo) vertInfo.elementAt(j)).vert;
-							double[] coef = ((VertexParamInfo) vertInfo
-									.elementAt(j)).coef;
+							int[] vf = vertInfo.get(j).vert;
+							double[] coef = vertInfo.get(j).coef;
 							for (int k = 0; k < vf.length; ++k)
 								newval[j] += coef[k] * oldval[vf[k]];
 						}
 						newParamVal[i] = new VertexParameterValue(newval);
 
 					} else if (oldParamVal[i] instanceof FaceParameterValue) {
-						double oldval[] = ((FaceParameterValue) oldParamVal[i])
-								.getValue();
+						double oldval[] = ((FaceParameterValue) oldParamVal[i]).getValue();
 						double newval[] = new double[faceInfo.size()];
 						for (int j = 0; j < newval.length; ++j)
 							newval[j] = oldval[((Integer) faceInfo.elementAt(j))];
@@ -1480,10 +1477,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 								}
 								int pmeFace = ((Integer) faceInfo.elementAt(j));
 								int[] fv = getFaceVertices(faces[pmeFace]);
-								int[] vf = ((VertexParamInfo) vertInfo
-										.elementAt(vertex)).vert;
-								double[] coef = ((VertexParamInfo) vertInfo
-										.elementAt(vertex)).coef;
+								int[] vf = vertInfo.get(vertex).vert;
+								double[] coef = vertInfo.get(vertex).coef;
 								for (int l = 0; l < vf.length; ++l) {
 									int vv = -1;
 									for (int m = 0; m < fv.length; ++m) {
@@ -1867,9 +1862,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		// first let's record any per face per vertex texture parameter
 		// System.out.println(vertices.length);
 		facesTextureIndexMap = recordFacesTexture(selected);
-		vert = new Vector();
+		vert = new Vector<>();
 		for (int i = 0; i < vertices.length; ++i)
-			vert.addElement(vertices[i].r);
+			vert.add(vertices[i].r);
 		for (int i = 0; i < selected.length; i++) {
 			if (selected[i]) {
 				vf = getFaceVertices(faces[i]);
@@ -1891,7 +1886,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 				edgeCount = edges.length / 2;
 				faceCount = faces.length;
 				for (int j = vertices.length; j < vert.size(); ++j) {
-					newVertices[j] = new Wvertex((Vec3) vert.elementAt(j), -1);
+					newVertices[j] = new Wvertex(vert.get(j), -1);
 					// newVertices[j].smoothness =
 					// faces[i].centerSmoothness;
 					vertTable.add(new Integer(edges[faces[i].edge].vertex));
@@ -3034,16 +3029,16 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		}
 		
 		TriangleMesh mesh;
-		vert = new Vector();
-		v1 = new Vector();
-		v2 = new Vector();
-		v3 = new Vector();
+		vert = new Vector<>();
+		v1 = new Vector<>();
+		v2 = new Vector<>();
+		v3 = new Vector<>();
 		vertInfo = new Vector();
 		faceInfo = new Vector();
 		polyedge = null;
 
 		for (int i = 0; i < vertices.length; ++i) {
-			vert.addElement(vertices[i].r);
+			vert.add(vertices[i].r);
 			vertInfo.add(new VertexParamInfo(new int[] { i },
 					new double[] { 1.0 }));
 		}
@@ -3062,7 +3057,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		int[][] tfaces = new int[v1.size()][3];
 		Vec3[] v = new Vec3[vert.size()];
 		for (int i = 0; i < v.length; ++i)
-			v[i] = (Vec3) vert.elementAt(i);
+			v[i] = vert.get(i);
 		for (int i = 0; i < v1.size(); ++i) {
 			tfaces[i][0] = v1.get(i);
 			tfaces[i][1] = v2.get(i);
@@ -3156,9 +3151,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 							.getValue();
 					double newval[] = new double[vert.size()];
 					for (int j = 0; j < vert.size(); ++j) {
-						int[] vf = ((VertexParamInfo) vertInfo.elementAt(j)).vert;
-						double[] coef = ((VertexParamInfo) vertInfo
-								.elementAt(j)).coef;
+						int[] vf = vertInfo.get(j).vert;
+						double[] coef = vertInfo.get(j).coef;
 						for (int k = 0; k < vf.length; ++k)
 							newval[j] += coef[k] * oldval[vf[k]];
 					}
@@ -3190,10 +3184,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 							}
 							int pmeFace = ((Integer) faceInfo.elementAt(j));
 							int[] fv = getFaceVertices(faces[pmeFace]);
-							int[] vf = ((VertexParamInfo) vertInfo
-									.elementAt(vertex)).vert;
-							double[] coef = ((VertexParamInfo) vertInfo
-									.elementAt(vertex)).coef;
+							int[] vf = vertInfo.get(vertex).vert;
+							double[] coef = vertInfo.get(vertex).coef;
 							for (int l = 0; l < vf.length; ++l) {
 								int vv = -1;
 								for (int m = 0; m < fv.length; ++m) {
