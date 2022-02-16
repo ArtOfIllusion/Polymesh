@@ -4445,8 +4445,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 				if (edges[i].face == -1 && edges[edges[i].next].next == i
 						&& edges[i].next != i && !deleted[edges[i].next]) {
 					if (edges[edges[i].next].face != -1)
-						System.out
-								.println("Houston, We've got a problem in removeTwoEdgeBoundaries");
+						System.out.println("Houston, We've got a problem in removeTwoEdgeBoundaries");
 					int e2 = edges[i].next;
 					int he2 = edges[e2].hedge;
 					int phe2 = getPreviousEdge(he2);
@@ -12039,26 +12038,25 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	public String checkMesh() {
 
 		boolean repairTwoEdgeFaces = false;
-		String s = "";
+		StringBuilder s = new StringBuilder();
 
-		s += "Mesh consisting of:\n";
-		s += vertices.length + " vertices, " + edges.length / 2 + " edges, "
-				+ faces.length + " faces.\n\n";
-		s += "Checking Vertices...\n";
+		s.append("Mesh consisting of:\n");
+		s.append(vertices.length).append(" vertices, ").append(edges.length / 2).append(" edges, ").append(faces.length).append(" faces.\n\n");
+		s.append("Checking Vertices...\n");
 		for (int i = 0; i < vertices.length; ++i) {
 			if (vertices[i].edge >= edges.length) {
 				vertices[i].edge = 0;
-				s += "vertex " + i + " : edge reference too high\n";
+				s.append("vertex ").append(i).append(" : edge reference too high\n");
 			} else if (vertices[i].edge < 0) {
 				vertices[i].edge = 0;
-				s += "vertex " + i + " : negative edge reference\n";
+				s.append("vertex ").append(i).append(" : negative edge reference\n");
 			}
 		}
 		for (int i = 0; i < vertices.length; ++i) {
 			if (edges[vertices[i].edge].hedge >= 0
 					&& edges[vertices[i].edge].hedge < edges.length
 					&& edges[edges[vertices[i].edge].hedge].vertex != i) {
-				s += "Wrong edge reference for vertex " + i + ".\n";
+				s.append("Wrong edge reference for vertex ").append(i).append(".\n");
 				boolean corrected = false;
 				for (int j = 0; j < edges.length; ++j) {
 					if (edges[edges[j].hedge].vertex == i) {
@@ -12068,9 +12066,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 					}
 				}
 				if (corrected)
-					s += "Corrected.\n";
+					s.append("Corrected.\n");
 				else
-					s += "No edge leaving this vertex. No correction possible.\n";
+					s.append("No edge leaving this vertex. No correction possible.\n");
 			}
 		}
 		int counter;
@@ -12084,10 +12082,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 				counter++;
 			}
 			if (counter == edges.length)
-				s += "Problem infinite edge references on vertex: " + i + ".\n";
+				s.append("Problem infinite edge references on vertex: ").append(i).append(".\n");
 		}
-		s += "Done checking vertices.\n\n";
-		s += "Checking Edges...\n";
+		s.append("Done checking vertices.\n\n");
+		s.append("Checking Edges...\n");
 		boolean validHedge = true;
 		boolean validVertex = true;
 		for (int i = 0; i < edges.length; ++i) {
@@ -12098,10 +12096,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 			if (edges[i].face >= faces.length)
 				edges[i].face = -2;
 			if (edges[i].vertex == edges[edges[i].hedge].vertex) {
-				s += "Null length edge found\n";
+				s.append("Null length edge found\n");
 			}
 			if (edges[i].next == i) {
-				s += "Single edge loop found\n";
+				s.append("Single edge loop found\n");
 				edges[i].next = 0;
 			} else if (edges[edges[i].next].next == i) {
 				repairTwoEdgeFaces = true;
@@ -12112,48 +12110,45 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 			}
 		}
 		if (!validHedge)
-			s += "Half edge reference(s) out of range. No correction possible.\n";
+			s.append("Half edge reference(s) out of range. No correction possible.\n");
 		if (!validVertex)
-			s += "Vertex reference(s) out of range. No correction possible.\n";
+			s.append("Vertex reference(s) out of range. No correction possible.\n");
 		if (repairTwoEdgeFaces)
-			s += "Two edge faces/boundaries found.\n";
+			s.append("Two edge faces/boundaries found.\n");
 		if (validHedge & validVertex) {
 			for (int i = 0; i < edges.length; ++i) {
 				if (edges[i].hedge < edges.length / 2 && i < edges.length / 2)
-					s += "Wrong position in array for edges " + i + " and "
-							+ edges[i].hedge + ".\n";
+					s.append("Wrong position in array for edges ").append(i).append(" and ").append(edges[i].hedge).append(".\n");
 				if (edges[i].hedge >= edges.length / 2 && i >= edges.length / 2)
-					s += "Wrong position in array for edges " + i + " and "
-							+ edges[i].hedge + ".\n";
+					s.append("Wrong position in array for edges ").append(i).append(" and ").append(edges[i].hedge).append(".\n");
 				if (edges[i].face == -1 && edges[edges[i].hedge].face == -1)
-					s += "Edges " + i + " and other half-edge" + edges[i].hedge
-							+ " both boundary edges.\n";
+					s.append("Edges ").append(i).append(" and other half-edge").append(edges[i].hedge).append(" both boundary edges.\n");
 				if (edges[i].next >= edges.length) {
 					edges[i].next = 0;
-					s += "edge " + i + " : next edge reference too high\n";
+					s.append("edge ").append(i).append(" : next edge reference too high\n");
 				} else if (edges[i].next < 0) {
 					edges[i].next = 0;
-					s += "edge " + i + " : negative next edge reference\n";
+					s.append("edge ").append(i).append(" : negative next edge reference\n");
 				}
 				if (edges[i].face >= faces.length) {
 					edges[i].face = -1;
-					s += "edge " + i + " : face reference too high\n";
+					s.append("edge ").append(i).append(" : face reference too high\n");
 				}
 			}
 		}
-		s += "Done checking edges.\n\n";
-		s += "Checking Faces...\n";
+		s.append("Done checking edges.\n\n");
+		s.append("Checking Faces...\n");
 		for (int i = 0; i < faces.length; ++i)
 			if (faces[i].edge >= edges.length) {
 				faces[i].edge = 0;
-				s += "face " + i + " : edge reference too high\n";
+				s.append("face ").append(i).append(" : edge reference too high\n");
 			} else if (faces[i].edge < 0) {
 				faces[i].edge = 0;
-				s += "face " + i + " : negative edge reference\n";
+				s.append("face ").append(i).append(" : negative edge reference\n");
 			}
 		for (int i = 0; i < faces.length; ++i) {
 			if (edges[faces[i].edge].face != i) {
-				s += "Wrong edge reference for face " + i + ".\n";
+				s.append("Wrong edge reference for face ").append(i).append(".\n");
 				boolean corrected = false;
 				ed = faces[i].edge;
 				int index = 0;
@@ -12164,10 +12159,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 					++index;
 				}
 				if (index >= edges.length)
-					s += "Unclosed face. No correction possible.\n";
+					s.append("Unclosed face. No correction possible.\n");
 				else if (corrected) {
 					changeFace(edges, faces[i].edge, i);
-					s += "Corrected.\n";
+					s.append("Corrected.\n");
 				} else {
 					for (int j = 0; j < edges.length; ++j) {
 						if (edges[j].face == i) {
@@ -12178,34 +12173,33 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 						}
 					}
 					if (corrected)
-						s += "Corrected.\n";
+						s.append("Corrected.\n");
 					else
-						s += "No edge sharing this face. No correction possible.\n";
+						s.append("No edge sharing this face. No correction possible.\n");
 				}
 			} else {
 				ed = faces[i].edge;
 				int index = 0;
 				while (edges[ed].next != faces[i].edge && index < edges.length) {
 					if (edges[ed].face != i) {
-						s += "Wrong edge face reference for edge " + ed
-								+ " (face " + i + "). Corrected.\n";
+						s.append("Wrong edge face reference for edge ").append(ed).append(" (face ").append(i).append("). Corrected.\n");
 						edges[ed].face = i;
 					}
 					ed = edges[ed].next;
 					++index;
 				}
 				if (index >= edges.length)
-					s += "Unclosed face. No correction possible.\n";
+					s.append("Unclosed face. No correction possible.\n");
 			}
 
 		}
-		s += "Done checking faces.\n\n";
+		s.append("Done checking faces.\n\n");
 		if (repairTwoEdgeFaces) {
-			s += "Repairing two edge faces/boundaries...\n";
+			s.append("Repairing two edge faces/boundaries...\n");
 			removeTwoEdgeBoundaries();
 			removeTwoEdgedFaces(null);
 		}
-		return s;
+		return s.toString();
 	}
 
 	/**
