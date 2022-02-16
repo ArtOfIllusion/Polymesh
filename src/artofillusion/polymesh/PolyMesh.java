@@ -1881,8 +1881,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 				v1 = new Vector<>();
 				v2 = new Vector<>();
 				v3 = new Vector<>();
-				vertInfo = new Vector();
-				faceInfo = new Vector();
+				vertInfo = new Vector<>();
+				faceInfo = new Vector<>();
 				/*
 				 * s1 = null; s2 = null; s3 = null;
 				 */
@@ -2967,14 +2967,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		v1 = new Vector<>();
 		v2 = new Vector<>();
 		v3 = new Vector<>();
-		vertInfo = new Vector();
-		faceInfo = new Vector();
+		vertInfo = new Vector<>();
+		faceInfo = new Vector<>();
 		polyedge = null;
 
 		for (int i = 0; i < vertices.length; ++i) {
 			vert.add(vertices[i].r);
-			vertInfo.add(new VertexParamInfo(new int[] { i },
-					new double[] { 1.0 }));
+			vertInfo.add(new VertexParamInfo(new int[] { i }, new double[] { 1.0 }));
 		}
 		for (int i = 0; i < faces.length; ++i) {
 			int[] vf = getFaceVertices(faces[i]);
