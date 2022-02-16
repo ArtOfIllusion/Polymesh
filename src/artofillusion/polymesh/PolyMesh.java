@@ -11768,51 +11768,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		return -1;
 	}
 
-	/**
-	 * Returns an array to a continuous selection of edges. If the selection
-	 * consists in several interconnected lines then an arbitray line is
-	 * returned.
-	 * 
-	 * @param sel
-	 *            The current edge selection
-	 * @param start
-	 *            An edge along the selected line
-	 * @return the indew array describing the edge line
-	 */
-	private int[] findEdgeLine(boolean[] sel, int start) {
-		ArrayList edgeLine = new ArrayList();
-		int edge = start;
-		int firstEdge = start;
-		int newEdge;
-		while (edge != -1) {
-			newEdge = -1;
-			int vertex = edges[edges[edge].hedge].vertex;
-			int ve[] = getVertexEdges(vertices[vertex]);
-			for (int i = 0; i < ve.length; i++) {
-				if (ve[i] != edge && ve[i] != edges[edge].hedge
-						&& isEdgeSelected(ve[i], seams))
-					firstEdge = newEdge = ve[i];
-			}
-			edge = newEdge;
-		}
-		edge = firstEdge;
-		while (edge != -1) {
-			newEdge = -1;
-			int vertex = edges[edge].vertex;
-			int ve[] = getVertexEdges(vertices[vertex]);
-			for (int i = 0; i < ve.length; i++) {
-				if (ve[i] != edge && ve[i] != edges[edge].hedge
-						&& isEdgeSelected(ve[i], seams))
-					edgeLine.add(new Integer(newEdge = ve[i]));
-			}
-			edge = newEdge;
-		}
-		int[] indices = new int[edgeLine.size()];
-		for (int i = 0; i < indices.length; i++)
-			indices[i] = ((Integer) edgeLine.get(i));
-		return indices;
-	}
 
+        //TDDO: Delete this method together with PolymeshEditorWindow.doFindSeams
 	/**
 	 * Finds appropriate seams in a mesh. Postponed to a later date.
 	 */
