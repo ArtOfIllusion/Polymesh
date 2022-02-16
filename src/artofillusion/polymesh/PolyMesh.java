@@ -3791,7 +3791,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		int[] toVert;
 		int[] fromVert;
 
-		//dumpFaceVertices();
 		int count = edges.length / 2;
 		newVertices = new Wvertex[vertices.length + count];
 		newEdges = new Wedge[edges.length + 2 * count];
@@ -3898,18 +3897,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		vertices = newVertices;
 		resetMesh();
 		//projectedEdges = newProjectEdges;
-		//dumpFaceVertices();
+
 	}
 
-	private void dumpFaceVertices() {
-		for (int i = 0; i < faces.length; i++) {
-			int[] fv = getFaceVertices(faces[i]);
-			System.out.print(i + ": ");
-			for (int j = 0; j < fv.length; j++)
-				System.out.print(fv[j] + " ");
-			System.out.println("");
-		}
-	}
 
 	/**
 	 * Merges two boundary edges.
