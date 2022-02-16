@@ -12379,12 +12379,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
         @Override
 	public Object getPropertyValue(int index) {
-		switch (index) {
-		case 0:
-			return interactiveSmoothLevel;
-		default:
-			return null;
-		}
+          return index == 0 ? interactiveSmoothLevel: null;
 	}
 
         @Override
