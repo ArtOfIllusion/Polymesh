@@ -11874,9 +11874,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		newEdges = new Wedge[edges.length + (newPoints.length + 1) * 2];
 		newFaces = new Wface[faces.length + 1];
 		translateMesh(newVertices, newEdges, newFaces);
-		ArrayList v;
-		ArrayList v1 = new ArrayList();
-		ArrayList v2 = new ArrayList();
+		List<Integer> v;
+		List<Integer> v1 = new ArrayList<>();
+		List<Integer> v2 = new ArrayList<>();
 		boolean found;
 		int fromPoint = from;
 		while (fromPoint != to) {
@@ -11886,9 +11886,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 				if (edges[ve[i]].face < 0) {
 					found = true;
 					if (ve[i] < edges.length / 2)
-						v1.add(new Integer(ve[i]));
+						v1.add(ve[i]);
 					else
-						v1.add(new Integer(ve[i] + newEdges.length / 2 - edges.length / 2));
+						v1.add(ve[i] + newEdges.length / 2 - edges.length / 2);
 					fromPoint = edges[ve[i]].vertex;
 					break;
 				}
@@ -11910,10 +11910,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 				if (edges[ve[i]].face < 0) {
 					found = true;
 					if (ve[i] < edges.length / 2)
-						v2.add(new Integer(ve[i]));
+						v2.add(ve[i]);
 					else
-						v2.add(new Integer(ve[i] + newEdges.length / 2
-								- edges.length / 2));
+						v2.add(ve[i] + newEdges.length / 2 - edges.length / 2);
 					fromPoint = edges[ve[i]].vertex;
 					break;
 				}
@@ -11935,7 +11934,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
 		}
 		for (int i = 0; i < v.size(); i++) {
-			int k = ((Integer) v.get(i));
+			int k = v.get(i);
 			newEdges[k].face = faces.length;
 		}
 		int f, t;
@@ -11963,7 +11962,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 					edges.length / 2 + i, -1, edges.length / 2 + i - 1
 							+ newEdges.length / 2);
 		}
-		int index = ((Integer) v.get(0));
+		int index = v.get(0);
 		newEdges[edges.length / 2 + newPoints.length].next = index;
 		if (index >= newEdges.length / 2)
 			index -= newEdges.length / 2 - edges.length / 2;
@@ -11982,7 +11981,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 				break;
 			}
 		}
-		index = ((Integer) v.get(v.size() - 1));
+		index = v.get(v.size() - 1);
 		newEdges[edges.length / 2 + newEdges.length / 2].next = newEdges[index].next;
 		newEdges[index].next = edges.length / 2;
 		for (int i = 0; i < newPoints.length; ++i) {
