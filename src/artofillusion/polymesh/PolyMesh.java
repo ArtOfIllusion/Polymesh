@@ -4503,10 +4503,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 	}
 
 	public ArrayList extractCurveFromSelection(boolean[] sel) {
-		int beforee1, aftere1, firste1, e1;
+
 		ArrayList curves = new ArrayList();
-		ArrayList curve;
-		ArrayList closed = new ArrayList();
+		List<Vec3> curve;
+		List<Boolean> closed = new ArrayList<>();
 		// deal with open curves
 		for (int i = 0; i < edges.length / 2; i++)
 			if (sel[i]) {
@@ -4529,7 +4529,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 				int p = edges[i].hedge;
 				if (regular)
 					p = i;
-				curve = new ArrayList();
+				curve = new ArrayList<>();
 				curve.add(new Vec3(vertices[edges[edges[p].hedge].vertex].r));
 				while (isEdgeSelected(p, sel)) {
 					curve.add(new Vec3(vertices[edges[p].vertex].r));
@@ -4545,7 +4545,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
 				}
 				curves.add(curve);
-				closed.add(new Boolean(false));
+				closed.add(false);
 			}
 		// now deal with closed ones
 		for (int i = 0; i < edges.length / 2; i++)
@@ -4568,7 +4568,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
 				}
 				curves.add(curve);
-				closed.add(new Boolean(true));
+				closed.add(true);
 			}
 		curves.add(closed);
 		return curves;
