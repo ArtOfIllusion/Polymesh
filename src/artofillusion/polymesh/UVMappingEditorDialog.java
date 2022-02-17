@@ -1,7 +1,8 @@
 /*
  *  Copyright (C) 2007 by François Guillet
  *  Modifications Copyright (C) 2019 by Petri Ihalainen
- *
+ *  Changes copyright (C) 2022 by Maksim Khramov
+
  *  This program is free software; you can redistribute it and/or modify it under the 
  *  terms of the GNU General Public License as published by the Free Software 
  *  Foundation; either version 2 of the License, or (at your option) any later version. 
@@ -15,7 +16,6 @@ package artofillusion.polymesh;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.awt.Window;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -25,11 +25,8 @@ import java.awt.geom.Line2D;
 import java.awt.BasicStroke;
 import java.awt.Rectangle;
 
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
@@ -60,10 +57,10 @@ import buoy.xml.WidgetDecoder;
  */
 public class UVMappingEditorDialog extends BDialog {
 
-    private UVMappingCanvas mappingCanvas; // the mapping canvas displayed at window center
-    private BList pieceList; // the list of mesh pieces
+    private final UVMappingCanvas mappingCanvas; // the mapping canvas displayed at window center
+    private final BList pieceList; // the list of mesh pieces
     private UVMappingData mappingData; // mapping data associated to the unfolded mesh
-    private MeshPreviewer preview; // 3D textutring preview
+    private final MeshPreviewer preview; // 3D texturing preview
     protected ActionProcessor mouseProcessor;
     protected UVMappingManipulator manipulator;
     private ObjectInfo objInfo;
@@ -73,27 +70,30 @@ public class UVMappingEditorDialog extends BDialog {
     private ArrayList<UVMapping> mappingList; // the corresponding mapping  list
     private ArrayList<Vec2[][]> oldCoordList; // the old texture coordinates for undoing changes
     private UVMappingData oldMappingData; // the original mapping data for undoing changes
-    private PMUndoRedoStack undoRedoStack; // the Undo/Redo stack
+    
     private boolean clickedOk; // true if the user clicked the ok button
+
     private boolean tension;
-    private int tensionValue;
+    private int tensionValue = 2;
+    private int tensionDistance = 3;
 
      // This is not pretty. 3.0 --> 3.5 or maybe a geometric sequence
 
     protected static final double[] tensionArray = { 5.0, 3.0, 2.0, 1.0, 0.5 };
-    private int tensionDistance;
-    private int undoLevels;
+    
+    
+    private int undoLevels = 20;
+    private PMUndoRedoStack undoRedoStack = new PMUndoRedoStack(undoLevels); // the Undo/Redo stack
 
     /* Interface variables */
 
-    private BorderContainer borderContainer1;
+   
     private BLabel componentLabel;
     private BComboBox componentCB;
     private BLabel uMinValue;
     private BLabel uMaxValue;
     private BLabel vMinValue;
     private BLabel vMaxValue;
-    private BButton autoButton;
     private BLabel resLabel;
     private BSpinner resSpinner;
     private BComboBox mappingCB;
@@ -102,7 +102,7 @@ public class UVMappingEditorDialog extends BDialog {
     private BCheckBox meshTensionCB;
     private BSpinner distanceSpinner;
     private BComboBox tensionCB;
-    private BMenuBar menuBar;
+    
     private BMenuItem undoMenuItem;
     private BMenuItem redoMenuItem;
     private BMenu sendTexToMappingMenu;
@@ -116,18 +116,13 @@ public class UVMappingEditorDialog extends BDialog {
      *  Construct a new UVMappingEditorDialog
      */
 
-    public UVMappingEditorDialog(String title, ObjectInfo objInfo, boolean initialize, BFrame parent) {
+    public UVMappingEditorDialog(ObjectInfo objInfo, boolean initialize, BFrame parent) {
 
-        super(parent, title, true);
+        super(parent, Translate.text("uvCoordsTitle"), true);
         this.objInfo = objInfo;
         PolyMesh mesh = (PolyMesh) objInfo.object;
         mappingData = mesh.getMappingData();
         oldMappingData = mappingData.duplicate();
-        undoLevels = 20;
-        undoRedoStack = new PMUndoRedoStack(undoLevels);
-        tension = false;
-        tensionValue = 2;
-        tensionDistance = 3;
 
         // find out the UVMapped texture on parFacePerVertex basis
         // record current coordinates in order to undo if the user cancels
@@ -197,13 +192,10 @@ public class UVMappingEditorDialog extends BDialog {
                                    LayoutInfo.NONE, 
                                    new Insets(2, 2, 2, 2), 
                                    new Dimension(0, 0)));
-        InputStream inputStream = null;
-        try {
-            WidgetDecoder decoder = 
-                          new WidgetDecoder(inputStream = 
-                          getClass().getResource("interfaces/unfoldEditor.xml").openStream(), 
-                          PolyMeshPlugin.resources);
-            borderContainer1 = (BorderContainer) decoder.getRootObject();
+        
+        try(InputStream is = getClass().getResource("interfaces/unfoldEditor.xml").openStream()) {
+            WidgetDecoder decoder = new WidgetDecoder(is, PolyMeshPlugin.resources);
+            BorderContainer borderContainer = (BorderContainer) decoder.getRootObject();
             uMinValue = ((BLabel) decoder.getObject("uMinValue"));
             uMaxValue = ((BLabel) decoder.getObject("uMaxValue"));
             vMinValue = ((BLabel) decoder.getObject("vMinValue"));
@@ -218,7 +210,7 @@ public class UVMappingEditorDialog extends BDialog {
             textureCB.addEventLink(ValueChangedEvent.class, this, "doTextureChanged");
             componentLabel = ((BLabel) decoder.getObject("componentLabel"));
             componentCB = ((BComboBox) decoder.getObject("componentCB"));
-            content.add(borderContainer1, 
+            content.add(borderContainer, 
                         BorderContainer.WEST, 
                         new LayoutInfo(LayoutInfo.CENTER, 
                                        LayoutInfo.BOTH, 
@@ -237,7 +229,7 @@ public class UVMappingEditorDialog extends BDialog {
                                                   Translate.text("Emissive") });
             componentCB.addEventLink(ValueChangedEvent.class, this, "doChangeComponent");
             resSpinner = ((BSpinner) decoder.getObject("resSpinner"));
-            resSpinner.setValue(new Integer(mappingData.sampling));
+            resSpinner.setValue(mappingData.sampling);
             resSpinner.addEventLink(ValueChangedEvent.class, this, "doSamplingChanged");
             meshTensionCB = ((BCheckBox) decoder.getObject("meshTensionCB"));
             meshTensionCB.addEventLink(ValueChangedEvent.class, this, "doTensionChanged");
@@ -255,14 +247,7 @@ public class UVMappingEditorDialog extends BDialog {
         } catch (IOException ex) {
             ex.printStackTrace();
         } 
-        finally {
-            try {
-                if (inputStream != null)
-                    inputStream.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
+
         BSplitPane meshViewPanel = new BSplitPane(BSplitPane.VERTICAL, 
                                                   new BScrollPane(pieceList = new BList()), 
                                                   preview = new MeshPreviewer(objInfo, 200, 200));
@@ -299,7 +284,7 @@ public class UVMappingEditorDialog extends BDialog {
         mappingCanvas.addEventLink(MouseScrolledEvent.class, this, "processMouseScrolled");
         manipulator = new UVMappingManipulator(mappingCanvas, this);
 
-        menuBar = new BMenuBar();
+        BMenuBar menuBar = new BMenuBar();
 
         BMenu menu = Translate.menu("polymesh:edit");
         menu.add(undoMenuItem = Translate.menuItem("undo", this, "doUndo"));
@@ -553,22 +538,20 @@ public class UVMappingEditorDialog extends BDialog {
     }
 
     private void initializeMappingsTextures() {
-        ArrayList<UVMeshMapping> mappings = mappingData.getMappings();
-        for (int i = 0; i < mappings.size(); i++) {
-            UVMeshMapping mapping = mappings.get(i);
-            int t;
-            if (mapping.textures.size() > 0) {
-                for (int j = mapping.textures.size() - 1; j >= 0; j--) {
-                    t = getTextureFromID(mapping.textures.get(j));
-                    if (t < 0)
-                        mapping.textures.remove(j);
-                }
+        for (UVMeshMapping mapping: mappingData.getMappings()) {
+            if(mapping.textures.isEmpty()) continue;
+
+            for (int j = mapping.textures.size() - 1; j >= 0; j--) {
+                int t = getTextureFromID(mapping.textures.get(j));
+                if (t < 0)
+                    mapping.textures.remove(j);
             }
+
         }
     }
 
     private int getTextureFromID(Integer id) {
-        if (texList == null || texList.size() == 0)
+        if (texList == null || texList.isEmpty())
             return -1;
         for (int i = 0; i < texList.size(); i++)
             if (texList.get(i).getID() == id)
@@ -592,12 +575,12 @@ public class UVMappingEditorDialog extends BDialog {
     private void changeMapping(int index) {
         currentMapping = mappingData.mappings.get(index);
         setTexturesForMapping(currentMapping);
-        if (currentMapping.textures.size() > 0) {
-            currentTexture = getTextureFromID(currentMapping.textures.get(0));
-            textureCB.setSelectedIndex(0);
-        }
+        if (currentMapping.textures.isEmpty()) currentTexture = -1;
         else
-            currentTexture = -1;
+        {
+          currentTexture = getTextureFromID(currentMapping.textures.get(0));
+          textureCB.setSelectedIndex(0);
+        }
         if (currentTexture >= 0)
             mappingCanvas.setTexture(texList.get(currentTexture), mappingList.get(currentTexture));
         else
@@ -720,7 +703,7 @@ public class UVMappingEditorDialog extends BDialog {
     }
 
     private void doSamplingChanged() {
-        mappingCanvas.setSampling(((Integer) resSpinner.getValue()).intValue());
+        mappingCanvas.setSampling((Integer) resSpinner.getValue());
     }
 
     private void processMousePressed(WidgetMouseEvent ev) {
@@ -732,20 +715,12 @@ public class UVMappingEditorDialog extends BDialog {
 
     private void processMouseDragged(final WidgetMouseEvent ev) {
         if (mouseProcessor != null)
-            mouseProcessor.addEvent(new Runnable() {
-                public void run() {
-                    doMouseDragged(ev);
-                }
-            });
+            mouseProcessor.addEvent(() -> doMouseDragged(ev));
     }
 
     private void processMouseMoved(final WidgetMouseEvent ev) {
         if (mouseProcessor != null)
-            mouseProcessor.addEvent(new Runnable() {
-                public void run() {
-                    doMouseMoved(ev);
-                }
-            });
+            mouseProcessor.addEvent(() -> doMouseMoved(ev));
     }
 
     private void processMouseReleased(WidgetMouseEvent ev) {
@@ -839,15 +814,11 @@ public class UVMappingEditorDialog extends BDialog {
 
     //for debugging purposes
     private void dumpTextureIDs() {
-        ArrayList<UVMeshMapping> mappings = mappingData.getMappings();
-        UVMeshMapping mapping;
-        for (int i = 0; i < mappings.size(); i++) {
-            mapping = mappings.get(i);
-            System.out.print(i + ": ");
-            for (int j = 0; j < mapping.textures.size(); j++)
-                System.out.print(mapping.textures.get(j) + " ");
-            System.out.println("");
-        }
+        mappingData.getMappings().forEach(mapping -> {
+          mapping.textures.forEach(tex -> {
+            System.out.println("Mapping " + mapping.name + " Texture Id: " + tex);
+          });
+        });
     }
 
     /**
@@ -889,14 +860,9 @@ public class UVMappingEditorDialog extends BDialog {
     }
 
     private void doMaxDistanceValueChanged() {
-        tensionDistance = ((Integer) distanceSpinner.getValue()).intValue();
+        tensionDistance = ((Integer) distanceSpinner.getValue());
         mappingCanvas.findSelectionDistance();
     }
-
-    //private void doAutoScale() {
-    //    mappingCanvas.fitRangeToAll();
-    //    mappingCanvas.repaint();
-    //}
 
     private void openImageExportDialog()
     {
@@ -932,7 +898,7 @@ public class UVMappingEditorDialog extends BDialog {
 
         // Good to go
 
-        new ExportImageDialog();
+        new ExportImageDialog(this);
     }
 
     private void createAndExportMapImage(ExportImageDialog exportDialog, File outputFile)
@@ -1115,13 +1081,13 @@ public class UVMappingEditorDialog extends BDialog {
             UVMeshMapping fromMapping = mappingData.mappings.get(from);
             UVMeshMapping toMapping = mappingData.mappings.get(to);
             for (int j = 0; j < fromMapping.textures.size(); j++)
-                if (texture == fromMapping.textures.get(j).intValue()) {
+                if (texture == fromMapping.textures.get(j)) {
                     fromMapping.textures.remove(j);
                     break;
                 }
 
             mappingMenuItems[from].setState(false);
-            toMapping.textures.add(new Integer(texture));
+            toMapping.textures.add(texture);
             mappingMenuItems[from].setState(false);
             mappingMenuItems[to].setState(true);
             changeMapping(to);
@@ -1273,8 +1239,8 @@ public class UVMappingEditorDialog extends BDialog {
      */
     public class SelectPieceCommand implements Command {
 
-        private int oldPiece;
-        private int newPiece;
+        private final int oldPiece;
+        private final int newPiece;
 
         public SelectPieceCommand(int oldPiece, int newPiece) {
             super();
@@ -1304,9 +1270,9 @@ public class UVMappingEditorDialog extends BDialog {
      */
     public class RenamePieceCommand implements Command {
 
-        private int piece;
-        private String oldName;
-        private String newName;
+        private final int piece;
+        private final String oldName;
+        private final String newName;
 
         public RenamePieceCommand(int piece, String oldName, String newName) {
             super();
@@ -1336,9 +1302,7 @@ public class UVMappingEditorDialog extends BDialog {
     {
         BSpinner resolutionSpinner;
         BButton exportButton;
-        BButton closeButton;
-        BButton cancelButton;
-        RadioButtonGroup bgButtons, colorButtons;
+        
         BRadioButton transparentButton, whiteButton, texturedButton, useMappingButton, blackButton;
         BCheckBox antialiasBox, textureOnlyBox;
         ColumnContainer content, leftBox, rightBox;
@@ -1348,17 +1312,16 @@ public class UVMappingEditorDialog extends BDialog {
         // - Selection for line width? More choices for antialiased image?
         // - Option to export the texture image only
 
-        ExportImageDialog()
+        ExportImageDialog(WindowWidget parent)
         {
-            super(UVMappingEditorDialog.this, true);
-            addEventLink(WindowClosingEvent.class, new Object()
-                        {void processEvent(WindowClosingEvent e) {dispose();}});
+            super(parent, true);
+            addEventLink(WindowClosingEvent.class, this, "dispose");
             
             LayoutInfo labelLayout  = new LayoutInfo(LayoutInfo.WEST,      LayoutInfo.NONE,       new Insets(10, 10, 0,  2), null);
             LayoutInfo valueLayout  = new LayoutInfo(LayoutInfo.WEST,      LayoutInfo.HORIZONTAL, new Insets(10,  0, 2, 10), null);
             LayoutInfo headerLayout = new LayoutInfo(LayoutInfo.NORTHWEST, LayoutInfo.NONE,       new Insets(10, 10, 5, 10), null);
             LayoutInfo radioLayout  = new LayoutInfo(LayoutInfo.NORTHWEST, LayoutInfo.NONE,       new Insets( 0, 25, 0, 10), null);
-            LayoutInfo actionLayout = new LayoutInfo(LayoutInfo.SOUTHEAST, LayoutInfo.NONE,       new Insets(10,  0, 0, 10), null);
+            
             LayoutInfo boxLayout    = new LayoutInfo(LayoutInfo.NORTHWEST, LayoutInfo.NONE,       new Insets( 0,  0, 0,  0), null);
             LayoutInfo actboxLayout = new LayoutInfo(LayoutInfo.SOUTHEAST, LayoutInfo.NONE,       new Insets( 15, 0, 0, 10), null);
 
@@ -1372,7 +1335,7 @@ public class UVMappingEditorDialog extends BDialog {
             resoContainer.add(new BLabel(Translate.text("polymesh:imageResolution")), labelLayout);
             resoContainer.add(resolutionSpinner = new BSpinner(), valueLayout);
 
-            bgButtons = new RadioButtonGroup();
+            RadioButtonGroup bgButtons = new RadioButtonGroup();
             leftBox.add(new BLabel(Translate.text("polymesh:backgroundType")), headerLayout);
             leftBox.add(transparentButton = new BRadioButton(Translate.text("polymesh:transparent"), true,  bgButtons), radioLayout);
             leftBox.add(whiteButton       = new BRadioButton(Translate.text("polymesh:white"),       false, bgButtons), radioLayout);
@@ -1380,21 +1343,21 @@ public class UVMappingEditorDialog extends BDialog {
             leftBox.add(textureOnlyBox    = new BCheckBox   (Translate.text("polymesh:textureOnly"), false), radioLayout);
             textureOnlyBox.setEnabled(false);
 
-            colorButtons = new RadioButtonGroup();
+            RadioButtonGroup colorButtons = new RadioButtonGroup();
             rightBox.add(new BLabel(Translate.text("polymesh:lineProperties")), headerLayout);
             rightBox.add(antialiasBox     = new BCheckBox   (Translate.text("polymesh:softLines"),       true), radioLayout);
             rightBox.add(useMappingButton = new BRadioButton(Translate.text("polymesh:useMappingColor"), true,  colorButtons), radioLayout);
             rightBox.add(blackButton      = new BRadioButton(Translate.text("polymesh:useBlack"),        false, colorButtons), radioLayout);
 
             actionContainer.add(exportButton = new BButton(Translate.text("polymesh:exportImage")));
-            actionContainer.add(cancelButton = new BButton(Translate.text("polymesh:cancel")));
+            actionContainer.add(Translate.button("cancel", this, "close"));
 
             transparentButton.addEventLink(ValueChangedEvent.class, this, "updateDialogState");
             whiteButton.addEventLink      (ValueChangedEvent.class, this, "updateDialogState");
             texturedButton.addEventLink   (ValueChangedEvent.class, this, "updateDialogState");
             textureOnlyBox.addEventLink   (ValueChangedEvent.class, this, "updateDialogState");
 
-            cancelButton.addEventLink(CommandEvent.class, this, "close");
+            
             exportButton.addEventLink(CommandEvent.class, new Object()
             {
                 void processEvent()
@@ -1406,10 +1369,10 @@ public class UVMappingEditorDialog extends BDialog {
             if (currentTexture == -1)
                 texturedButton.setEnabled(false);
             
-            resolutionSpinner.setValue(new Integer(123456)); 
+            resolutionSpinner.setValue(123456); 
             Dimension d = resolutionSpinner.getPreferredSize();
             resolutionSpinner.getComponent().setPreferredSize(d);
-            resolutionSpinner.setValue(new Integer(640)); 
+            resolutionSpinner.setValue(640); 
 
             setContent(content);
             pack();
@@ -1435,7 +1398,7 @@ public class UVMappingEditorDialog extends BDialog {
 
         int getResolution()
         {
-            return ((Integer) resolutionSpinner.getValue()).intValue();
+            return (Integer) resolutionSpinner.getValue();
         }
         
         boolean useAntialias()

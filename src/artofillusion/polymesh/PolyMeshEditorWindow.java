@@ -1,5 +1,7 @@
 /*
  *  Copyright (C) 2006-2007 by Francois Guillet
+ *  Changes copyright (C) 2022 by Maksim Khramov
+ *
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
  *  Foundation; either version 2 of the License, or (at your option) any later version.
@@ -9,10 +11,6 @@
  */
 package artofillusion.polymesh;
 
-import artofillusion.polymesh.ui.*;
-
-import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Point;
@@ -47,7 +45,6 @@ import artofillusion.SkewMeshTool;
 import artofillusion.TaperMeshTool;
 import artofillusion.TextureParameter;
 import artofillusion.ThickenMeshTool;
-import artofillusion.TriMeshBeveler;
 import artofillusion.UndoRecord;
 import artofillusion.ViewerCanvas;
 import artofillusion.animation.Joint;
@@ -4638,7 +4635,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		updateMenus();
 	}
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings({"unused", "ResultOfObjectAllocationIgnored"})
 	private void doEditMapping() {
 		PolyMesh theMesh = (PolyMesh) objInfo.object;
 		ObjectInfo info = objInfo.duplicate();
@@ -4647,11 +4644,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		if (data == null) {
 			return;
 		}
-		UVMappingEditorDialog window = new UVMappingEditorDialog(Translate
-				.text("uvCoordsTitle"), info, true, this);
-		//	if (window.isClickedOk()) {
-		//	    theMesh.setMappingData(window.getMappingData());
-		//	}
+		new UVMappingEditorDialog(info, true, this);
 	}
 
 	@SuppressWarnings("unused")
