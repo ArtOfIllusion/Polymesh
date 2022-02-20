@@ -116,6 +116,8 @@ import buoy.widget.RowContainer;
 import buoy.widget.Shortcut;
 import buoy.widget.Widget;
 import buoy.xml.WidgetDecoder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The PolyMeshEditorWindow class represents the window for editing PolyMesh
@@ -124,9 +126,7 @@ import buoy.xml.WidgetDecoder;
  * @author Francois Guillet
  */
 
-public class PolyMeshEditorWindow extends MeshEditorWindow implements
-		EditingWindow, PopupMenuManager, ValueWidgetOwner {
-	private Scene scene;
+public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWindow, PopupMenuManager, ValueWidgetOwner {
 
 	private ToolPalette modes;
 
@@ -1769,7 +1769,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
             KeystrokeManager.addRecordsFromXML(in);
             KeystrokeManager.saveRecords();
           } catch (Exception ex) {
-            logger.info(() -> "Error reload Keystrokes due " + ex.getLocalizedMessage());
+            System.out.println("Error reload Keystrokes due " + ex.getLocalizedMessage());
           }
 	}
 
