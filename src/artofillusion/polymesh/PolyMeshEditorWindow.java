@@ -39,7 +39,6 @@ import artofillusion.MeshViewer;
 import artofillusion.MoveViewTool;
 import artofillusion.RenderingMesh;
 import artofillusion.RotateViewTool;
-import artofillusion.Scene;
 import artofillusion.SkewMeshTool;
 import artofillusion.TaperMeshTool;
 import artofillusion.TextureParameter;
@@ -115,7 +114,6 @@ import buoy.widget.RowContainer;
 import buoy.widget.Shortcut;
 import buoy.widget.Widget;
 import buoy.xml.WidgetDecoder;
-import java.util.logging.Logger;
 
 /**
  * The PolyMeshEditorWindow class represents the window for editing PolyMesh
@@ -125,10 +123,7 @@ import java.util.logging.Logger;
  */
 
 public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWindow, PopupMenuManager, ValueWidgetOwner {
-  
-  private static final Logger logger = Logger.getLogger(PolyMeshEditorWindow.class.getName());
-	
-        private Scene scene;
+
 	private ToolPalette modes;
 
 	private Runnable onClose;
@@ -354,10 +349,8 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 	 * @param onClose
 	 *                a callback which will be executed when editing is over
 	 */
-	public PolyMeshEditorWindow(EditingWindow parent, String title,
-			ObjectInfo obj, Runnable onClose) {
+	public PolyMeshEditorWindow(EditingWindow parent, String title, ObjectInfo obj, Runnable onClose) {
 		super(parent, title, obj);
-		scene = ((LayoutWindow) parent).getScene();
 		PolyMesh mesh = (PolyMesh) objInfo.object;
 		if (eventSource == null)
 			eventSource = new EventSource();
@@ -4881,7 +4874,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 				okButton.setText(Translate.text("polymesh:ok"));
 				cancelButton.setText(Translate.text("polymesh:cancel"));
 			} catch (IOException ex) {
-                          logger.info(() -> "Error creating FindSimilarFacesDialog due " + ex.getLocalizedMessage());
+                          System.out.println("Error creating FindSimilarFacesDialog due " + ex.getLocalizedMessage());
 			}
 			setContent(borderContainer1);
 			normalCBVF.addEventLink(ValueChangedEvent.class, this, "doTolValueChanged");
@@ -4995,7 +4988,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 				okButton.setText(Translate.text("polymesh:ok"));
 				cancelButton.setText(Translate.text("polymesh:cancel"));
 			} catch (IOException ex) {
-                          logger.info(() -> "Error creating FindSimilarEdgesDialog due " + ex.getLocalizedMessage());
+                          System.out.println("Error creating FindSimilarEdgesDialog due " + ex.getLocalizedMessage());
 			}
 			setContent(borderContainer);
 			toleranceVF.addEventLink(ValueChangedEvent.class, this, "doTolValueChanged");
@@ -5063,7 +5056,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 				cancelButton = ((BButton) decoder.getObject("cancelButton"));
 				cancelButton.setText(Translate.text("polymesh:cancel"));
 			} catch (IOException ex) {
-                          logger.info(() -> "Error creating DivideDialog due " + ex.getLocalizedMessage());
+                          System.out.println("Error creating DivideDialog due " + ex.getLocalizedMessage());
 			}
                         
 			okButton.addEventLink(CommandEvent.class, this, "doOK");
@@ -5139,7 +5132,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 				cancelButton = ((BButton) decoder.getObject("cancelButton"));
 				cancelButton.setText(Translate.text("polymesh:cancel"));
 			} catch (IOException ex) {
-                          logger.info(() -> "Error creating BevelPropertiesDialog due " + ex.getLocalizedMessage());
+                          System.out.println("Error creating BevelPropertiesDialog due " + ex.getLocalizedMessage());
 			}
                         
 			setContent(borderContainer1);
@@ -5193,7 +5186,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 				dismiss = ((BButton) decoder.getObject("dismiss"));
 				dismiss.setText(Translate.text("polymesh:dismiss"));
 			} catch (IOException ex) {
-                          logger.info(() -> "Error creating CheckMeshDialog due " + ex.getLocalizedMessage());
+                          System.out.println("Error creating CheckMeshDialog due " + ex.getLocalizedMessage());
 			}
 			setContent(borderContainer);
 			dismiss.addEventLink(CommandEvent.class, this, "doDismiss");
@@ -5327,7 +5320,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 				doApplyCB();
 				setContent(columnContainer);
 			} catch (IOException ex) {
-                          logger.info(() -> "Error creating ControlledSmoothingDialog due " + ex.getLocalizedMessage());
+                          System.out.println("Error creating ControlledSmoothingDialog due " + ex.getLocalizedMessage());
 			}
 			pack();
 			addEventLink(WindowClosingEvent.class, this, "doCancel");
@@ -5475,7 +5468,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 				residualLabel.setVisible(false);
 				residualVF.setVisible(false);
 			} catch (IOException ex) {
-                          logger.info(() -> "Error creating UnfoldStatusDialog due " + ex.getLocalizedMessage());
+                          System.out.println("Error creating UnfoldStatusDialog due " + ex.getLocalizedMessage());
 			}
                         
 			status = 0;
@@ -5611,7 +5604,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 				setContent(borderContainer);
 				addEventLink(WindowClosingEvent.class, this, "doCancel");
 			} catch (IOException ex) {
-                          logger.info(() -> "Error creating EdgeSmoothnessRangeDialog due " + ex.getLocalizedMessage());
+                          System.out.println("Error creating EdgeSmoothnessRangeDialog due " + ex.getLocalizedMessage());
 			}
 			updateSelection();
 			pack();
