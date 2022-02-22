@@ -416,7 +416,7 @@ public class MeshUnfolder {
 					f1 = uedges[ed].f1;
 					f2 = uedges[ed].f2;
 					if (f1 != -1 && !unfoldedFace[f1]) {
-						computeFace(ed, f1, uverts, uedges, ufaces, unfoldedFace, unfoldedVerts, vertList, edgeList, faceList);
+						computeFace(ed, f1, uedges, ufaces, unfoldedFace, unfoldedVerts, vertList, faceList);
 						if (ufaces[f1].e1 != ed) {
 							edgeList.add(ufaces[f1].e1);
 							edgeStack.push(ufaces[f1].e1);
@@ -431,7 +431,7 @@ public class MeshUnfolder {
 						}
 					}
 					if (f2 != -1 && !unfoldedFace[f2]) {
-						computeFace(ed, f2, uverts, uedges, ufaces, unfoldedFace, unfoldedVerts, vertList, edgeList, faceList);
+						computeFace(ed, f2, uedges, ufaces, unfoldedFace, unfoldedVerts, vertList, faceList);
 						if (ufaces[f2].e1 != ed) {
 							edgeList.add(ufaces[f2].e1);
 							edgeStack.push(ufaces[f2].e1);
@@ -806,10 +806,10 @@ public class MeshUnfolder {
 	 * Given an edge and a face, this method checks the 3rd vertex as being
 	 * unfolded if's not already checked
 	 */
-	private void computeFace(int e, int f, UnfoldedVertex[] uverts,
+	private void computeFace(int e, int f,
 			UnfoldedEdge[] uedges, UnfoldedFace[] ufaces,
 			boolean[] unfoldedFace, boolean[] unfoldedVerts,
-			ArrayList<Integer> vertList, ArrayList<Integer> edgeList,
+			ArrayList<Integer> vertList,
 			ArrayList<Integer> faceList) {
 		int v1, v2, v3;
 		v1 = ufaces[f].v1;
