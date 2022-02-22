@@ -34,9 +34,9 @@ import no.uib.cipr.matrix.sparse.*;
 
 
 public class MeshUnfolder {
-	protected FacetedMesh mesh; // the mesh to unfold
+	private final FacetedMesh mesh; // the mesh to unfold
 
-	protected TriangleMesh trimesh; // the trimesh version of the mesh to
+	private final TriangleMesh trimesh; // the trimesh version of the mesh to
 
 	// unfold
 
@@ -46,17 +46,7 @@ public class MeshUnfolder {
 
 	// elements
 
-	private int[][] angleTable; // angle references for each interior vertex
-
 	// vertex, minus one (see ABF++)
-
-	private int[] interiorVertices; // interior vertices array
-
-	private int nint; // number of interior vertices
-
-	private int ntri; // number of triangles
-
-	private int nangles; // number of angles
 
 	private int[] invInteriorTable; // inverse table : given an interior
 
@@ -66,11 +56,11 @@ public class MeshUnfolder {
 
 	// from unfolding process
 
-	private int[] vertexTable; // vertex table correspondance between
+	private final int[] vertexTable; // vertex table correspondance between
 
 	// original mesh vertices and opened mesh vertices
 
-	private int[] faceTable; // same for faces
+	private final int[] faceTable; // same for faces
 
 	/**
 	 * Creates a new unfolder instance. This class unfolds triangle meshes.
@@ -109,7 +99,7 @@ public class MeshUnfolder {
 		this.vertexTable = vertexTable;
 		this.faceTable = faceTable;
 	}
-	
+
 	public boolean unfold(BTextArea textArea, double res) {
           return unfoldLinearAbf(textArea);
 	}
@@ -126,8 +116,10 @@ public class MeshUnfolder {
 		totaltime = new Date().getTime();
 		TriangleMesh.Vertex[] vertices = (Vertex[]) trimesh.getVertices();
 		TriangleMesh.Face[] faces = trimesh.getFaces();
-		ntri = faces.length;
-		nangles = 3 * ntri;
+		// number of triangles
+		int ntri = faces.length;
+		// number of angles
+		int nangles = 3 * ntri;
 		angles = new double[nangles];
 		Vec3 v1r, v2r, v3r;
 		for (int i = 0; i < ntri; i++) {
@@ -154,14 +146,17 @@ public class MeshUnfolder {
 			} else
 				invInteriorTable[i] = -1;
 		}
-		nint = interiorVerticesTable.size();
-		interiorVertices = new int[nint];
+		// number of interior vertices
+		int nint = interiorVerticesTable.size();
+		// interior vertices array
+		int[] interiorVertices = new int[nint];
 		for (int i = 0; i < nint; i++) {
 			interiorVertices[i] = ((Integer) interiorVerticesTable.get(i))
 					.intValue();
 		}
 		interiorVerticesTable = null;
-		angleTable = new int[nint][];
+		// angle references for each interior vertex
+		int[][] angleTable = new int[nint][];
 		for (int i = 0; i < nint; i++) {
 			int v = interiorVertices[i];
 			int[] ed = vertices[v].getEdges();
