@@ -28,8 +28,10 @@ import artofillusion.polymesh.UnfoldedMesh.UnfoldedEdge;
 import artofillusion.polymesh.UnfoldedMesh.UnfoldedFace;
 import artofillusion.polymesh.UnfoldedMesh.UnfoldedVertex;
 import artofillusion.ui.Translate;
-import no.uib.cipr.matrix.*;
+import no.uib.cipr.matrix.DenseVector;
+import no.uib.cipr.matrix.sparse.CG;
 import no.uib.cipr.matrix.sparse.*;
+
 
 public class MeshUnfolder {
 	protected FacetedMesh mesh; // the mesh to unfold
@@ -40,57 +42,21 @@ public class MeshUnfolder {
 
 	private double[] angles; // mesh angles, 3 angles for each triangle
 
-	private double[] weights;
-
 	private double[] var; // variables, i.e. angles plus Lagrange
-
-	// multipliers
-
-	private double gradient[];
-
-	private CompRowMatrix j2matrix; // J2 matrix as defined in ABF++
-
-	FlexCompRowMatrix jstar; // J* matrix as defined in ABF++
-
-	FlexCompRowMatrix jstarstar; // J** matrix as defined in ABF++
-
-	FlexCompRowMatrix matrix; // matrix of linear system to solve
-
-	DenseVector bb2vec; // right hand of linear system to solve
-
-	double[] lambdaStar; // diagonal of lambda matrix
-
-	double[] lambdaStarInv; // diagonal of invers lambda matrix
-
-	private int[][] j2nonzero; // per row array of array to non zero column
 
 	// elements
 
 	private int[][] angleTable; // angle references for each interior vertex
 
-	private int[][] anglePTable; // angle references for each interior
-
-	// vertex, plus one (see ABF++)
-
-	private int[][] angleMTable; // angle references for each interior
-
 	// vertex, minus one (see ABF++)
 
 	private int[] interiorVertices; // interior vertices array
-
-	private double[] constraints; // constraints values
-
-	private DenseVector weightsVec; // angle weights
 
 	private int nint; // number of interior vertices
 
 	private int ntri; // number of triangles
 
 	private int nangles; // number of angles
-
-	private double[] bstar; // ABF++ vector
-
-	private double[] solution; // solution to full linear system
 
 	private int[] invInteriorTable; // inverse table : given an interior
 
@@ -105,8 +71,6 @@ public class MeshUnfolder {
 	// original mesh vertices and opened mesh vertices
 
 	private int[] faceTable; // same for faces
-
-	private FlexCompRowMatrix matTmat;
 
 	/**
 	 * Creates a new unfolder instance. This class unfolds triangle meshes.
@@ -157,7 +121,7 @@ public class MeshUnfolder {
 		TriangleMesh.Edge[] edges = trimesh.getEdges();
 		int nedges = edges.length;
 		long totaltime;
-		QMR qmr = null;
+
 		
 		totaltime = new Date().getTime();
 		TriangleMesh.Vertex[] vertices = (Vertex[]) trimesh.getVertices();
@@ -262,7 +226,7 @@ public class MeshUnfolder {
 					var[angleTable[i][j]] *= 2 * Math.PI / anglesum;
 				}
 		}
-		constraints = new double[ntri + 2 * nint];
+
 		//set up matrix and constraints
 		//System.out.println(ntri+2*nint);
 		FlexCompRowMatrix newMat = new FlexCompRowMatrix(ntri + 2*nint, 3*ntri);
