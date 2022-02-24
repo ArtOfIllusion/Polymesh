@@ -114,6 +114,7 @@ import buoy.widget.RowContainer;
 import buoy.widget.Shortcut;
 import buoy.widget.Widget;
 import buoy.xml.WidgetDecoder;
+import javax.swing.UIManager;
 
 /**
  * The PolyMeshEditorWindow class represents the window for editing PolyMesh
@@ -5470,7 +5471,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 			} catch (IOException ex) {
                           System.out.println("Error creating UnfoldStatusDialog due " + ex.getLocalizedMessage());
 			}
-                        
+                        textArea.getComponent().setFont(UIManager.getFont("TextField.font"));
 			status = 0;
 			cancelled = false;
 			pack();
