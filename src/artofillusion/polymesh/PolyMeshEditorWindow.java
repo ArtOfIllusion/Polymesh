@@ -5142,7 +5142,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements EditingWin
 			addEventLink(WindowClosingEvent.class, this, "doCancel");
 			pack();
 			UIUtilities.centerWindow(this);
-			setVisible(true);
+			
 		}
 
 		/**
