@@ -116,7 +116,7 @@
       <void method="add"> 
        <object class="buoy.widget.BLabel"> 
         <void property="name"> 
-         <string>Label2</string> 
+         <string>Label3</string> 
         </void> 
         <void property="text"> 
          <object class="buoy.xml.WidgetLocalization" method="getLocalizedString"> 

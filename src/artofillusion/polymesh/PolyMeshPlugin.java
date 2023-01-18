@@ -1,6 +1,6 @@
-
 /*
  *  Copyright 2004-2007 Francois Guillet
+ *  Changes copyright 2023 Maksim Khramov
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
  *  Foundation; either version 2 of the License, or (at your option) any later version.
@@ -11,10 +11,6 @@
 package artofillusion.polymesh;
 
 import java.io.InputStream;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import artofillusion.ArtOfIllusion;
 import artofillusion.LayoutWindow;
 import artofillusion.Plugin;
 import artofillusion.Scene;
@@ -27,7 +23,6 @@ import artofillusion.object.TriangleMesh;
 import artofillusion.ui.ToolPalette;
 import artofillusion.ui.Translate;
 import buoy.widget.BMenu;
-import buoy.widget.BMenuBar;
 import buoy.widget.BMenuItem;
 import buoy.widget.BStandardDialog;
 import buoy.widget.MenuWidget;
@@ -40,7 +35,6 @@ import buoy.widget.MenuWidget;
  */
 public class PolyMeshPlugin implements Plugin
 {
-    public static ResourceBundle resources;
 	
 	/**
      *  Process messages sent to plugin by AoI (see AoI API description)
@@ -48,12 +42,12 @@ public class PolyMeshPlugin implements Plugin
      *@param  message  The message
      *@param  args     Arguments depending on the message
      */
+    @Override
     public void processMessage( int message, Object args[] )
     {
         if ( message == Plugin.APPLICATION_STARTING )
         {
-        	resources = ResourceBundle.getBundle( "polymesh", ArtOfIllusion.getPreferences().getLocale() );
-        	KeystrokeRecord[] keys = KeystrokeManager.getAllRecords();
+            KeystrokeRecord[] keys = KeystrokeManager.getAllRecords();
             boolean keysImplemented = false;
             for (int i = 0; i  < keys.length; i++)
             {

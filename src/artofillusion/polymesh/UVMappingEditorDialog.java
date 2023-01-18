@@ -1,7 +1,7 @@
 /*
  *  Copyright (C) 2007 by François Guillet
  *  Modifications Copyright (C) 2019 by Petri Ihalainen
- *
+ *  Changes copyright (C) 2023 by Maksim Khramov
  *  This program is free software; you can redistribute it and/or modify it under the 
  *  terms of the GNU General Public License as published by the Free Software 
  *  Foundation; either version 2 of the License, or (at your option) any later version. 
@@ -15,7 +15,6 @@ package artofillusion.polymesh;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.awt.Window;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -25,11 +24,8 @@ import java.awt.geom.Line2D;
 import java.awt.BasicStroke;
 import java.awt.Rectangle;
 
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
@@ -86,14 +82,14 @@ public class UVMappingEditorDialog extends BDialog {
 
     /* Interface variables */
 
-    private BorderContainer borderContainer1;
+
     private BLabel componentLabel;
     private BComboBox componentCB;
     private BLabel uMinValue;
     private BLabel uMaxValue;
     private BLabel vMinValue;
     private BLabel vMaxValue;
-    private BButton autoButton;
+
     private BLabel resLabel;
     private BSpinner resSpinner;
     private BComboBox mappingCB;
@@ -116,9 +112,9 @@ public class UVMappingEditorDialog extends BDialog {
      *  Construct a new UVMappingEditorDialog
      */
 
-    public UVMappingEditorDialog(String title, ObjectInfo objInfo, boolean initialize, BFrame parent) {
+    public UVMappingEditorDialog(ObjectInfo objInfo, boolean initialize, BFrame parent) {
 
-        super(parent, title, true);
+        super(parent, Translate.text("uvCoordsTitle"), true);
         this.objInfo = objInfo;
         PolyMesh mesh = (PolyMesh) objInfo.object;
         mappingData = mesh.getMappingData();
@@ -197,13 +193,10 @@ public class UVMappingEditorDialog extends BDialog {
                                    LayoutInfo.NONE, 
                                    new Insets(2, 2, 2, 2), 
                                    new Dimension(0, 0)));
-        InputStream inputStream = null;
-        try {
-            WidgetDecoder decoder = 
-                          new WidgetDecoder(inputStream = 
-                          getClass().getResource("interfaces/unfoldEditor.xml").openStream(), 
-                          PolyMeshPlugin.resources);
-            borderContainer1 = (BorderContainer) decoder.getRootObject();
+
+        try(InputStream inputStream = getClass().getResource("interfaces/unfoldEditor.xml").openStream()) {
+            WidgetDecoder decoder = new WidgetDecoder(inputStream);
+            BorderContainer borderContainer = (BorderContainer) decoder.getRootObject();
             uMinValue = ((BLabel) decoder.getObject("uMinValue"));
             uMaxValue = ((BLabel) decoder.getObject("uMaxValue"));
             vMinValue = ((BLabel) decoder.getObject("vMinValue"));
@@ -211,14 +204,22 @@ public class UVMappingEditorDialog extends BDialog {
             //autoButton = ((BButton) decoder.getObject("autoButton"));
             //autoButton.addEventLink(CommandEvent.class, this, "doAutoScale");
             resLabel = ((BLabel) decoder.getObject("resLabel"));
+            resLabel.setText(Translate.text("polymesh:sampling"));
+            
+            BLabel mappingLabel = (BLabel)decoder.getObject("mappingLabel");
+            mappingLabel.setText(Translate.text("polymesh:mapping"));
+            
             mappingCB = ((BComboBox) decoder.getObject("mappingCB"));
             mappingCB.addEventLink(ValueChangedEvent.class, this, "doMappingChanged");
             textureLabel = ((BLabel) decoder.getObject("textureLabel"));
+            textureLabel.setText(Translate.text("polymesh:texture"));
+            
             textureCB = ((BComboBox) decoder.getObject("textureCB"));
             textureCB.addEventLink(ValueChangedEvent.class, this, "doTextureChanged");
             componentLabel = ((BLabel) decoder.getObject("componentLabel"));
+            componentLabel.setText(Translate.text("polymesh:component"));
             componentCB = ((BComboBox) decoder.getObject("componentCB"));
-            content.add(borderContainer1, 
+            content.add(borderContainer, 
                         BorderContainer.WEST, 
                         new LayoutInfo(LayoutInfo.CENTER, 
                                        LayoutInfo.BOTH, 
@@ -237,10 +238,18 @@ public class UVMappingEditorDialog extends BDialog {
                                                   Translate.text("Emissive") });
             componentCB.addEventLink(ValueChangedEvent.class, this, "doChangeComponent");
             resSpinner = ((BSpinner) decoder.getObject("resSpinner"));
-            resSpinner.setValue(new Integer(mappingData.sampling));
+            resSpinner.setValue(mappingData.sampling);
             resSpinner.addEventLink(ValueChangedEvent.class, this, "doSamplingChanged");
+            BLabel tensionLabel = (BLabel)decoder.getObject("tensionLabel");
+            tensionLabel.setText(Translate.text("polymesh:tension"));
+            
             meshTensionCB = ((BCheckBox) decoder.getObject("meshTensionCB"));
+            meshTensionCB.setText(Translate.text("polymesh:meshTension"));
             meshTensionCB.addEventLink(ValueChangedEvent.class, this, "doTensionChanged");
+            
+            BLabel distanceLabel = (BLabel)decoder.getObject("distanceLabel");
+            distanceLabel.setText(Translate.text("polymesh:distance"));
+            
             distanceSpinner = ((BSpinner) decoder.getObject("distanceSpinner"));
             distanceSpinner.setValue(tensionDistance);
             distanceSpinner.addEventLink(ValueChangedEvent.class, this, "doMaxDistanceValueChanged");
@@ -254,14 +263,6 @@ public class UVMappingEditorDialog extends BDialog {
             tensionCB.setSelectedIndex(tensionValue);
         } catch (IOException ex) {
             ex.printStackTrace();
-        } 
-        finally {
-            try {
-                if (inputStream != null)
-                    inputStream.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
         }
         BSplitPane meshViewPanel = new BSplitPane(BSplitPane.VERTICAL, 
                                                   new BScrollPane(pieceList = new BList()), 
