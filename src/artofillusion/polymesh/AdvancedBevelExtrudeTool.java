@@ -1,4 +1,5 @@
 /* Copyright (C) 2006-2007 by Francois Guillet
+ *  Changes copyright (C) 2023 by Maksim Khramov
 
  This program is free software; you can redistribute it and/or modify it under the
  terms of the GNU General Public License as published by the Free Software
@@ -11,7 +12,6 @@
 package artofillusion.polymesh;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 
@@ -28,6 +28,7 @@ import artofillusion.ui.ThemeManager;
 import artofillusion.ui.Translate;
 import buoy.widget.BComboBox;
 import buoy.widget.Widget;
+import java.util.Map;
 
 /** AdvancedExtrudeTool is the stool used to extrude selection.
  * In addition, it can scale/rotate the selection (e.g. extruded faces.*/
@@ -36,7 +37,7 @@ public class AdvancedBevelExtrudeTool extends AdvancedEditingTool
 {
     private Vec3 baseVertPos[];
     private UndoRecord undo;
-    private HashMap mouseDragManipHashMap;
+    private Map<ViewerCanvas, Manipulator> mouseDragManipHashMap;
     private boolean selected[], separateFaces;
     private PolyMesh origMesh;
     private short NO_EXTRUDE = 0;
@@ -55,7 +56,7 @@ public class AdvancedBevelExtrudeTool extends AdvancedEditingTool
             AdvancedBevelExtrudeTool.bevelExtrudeEdgesIcon = ThemeManager.getIcon( "polymesh:bevelextrudeedges" );
             AdvancedBevelExtrudeTool.bevelExtrudeVerticesIcon = ThemeManager.getIcon( "polymesh:bevelextrudevertices" );
         }
-       mouseDragManipHashMap = new HashMap();
+       mouseDragManipHashMap = new HashMap<>();
     }
 
     public void activateManipulators(ViewerCanvas view)
@@ -75,7 +76,7 @@ public class AdvancedBevelExtrudeTool extends AdvancedEditingTool
         }
         else
         {
-            ((PolyMeshViewer)view).addManipulator((Manipulator)mouseDragManipHashMap.get(view));
+            ((PolyMeshViewer)view).addManipulator(mouseDragManipHashMap.get(view));
         }
     }
 
@@ -86,21 +87,11 @@ public class AdvancedBevelExtrudeTool extends AdvancedEditingTool
         theWindow.setHelpText(Translate.text("polymesh:advancedBevelExtrudeTool.helpText"));
     }
 
+    @Override
     public void deactivate()
     {
         super.deactivate();
-    	Iterator iter = mouseDragManipHashMap.keySet().iterator();
-        PolyMeshViewer view;
-        while (iter.hasNext())
-        {
-            view = (PolyMeshViewer)iter.next();
-            view.removeManipulator((Manipulator)mouseDragManipHashMap.get(view));
-        }
-    }
-
-    public int whichClicks()
-    {
-        return ALL_CLICKS;
+    	mouseDragManipHashMap.forEach((ViewerCanvas view, Manipulator manipulator) -> {((PolyMeshViewer) view).removeManipulator(manipulator); });
     }
 
     public String getToolTipText()
@@ -227,13 +218,10 @@ public class AdvancedBevelExtrudeTool extends AdvancedEditingTool
                  image = AdvancedBevelExtrudeTool.bevelExtrudeFacesIcon;
                 break;
         }
-        Iterator iter = mouseDragManipHashMap.keySet().iterator();
-        PolyMeshViewer view;
-        while (iter.hasNext())
-        {
-            view = (PolyMeshViewer)iter.next();
-            ((MouseDragManipulator)mouseDragManipHashMap.get(view)).setImage(image);
-        }
+        final ImageIcon tmpImage = image;
+        mouseDragManipHashMap.forEach((ViewerCanvas view, Manipulator manipulator) ->{
+            ((MouseDragManipulator)manipulator).setImage(tmpImage);
+        });
     }
 
     public void iconDoubleClicked()

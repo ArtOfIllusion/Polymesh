@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2007 by Francois Guillet
+ *  Changes copyright (C) 2023 by Maksim Khramov
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
  *  Foundation; either version 2 of the License, or (at your option) any later version.
@@ -10,7 +11,6 @@
 package artofillusion.polymesh;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -19,11 +19,8 @@ import java.util.ArrayList;
 
 import artofillusion.Scene;
 import artofillusion.math.Vec2;
-import artofillusion.polymesh.UnfoldedMesh.UnfoldedEdge;
-import artofillusion.polymesh.UnfoldedMesh.UnfoldedFace;
 import artofillusion.polymesh.UnfoldedMesh.UnfoldedVertex;
 import artofillusion.texture.Texture;
-import artofillusion.texture.TextureMapping;
 import artofillusion.ui.Translate;
 
 /**
@@ -57,7 +54,7 @@ public class UVMappingData {
 		public UVMeshMapping(Vec2[][] v, String name) {
 			this.v = v;
 			this.name = name;
-			textures = new ArrayList<Integer>();
+			textures = new ArrayList<>();
 			edgeColor = new Color(0, 0, 0);
 		}
 
@@ -71,7 +68,7 @@ public class UVMappingData {
 				}
 			}
 			newMapping.name = new String(name);
-			newMapping.textures = new ArrayList<Integer>();
+			newMapping.textures = new ArrayList<>();
 			for (int i = 0; i < textures.size(); i++) {
 				newMapping.textures.add(textures.get(i));
 			}
@@ -120,7 +117,7 @@ public class UVMappingData {
 				throw new InvalidObjectException("");
 			name = in.readUTF();
 			int count = in.readInt();
-			textures = new ArrayList<Integer>();
+			textures = new ArrayList<>();
 			Texture tex;
 			int index;
 			int numTex = scene.getNumTextures();
@@ -178,7 +175,7 @@ public class UVMappingData {
 	public UVMappingData(UnfoldedMesh[] meshes) {
 		super();
 		this.meshes = meshes;
-		mappings = new ArrayList<UVMeshMapping>();
+		mappings = new ArrayList<>();
 		addNewMapping(Translate.text("polymesh:mapping") + " #1", null);
 		sampling = 1;
 		setTables();
@@ -187,7 +184,7 @@ public class UVMappingData {
 	public UVMappingData duplicate() {
 		UVMappingData newData = new UVMappingData();
 		newData.meshes = meshes;
-		newData.mappings = new ArrayList<UVMeshMapping>();
+		newData.mappings = new ArrayList<>();
 		for (int i = 0; i < mappings.size(); i++) {
 			newData.mappings.add(mappings.get(i).duplicate());
 		}
@@ -221,7 +218,7 @@ public class UVMappingData {
 			meshes[i] = new UnfoldedMesh(in);
 		}
 		count = in.readInt();
-		mappings = new ArrayList<UVMeshMapping>();
+		mappings = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
 			mappings.add(new UVMeshMapping(in, scene));
 		}

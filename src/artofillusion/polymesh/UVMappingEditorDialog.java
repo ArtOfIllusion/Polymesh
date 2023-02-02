@@ -1,7 +1,7 @@
 /*
  *  Copyright (C) 2007 by François Guillet
  *  Modifications Copyright (C) 2019 by Petri Ihalainen
- *  Changes copyright (C) 2022 by Maksim Khramov
+ *  Changes copyright (C) 2022-2023 by Maksim Khramov
 
  *  This program is free software; you can redistribute it and/or modify it under the 
  *  terms of the GNU General Public License as published by the Free Software 
@@ -127,9 +127,9 @@ public class UVMappingEditorDialog extends BDialog {
         // find out the UVMapped texture on parFacePerVertex basis
         // record current coordinates in order to undo if the user cancels
 
-        texList = new ArrayList<Texture>();
-        mappingList = new ArrayList<UVMapping>();
-        oldCoordList = new ArrayList<Vec2[][]>();
+        texList = new ArrayList<>();
+        mappingList = new ArrayList<>();
+        oldCoordList = new ArrayList<>();
         Texture tex = objInfo.object.getTexture();
         TextureMapping mapping = objInfo.object.getTextureMapping();
         if (tex instanceof LayeredTexture) {

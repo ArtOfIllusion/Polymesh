@@ -1,5 +1,5 @@
 /* Copyright (C) 2001-2004 by Peter Eastman, 2005 by Francois Guillet
-
+   Changes copyright (C) 2023 by Maksim Khramov
 This program is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
 Foundation; either version 2 of the License, or (at your option) any later version.
@@ -10,16 +10,13 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details. */
 
 package artofillusion.polymesh;
 
-import java.awt.Image;
 import java.awt.Point;
-import java.awt.Window;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFormattedTextField;
 import javax.swing.JSpinner;
 
@@ -121,11 +118,6 @@ public class CreatePolyMeshTool extends EditingTool
             theWindow.setHelpText(Translate.text("polymesh:createPolyMeshTool.helpText2",
                 new Object [] { Translate.text("polymesh:createPolyMeshTool."+shapeDesc),
                                 Integer.toString(usize), Integer.toString(vsize), smoothingDesc}));
-    }
-    
-    public int whichClicks()
-    {
-        return ALL_CLICKS;
     }
     
     public String getToolTipText()
@@ -270,11 +262,11 @@ public class CreatePolyMeshTool extends EditingTool
                 sizeLabel = ( (BLabel) decoder.getObject( "sizeLabel" ) );
                 sizeLabel.setText( Translate.text( "polymesh:" + sizeLabel.getText() ) );
                 xSpinner = ( (BSpinner) decoder.getObject( "xSpinner" ) );
-                xSpinner.setValue(new Integer(usize));
+                xSpinner.setValue(usize);
                 byLabel = ( (BLabel) decoder.getObject( "byLabel" ) );
                 byLabel.setText( Translate.text("polymesh:" +  byLabel.getText() ) );
                 ySpinner = ( (BSpinner) decoder.getObject( "ySpinner" ) );
-                ySpinner.setValue(new Integer(vsize));
+                ySpinner.setValue(vsize);
                 meshType = ( (BLabel) decoder.getObject( "meshType" ) );
                 meshType.setText( Translate.text("polymesh:" +  meshType.getText() ) );
                 okButton = ( (BButton) decoder.getObject( "okButton" ) );
@@ -368,12 +360,12 @@ public class CreatePolyMeshTool extends EditingTool
                 switch ( typeCombo.getSelectedIndex() )
                 {
                     case 3:
-                        xSpinner.setValue( new Integer( 12 ) );
-                        ySpinner.setValue( new Integer( 1 ) );
+                        xSpinner.setValue(12);
+                        ySpinner.setValue(1);
                         break;
                     case 4:
-                        xSpinner.setValue( new Integer( 3 ) );
-                        ySpinner.setValue( new Integer( 3 ) );
+                        xSpinner.setValue(3);
+                        ySpinner.setValue(3);
                         break;
                 }
             }
@@ -425,8 +417,8 @@ public class CreatePolyMeshTool extends EditingTool
         private void doOK()
         {
             shape = typeCombo.getSelectedIndex();
-            usize = ( (Integer) xSpinner.getValue() ).intValue();
-            vsize = ( (Integer) ySpinner.getValue() ).intValue();
+            usize = (Integer) xSpinner.getValue();
+            vsize = (Integer) ySpinner.getValue();
             int type = typeCombo.getSelectedIndex();
             if (type < templateStart)
                 templateMesh = null;
@@ -456,10 +448,10 @@ public class CreatePolyMeshTool extends EditingTool
          */
         public void setSpinnerColumns( BSpinner spinner, int numCol )
         {
-            JSpinner.NumberEditor ed = (JSpinner.NumberEditor) ( (JSpinner) spinner.getComponent() ).getEditor();
+            JSpinner.NumberEditor ed = (JSpinner.NumberEditor) spinner.getComponent().getEditor();
             JFormattedTextField field = ed.getTextField();
             field.setColumns( numCol );
-            ( (JSpinner) spinner.getComponent() ).setEditor( ed );
+            spinner.getComponent().setEditor( ed );
         }
     }
 }

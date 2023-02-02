@@ -1,3 +1,13 @@
+/*
+ *  Changes copyright (C) 2023 by Maksim Khramov
+ *  This program is free software; you can redistribute it and/or modify it under the
+ *  terms of the GNU General Public License as published by the Free Software
+ *  Foundation; either version 2 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ *  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ *  PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ */
+
 package artofillusion.polymesh;
 
 import java.awt.Color;
@@ -5,9 +15,6 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-
-import javax.swing.ImageIcon;
 
 import artofillusion.Camera;
 import artofillusion.MeshEditorWindow;
@@ -571,7 +578,7 @@ extends SSMRManipulator
                         amplitude *= gridSize;
                     }
                     drag = view.getCamera().getCameraCoordinates().getZDirection().times(amplitude);
-                    ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:moveCenterBy", new String[] { String.valueOf(Math.round(drag.x*1e5)/1e5), String.valueOf(Math.round(drag.y*1e5)/1e5), String.valueOf(Math.round(drag.z*1e5)/1e5) } ));
+                    ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:moveCenterBy", Math.round(drag.x*1e5)/1e5, Math.round(drag.y*1e5)/1e5, Math.round(drag.z*1e5)/1e5));
                     break;
             }
         }
@@ -667,7 +674,7 @@ extends SSMRManipulator
                         dragY = (int)Math.round( d*view.getScale() );
                     }
                     drag = view.getCamera().findDragVector(moveCenter, dragX, dragY);
-                    ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:moveCenterBy", new String[] { String.valueOf(Math.round(drag.x*1e5)/1e5), String.valueOf(Math.round(drag.y*1e5)/1e5), String.valueOf(Math.round(drag.z*1e5)/1e5) } ));
+                    ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:moveCenterBy", Math.round(drag.x*1e5)/1e5, Math.round(drag.y*1e5)/1e5, Math.round(drag.z*1e5)/1e5));
                     break;
             }
         }
@@ -741,7 +748,7 @@ extends SSMRManipulator
             m = Mat4.translation(scaleCenter.x, scaleCenter.y, scaleCenter.z).times(m);
             m = cam.getViewToWorld().times(m);
             m = ((MeshViewer)view).getDisplayCoordinates().toLocal().times(m);
-            ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:scaleUVBy", new String[] { String.valueOf(Math.round(scaleX*1e5)/1e5), String.valueOf(Math.round(scaleY*1e5)/1e5) } ));
+            ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:scaleUVBy", Math.round(scaleX*1e5)/1e5, Math.round(scaleY*1e5)/1e5 ));
             dispatchEvent(new ManipulatorScalingEvent(this, m, view) );
         }
         else
@@ -830,7 +837,7 @@ extends SSMRManipulator
         if (!move)
         {
             dispatchEvent(new ManipulatorRotatingEvent(this, m, view) );
-            ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:rotateBy", new String[] { String.valueOf(Math.round(angle*180*1e5/Math.PI)/1e5) } ));
+            ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:rotateBy", Math.round(angle*180*1e5/Math.PI)/1e5 ));
         }
         else
             view.repaint();

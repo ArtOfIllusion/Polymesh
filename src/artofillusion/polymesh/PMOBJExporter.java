@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2002-2004 by Peter Eastman
+ *  Changes copyright (C) 2023 by Maksim Khramov
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
  *  Foundation; either version 2 of the License, or (at your option) any later version.
@@ -15,22 +16,15 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.text.NumberFormat;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Locale;
 
 import artofillusion.ArtOfIllusion;
 import artofillusion.Scene;
-import artofillusion.math.Mat4;
-import artofillusion.math.RGBColor;
-import artofillusion.math.Vec2;
-import artofillusion.math.Vec3;
-import artofillusion.object.MeshVertex;
 import artofillusion.object.ObjectInfo;
 import artofillusion.polymesh.PolyMesh.Wedge;
 import artofillusion.polymesh.PolyMesh.Wface;
 import artofillusion.polymesh.PolyMesh.Wvertex;
-import artofillusion.texture.Mapping2D;
 import artofillusion.texture.TextureSpec;
 import artofillusion.ui.ComponentsDialog;
 import artofillusion.ui.Translate;
@@ -42,6 +36,7 @@ import buoy.widget.BFileChooser;
 import buoy.widget.BFrame;
 import buoy.widget.BStandardDialog;
 import buoy.widget.Widget;
+import java.util.Map;
 
 /**
  *  PMOBJExporter contains the actual routines for exporting OBJ files for
@@ -66,9 +61,8 @@ public class PMOBJExporter
         if ( theScene.getSelection().length == 0 )
             return;
         boolean valid = false;
-        for ( int i = 0; i < theScene.getNumObjects(); i++ )
+        for (ObjectInfo info: theScene.getObjects())
         {
-            ObjectInfo info = theScene.getObject( i );
             if ( info.selected && info.object instanceof PolyMesh )
                 valid = true;
         }
@@ -155,7 +149,6 @@ public class PMOBJExporter
 
     public static void writePolyMesh( Scene theScene, PrintWriter out, TextureImageExporter textureExporter, String mtlFilename )
     {
-        RGBColor color;
 
         // Write the header information.
 
@@ -165,24 +158,12 @@ public class PMOBJExporter
 
         // Write the objects in the scene.
 
-        int numVert = 0;
-
-        // Write the objects in the scene.
-
-        int numNorm = 0;
-
-        // Write the objects in the scene.
-
-        int numTexVert = 0;
-        Hashtable groupNames = new Hashtable();
         NumberFormat nf = NumberFormat.getNumberInstance( Locale.US );
         nf.setMaximumFractionDigits( 5 );
         nf.setGroupingUsed( false );
-        for ( int i = 0; i < theScene.getNumObjects(); i++ )
+        for (ObjectInfo info: theScene.getObjects())
         {
-            // Get a rendering mesh for the object.
 
-            ObjectInfo info = theScene.getObject( i );
             if ( !info.selected || !( info.object instanceof PolyMesh ) )
                 continue;
             PolyMesh mesh = (PolyMesh) info.object;
@@ -232,14 +213,13 @@ public class PMOBJExporter
         // Write out the .mtl file.
 
         out.println( "#Produced by Art of Illusion " + ArtOfIllusion.getVersion() + ", PolyMesh Plugin, " + ( new Date() ).toString() );
-        Enumeration enumerate = textureExporter.getTextures();
-        Hashtable names = new Hashtable();
+        
+        Map<String, TextureImageInfo> names = new Hashtable<>();
         TextureSpec spec = new TextureSpec();
         NumberFormat nf = NumberFormat.getNumberInstance( Locale.US );
         nf.setMaximumFractionDigits( 5 );
-        while ( enumerate.hasMoreElements() )
+        for(TextureImageInfo info: textureExporter.getTextures())
         {
-            TextureImageInfo info = (TextureImageInfo) enumerate.nextElement();
 
             // Select a name for the texture.
 

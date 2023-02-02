@@ -1,3 +1,13 @@
+/*
+ *  Changes copyright (C) 2023 by Maksim Khramov
+ *  This program is free software; you can redistribute it and/or modify it under the
+ *  terms of the GNU General Public License as published by the Free Software
+ *  Foundation; either version 2 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ *  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ *  PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ */
+
 package artofillusion.polymesh;
 
 import java.awt.Color;
@@ -6,9 +16,6 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-
-import javax.swing.ImageIcon;
 
 import artofillusion.Camera;
 import artofillusion.MeshEditorWindow;
@@ -384,8 +391,8 @@ extends SSMRManipulator
         view.drawLine(centerPoint, new Point((int) screenZ.x, (int) screenZ.y), zColor);
 
         // Draw the handles.
-        boxes[CENTER].x = (int)(centerPoint.x - HANDLE_SIZE/2);
-        boxes[CENTER].y = (int)(centerPoint.y - HANDLE_SIZE/2);
+        boxes[CENTER].x = (centerPoint.x - HANDLE_SIZE/2);
+        boxes[CENTER].y = (centerPoint.y - HANDLE_SIZE/2);
         view.drawImage(centerhandle, boxes[CENTER].x, boxes[CENTER].y);
         for (int i = 0; i < 2; i++)
         {
@@ -806,7 +813,7 @@ extends SSMRManipulator
             drag.z = Math.round(drag.z);
             drag.z /= gridSize;
         }
-        ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:moveCenterBy", new String[] { String.valueOf(Math.round(drag.x*1e5)/1e5), String.valueOf(Math.round(drag.y*1e5)/1e5), String.valueOf(Math.round(drag.z*1e5)/1e5) } ));
+        ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:moveCenterBy", Math.round(drag.x*1e5)/1e5, Math.round(drag.y*1e5)/1e5, Math.round(drag.z*1e5)/1e5 ));
         dispatchEvent(new ManipulatorMovingEvent(this, drag, view) );
     }
 
@@ -873,7 +880,7 @@ extends SSMRManipulator
                 break;
 
         }
-        ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:moveBy", new String[] { String.valueOf(Math.round(amplitude*1e5)/1e5) } ));
+        ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:moveBy", Math.round(amplitude*1e5)/1e5 ));
         dispatchEvent(new ManipulatorMovingEvent(this, drag, view) );
     }
 
@@ -941,9 +948,9 @@ extends SSMRManipulator
             Mat4 m = Mat4.scale(scaleX, scaleY, scaleZ).times(coords.toLocal());
             m = coords.fromLocal().times(m);
             if (handle != UV_EXTRA)
-                ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:scaleBy", new String[] { String.valueOf(Math.round(scale*1e5)/1e5) } ));
+                ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:scaleBy", Math.round(scale*1e5)/1e5 ));
             else
-                ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:scaleUVBy", new String[] { String.valueOf(Math.round(scaleX*1e5)/1e5), String.valueOf(Math.round(scaleY*1e5)/1e5) } ));
+                ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:scaleUVBy", Math.round(scaleX*1e5)/1e5, Math.round(scaleY*1e5)/1e5 ));
 
             dispatchEvent(new ManipulatorScalingEvent(this, m, view) );
         }
@@ -972,7 +979,7 @@ extends SSMRManipulator
         mat = m.times(mat);
         mat = Mat4.translation(center.x, center.y, center.z).times(mat);
         dispatchEvent(new ManipulatorRotatingEvent(this, mat, view) );
-        ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:rotateBy", new String[] { String.valueOf(Math.round(rotAngle*180*1e5/Math.PI)/1e5) } ));
+        ((MeshEditorWindow)((MeshViewer)view).getController()).setHelpText(Translate.text("polymesh:rotateBy", Math.round(rotAngle*180*1e5/Math.PI)/1e5 ));
         return true;
     }
 

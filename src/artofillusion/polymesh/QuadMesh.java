@@ -1,4 +1,5 @@
 /* Copyright (C) 2007 by François Guillet
+   Changes copyright (C) 2023 by Maksim Khramov
 
  This program is free software; you can redistribute it and/or modify it under the
  terms of the GNU General Public License as published by the Free Software
@@ -13,7 +14,6 @@ package artofillusion.polymesh;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InvalidObjectException;
-import java.util.Date;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -32,7 +32,6 @@ import artofillusion.object.MeshVertex;
 import artofillusion.object.Object3D;
 import artofillusion.object.ObjectInfo;
 import artofillusion.object.TriangleMesh;
-import artofillusion.polymesh.PolyMesh.VertexParamInfo;
 import artofillusion.polymesh.PolyMesh.Wedge;
 import artofillusion.polymesh.PolyMesh.Wface;
 import artofillusion.polymesh.PolyMesh.Wvertex;
@@ -575,7 +574,7 @@ public class QuadMesh extends Object3D implements FacetedMesh {
 	public TriangleMesh convertToTriangleMesh(double tol) {
 		Vec3[] vertArray = new Vec3[vertices.length];
 		for (int i = 0; i < vertArray.length; ++i)
-			vertArray[i] = (Vec3) vertices[i].r;
+			vertArray[i] = vertices[i].r;
 		int[][] facesArray = new int[2*faces.length][3];
 		for (int i = 0; i < faces.length; i++) {
 			facesArray[2*i][0] = faces[i].v1;
@@ -659,7 +658,7 @@ public class QuadMesh extends Object3D implements FacetedMesh {
 		for (int i = 0; i < edges.length; i++) {
 			edges[i].mark = false;
 		}
-		Stack<QuadEdge> stack = new Stack<QuadEdge>();
+		Stack<QuadEdge> stack = new Stack<>();
 		//check for initial critical edges
 		for (int i = 0; i < faces.length; i++) {
 			checkEdge(i, faces[i].e1, stack);
@@ -668,7 +667,7 @@ public class QuadMesh extends Object3D implements FacetedMesh {
 			checkEdge(i, faces[i].e4, stack);
 		}
 		while (!stack.isEmpty()) {
-			QuadEdge ed = (QuadEdge)stack.pop();
+			QuadEdge ed = stack.pop();
 			if (ed.mark) {
 				solveCriticalEdge(ed, stack);
 			}
@@ -1791,7 +1790,7 @@ public class QuadMesh extends Object3D implements FacetedMesh {
 		
 		Vec3[] vertArray = new Vec3[vertices.length];
 		for (int i = 0; i < vertArray.length; ++i)
-			vertArray[i] = (Vec3) vertices[i].r;
+			vertArray[i] = vertices[i].r;
 
 		// The mesh needs to be smooth shaded, so we need to calculate the normal vectors.
 		// There may be more than one normal associated with a vertex, if that vertex is
@@ -1807,7 +1806,7 @@ public class QuadMesh extends Object3D implements FacetedMesh {
 			}
 		}
 
-	    Vector<Vec3> norm = new Vector<Vec3>();
+	    Vector<Vec3> norm = new Vector<>();
 	    int[] facenorm = new int [faces.length*4];
 	    int normals = 0;
 	    

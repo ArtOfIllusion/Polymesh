@@ -2,7 +2,7 @@
  *  Copyright (C) 1999-2004 by Peter Eastman (TriMeshViewer.java),
  *  Modifications for Winged Edge Mesh Copyright (C) 2004-2005 by François Guillet
  *  Modifications for mouse buttons Copyright (C) 2019 by Petri Ihalainen
- *
+ *  Changes copyright (C) 2023 by Maksim Khramov
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
  *  Foundation; either version 2 of the License, or (at your option) any later version.
@@ -15,17 +15,11 @@ package artofillusion.polymesh;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Polygon;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
-
-import artofillusion.MeshEditorWindow;
 import artofillusion.MeshViewer;
 import artofillusion.RenderingMesh;
 import artofillusion.TextureParameter;
-import artofillusion.TriMeshEditorWindow;
 import artofillusion.UndoRecord;
-import artofillusion.ViewerCanvas;
 import artofillusion.animation.SkeletonTool;
 import artofillusion.math.RGBColor;
 import artofillusion.math.Vec2;
@@ -36,7 +30,6 @@ import artofillusion.polymesh.PolyMesh.Wedge;
 import artofillusion.polymesh.PolyMesh.Wface;
 import artofillusion.polymesh.PolyMesh.Wvertex;
 import artofillusion.polymesh.QuadMesh.QuadEdge;
-import artofillusion.polymesh.QuadMesh.QuadVertex;
 import artofillusion.texture.FaceParameterValue;
 import artofillusion.ui.EditingTool;
 import artofillusion.ui.MeshEditController;
@@ -53,7 +46,6 @@ import artofillusion.view.VertexShader;
 import buoy.event.KeyPressedEvent;
 import buoy.event.MouseClickedEvent;
 import buoy.event.MouseMovedEvent;
-import buoy.event.WidgetEvent;
 import buoy.event.WidgetMouseEvent;
 import buoy.widget.RowContainer;
 
@@ -89,7 +81,7 @@ public class PolyMeshViewer extends MeshViewer
         super(window, p);
         PolyMesh mesh = (PolyMesh) window.getObject().object;
         visible = new boolean[mesh.getVertices().length];
-        manipulators = new ArrayList<Manipulator>();
+        manipulators = new ArrayList<>();
         manipulatorArray = new Manipulator[0];
         addEventLink(MouseMovedEvent.class, this, "mouseMoved");
         addEventLink(MouseClickedEvent.class, this, "mouseClicked");
@@ -173,10 +165,10 @@ public class PolyMeshViewer extends MeshViewer
         if (project && viewMesh.getSubdividedMesh() != null)
         {
             subMesh = viewMesh.getSubdividedMesh();
-            sv = (MeshVertex[]) subMesh.getVertices();
+            sv = subMesh.getVertices();
         }
         else
-            sv = (MeshVertex[]) viewMesh.getVertices();
+            sv = viewMesh.getVertices();
         Vec2 npt;
         for (int i = 0; i < length; i++)
         {
@@ -345,10 +337,10 @@ public class PolyMeshViewer extends MeshViewer
         if (project && viewMesh.getSubdividedMesh() != null)
         {
             subMesh = viewMesh.getSubdividedMesh();
-            sv = (MeshVertex[]) subMesh.getVertices();
+            sv = subMesh.getVertices();
         }
         else
-            sv = (MeshVertex[]) viewMesh.getVertices();
+            sv = viewMesh.getVertices();
 
         for (int i = 0; i < screenVert.length; i++)
         {
@@ -753,7 +745,7 @@ public class PolyMeshViewer extends MeshViewer
     protected void mousePressed(WidgetMouseEvent e)
     {
         PolyMesh mesh = (PolyMesh) getController().getObject().getObject();
-        MeshVertex v[] = (MeshVertex[]) mesh.getVertices();
+        MeshVertex v[] = mesh.getVertices();
         Wedge ed[] = mesh.getEdges();
         Wface f[] = mesh.getFaces();
         int i;
@@ -900,7 +892,7 @@ public class PolyMeshViewer extends MeshViewer
         // The click was on an unselected object. Select it and send an event to
         // the current tool.
 
-        boolean oldSelection[] = (boolean[]) selected.clone();
+        boolean oldSelection[] = selected.clone();
         if (!e.isShiftDown())
             for (k = 0; k < selected.length; k++)
                 selected[k] = false;
@@ -909,9 +901,8 @@ public class PolyMeshViewer extends MeshViewer
         currentTool.getWindow().setUndoRecord(new UndoRecord(currentTool.getWindow(), 
                                               false, 
                                               UndoRecord.SET_MESH_SELECTION, 
-                                              new Object[] {controller, 
-                                                            new Integer(controller.getSelectionMode()), 
-                                                            oldSelection }));
+                                              controller, controller.getSelectionMode(), 
+                                                            oldSelection ));
         controller.setSelection(selected);
         currentTool.getWindow().updateMenus();
         if (e.isShiftDown())
@@ -1001,7 +992,7 @@ public class PolyMeshViewer extends MeshViewer
         if (!(activeTool instanceof AdvancedEditingTool))
             moveToGrid(e);
         endDraggingSelection();
-        boolean oldSelection[] = (boolean[]) selected.clone();
+        boolean oldSelection[] = selected.clone();
         boolean tolerant = (controller instanceof PolyMeshEditorWindow && ((PolyMeshEditorWindow) controller).tolerant);
         boolean hideFace[] = (controller instanceof PolyMeshEditorWindow ? 
                               ((PolyMeshEditorWindow) controller).hideFace : new boolean[fc.length]);
@@ -1212,7 +1203,7 @@ public class PolyMeshViewer extends MeshViewer
         Wface[] trueFaces = polymesh.getFaces();
         MeshVertex vt[] = pv;
         if (submesh != null)
-            vt = (MeshVertex[]) submesh.getVertices();
+            vt = submesh.getVertices();
 
         double u;
         double v;

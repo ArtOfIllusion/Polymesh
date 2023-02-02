@@ -1,6 +1,6 @@
 /*
  *  Copyright (C) 2005-2007 by Francois Guillet
- *  Changes copyright (C) 2022 by Maksim Khramov
+ *  Changes copyright (C) 2022-2023 by Maksim Khramov
 
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
@@ -2064,7 +2064,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 							else
 								faceRef = faceTable.get(j - oldFaceCount);
 							int[] newIndices = getFaceVertices(faces[j]);
-							int[] oldIndices = (int[]) facesTextureIndexMap.get(faceRef);
+							int[] oldIndices = facesTextureIndexMap.get(faceRef);
 							for (int m = 0; m < 2; m++) {
 								if (newIndices[m] >= vertCount) {
 									double meanVal = 0;
@@ -3175,7 +3175,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 			return null;
 		VertexParamInfo[] vpi = new VertexParamInfo[vertInfo.size()];
 		for (int i = 0; i < vpi.length; i++) {
-			vpi[i] = (VertexParamInfo) vertInfo.get(i);
+			vpi[i] = vertInfo.get(i);
 		}
 		return vpi;
 	}
@@ -5090,7 +5090,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		boolean newSel[] = new boolean[edges.length];
 		int currentEdge = startEdge;
 		int currentVert = edges[startEdge].vertex;
-		Vector v = new Vector();
+		Vector<Vec3> v = new Vector<>();
 		Vec3 normDir = null;
 
 		Vec3 vv = vertices[edges[startEdge].vertex].r
@@ -5160,8 +5160,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 			if (v.size() > 1) {
 				normDir = new Vec3();
 				for (int i = 0; i < v.size() - 1; i++) {
-					normDir.add(((Vec3) v.elementAt(i)).cross((Vec3) v
-							.elementAt(i + 1)));
+					normDir.add(v.elementAt(i).cross(v.elementAt(i + 1)));
 				}
 				normDir.normalize();
 			}
@@ -11395,7 +11394,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 		Wedge[] newEdges;
 		Wface[] newFaces;
 		boolean[] seamsCopy = new boolean[seams.length];
-		ArrayList<Integer> vertTable = new ArrayList<Integer>();
+		ArrayList<Integer> vertTable = new ArrayList<>();
 		// System.out.println("Open seams " + seams);
 		// dumpMesh();
 		int count = 0;
@@ -12335,7 +12334,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
         @Override
 	public Property[] getProperties() {
-		return (Property[]) PROPERTIES.clone();
+		return PROPERTIES.clone();
 	}
 
         @Override
@@ -12487,7 +12486,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 			for (int i = 0; i < texParam.length; i++)
 				paramValue[i] = key.paramValue[i].duplicate();
 		for (int i = 0; i < edges.length; i++)
-			edges[i].smoothness = (float) key.edgeSmoothness[i];
+			edges[i].smoothness = key.edgeSmoothness[i];
 		/*
 		 * for ( int i = 0; i < faces.length; i++ ) { //1.0f = (float)
 		 * key.faceEdgeSmoothness[i]; //faces[i].centerSmoothness = (float)

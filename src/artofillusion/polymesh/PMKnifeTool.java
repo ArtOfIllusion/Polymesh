@@ -1,4 +1,5 @@
 /* Copyright (C) 1999-2004 by Peter Eastman
+   Changes copyright (C) 2023 by Maksim Khramov
 
 This program is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
@@ -11,12 +12,10 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details. */
 package artofillusion.polymesh;
 
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
 
 import artofillusion.Camera;
 import artofillusion.MeshViewer;
@@ -36,7 +35,7 @@ import buoy.event.WidgetMouseEvent;
 
 public class PMKnifeTool extends EditingTool
 {
-    private Vector clickPoints;
+    private Vector<Point> clickPoints;
     private UndoRecord undo;
     private MeshEditController controller;
     private PolyMesh originalMesh;
@@ -49,20 +48,16 @@ public class PMKnifeTool extends EditingTool
     public PMKnifeTool(EditingWindow fr, MeshEditController controller)
     {
         super(fr);
-        clickPoints= new Vector();
+        clickPoints= new Vector<>();
         this.controller = controller;
         initButton("polymesh:knife");
     }
     
+    @Override
     public void activate()
     {
         super.activate();
         theWindow.setHelpText(Translate.text("polymesh:knifeTool.helpText"));
-    }
-    
-    public int whichClicks()
-    {
-        return ALL_CLICKS;
     }
     
     public String getToolTipText()
@@ -110,6 +105,7 @@ public class PMKnifeTool extends EditingTool
         }
     }
     
+    @Override
     public void mouseDragged(WidgetMouseEvent e, ViewerCanvas view)
     {
         MeshViewer mv = (MeshViewer) view;
@@ -144,11 +140,11 @@ public class PMKnifeTool extends EditingTool
                 continue;
             for (int k = 0; k < clickPoints.size() - 1 ; ++k)
             {
-                f = findIntersection( (Point)clickPoints.elementAt(k), (Point)clickPoints.elementAt(k+1), screenVert[edges[i].vertex], screenVert[edges[edges[i].hedge].vertex]);
+                f = findIntersection( clickPoints.elementAt(k), clickPoints.elementAt(k+1), screenVert[edges[i].vertex], screenVert[edges[edges[i].hedge].vertex]);
                 if ( f > 0 )
                     fraction[i] = f;
             }
-            f = findIntersection( (Point)clickPoints.elementAt(clickPoints.size()-1), dragPoint, screenVert[edges[i].vertex], screenVert[edges[edges[i].hedge].vertex]);
+            f = findIntersection( clickPoints.elementAt(clickPoints.size()-1), dragPoint, screenVert[edges[i].vertex], screenVert[edges[edges[i].hedge].vertex]);
             if ( f > 0 )
                 fraction[i] = f;
         }
@@ -195,11 +191,11 @@ public class PMKnifeTool extends EditingTool
         if (dragging && canvas == view)
         {
             for (int k = 0; k < clickPoints.size() - 1 ; ++k)
-                view.drawLine( (Point)clickPoints.elementAt(k), (Point)clickPoints.elementAt(k+1), Color.black );
-            view.drawLine( (Point)clickPoints.elementAt(clickPoints.size()-1), dragPoint, Color.black );
+                view.drawLine(clickPoints.elementAt(k), clickPoints.elementAt(k+1), Color.black );
+            view.drawLine(clickPoints.elementAt(clickPoints.size()-1), dragPoint, Color.black );
             for (int k = 0; k < clickPoints.size() ; ++k)
             {
-                Point p1 = new Point( (Point)clickPoints.elementAt(k) );
+                Point p1 = new Point(clickPoints.elementAt(k) );
                 Point p2 = new Point( p1 );
                 p1.x += 5;
                 p2.x -= 5;

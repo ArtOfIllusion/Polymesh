@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2002,2004 by Peter Eastman, Modifications (C) 2005 by François Guillet for PolyMesh adaptation
+ *  Changes copyright (C) 2023 by Maksim Khramov
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
  *  Foundation; either version 2 of the License, or (at your option) any later version.
@@ -7,12 +8,12 @@
  *  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  *  PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  */
+
 package artofillusion.polymesh;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -41,6 +42,9 @@ import artofillusion.ui.Translate;
 import buoy.widget.BFileChooser;
 import buoy.widget.BFrame;
 import buoy.widget.BStandardDialog;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *  PMOBJImporter imports .OBJ files to Polymeshes.
@@ -84,15 +88,15 @@ public class PMOBJImporter
 
         // Open the file and read the contents.
 
-        Hashtable groupTable = new Hashtable();
+        Map<String, Vector<FaceInfo>> groupTable = new Hashtable<>();
 
         // Open the file and read the contents.
 
-        Hashtable textureTable = new Hashtable();
-        Vector vertex = new Vector();
-        Vector normal = new Vector();
-        Vector texture = new Vector();
-        Vector face[] = new Vector[]{new Vector()};
+        Map<String, TextureInfo> textureTable = new Hashtable<>();
+        Vector<Vec3> vertex = new Vector<>();
+        Vector<Vec3> normal = new Vector<>();
+        Vector<Vec3> texture = new Vector<>();
+        Vector<FaceInfo>[] face = new Vector[]{new Vector<>()};  // The array of Vector<FaceInfo>
         groupTable.put( "default", face[0] );
         int lineno = 0;
         int smoothingGroup = -1;
@@ -185,7 +189,7 @@ public class PMOBJImporter
                 {
                     vertIndex = new VertexInfo[fields.length - 1];
                     for ( int i = 0; i < vertIndex.length; i++ )
-                        vertIndex[i] = parseVertexSpec( fields[i + 1], vertex, texture, normal, lineno );
+                        vertIndex[i] = parseVertexSpec( fields[i + 1], vertex.size(), texture.size(), normal.size(), lineno );
                     for ( int i = 0; i < face.length; i++ )
                     {
                         // Add a face.
@@ -218,10 +222,10 @@ public class PMOBJImporter
                     face = new Vector[fields.length - 1];
                     for ( int i = 0; i < face.length; i++ )
                     {
-                        face[i] = (Vector) groupTable.get( fields[i + 1] );
+                        face[i] =  groupTable.get( fields[i + 1] );
                         if ( face[i] == null )
                         {
-                            face[i] = new Vector();
+                            face[i] = new Vector<>();
                             groupTable.put( fields[i + 1], face[i] );
                         }
                     }
@@ -245,19 +249,18 @@ public class PMOBJImporter
 
             double maxSize = Math.max( Math.max( max[0] - min[0], max[1] - min[1] ), max[2] - min[2] );
             double scale = Math.pow( 10.0, -Math.floor( Math.log( maxSize ) / Math.log( 10.0 ) ) );
-            for ( int i = 0; i < vertex.size(); i++ )
-                ( (Vec3) vertex.elementAt( i ) ).scale( scale );
+            vertex.forEach(item -> item.scale(scale));
 
             // Create a poly mesh for each group.
 
-            Enumeration enumarate = groupTable.keys();
-            Hashtable realizedTextures = new Hashtable();
-            Hashtable imageMaps = new Hashtable();
-            while ( enumarate.hasMoreElements() )
+            Map<String, Texture> realizedTextures = new Hashtable<>();
+            Map<String, ImageMap> imageMaps = new Hashtable<>();
+            
+            for(Map.Entry<String, Vector<FaceInfo>> entry: groupTable.entrySet())
             {
-                String group = (String) enumarate.nextElement();
-                Vector groupFaces = (Vector) groupTable.get( group );
-                if ( groupFaces.size() == 0 )
+                String group = entry.getKey();
+                Vector<FaceInfo> groupFaces = groupTable.get( group );
+                if ( groupFaces.isEmpty() )
                     continue;
 
                 // Find which vertices are used by faces in this group.
@@ -269,7 +272,7 @@ public class PMOBJImporter
                 int numVert = 0;
                 for ( int i = 0; i < fc.length; i++ )
                 {
-                    FaceInfo fi = (FaceInfo) groupFaces.elementAt( i );
+                    FaceInfo fi = groupFaces.elementAt( i );
                     for ( int j = 0; j < fi.vi.length; j++ )
                         if ( realIndex[fi.getVertex( j ).vert] == -1 )
                             realIndex[fi.getVertex( j ).vert] = numVert++;
@@ -289,7 +292,7 @@ public class PMOBJImporter
                 for ( int i = 0; i < realIndex.length; i++ )
                     if ( realIndex[i] > -1 )
                     {
-                        vert[realIndex[i]] = (Vec3) vertex.elementAt( i );
+                        vert[realIndex[i]] = vertex.elementAt( i );
                         center.add( vert[realIndex[i]] );
                     }
                 center.scale( 1.0 / vert.length );
@@ -307,8 +310,8 @@ public class PMOBJImporter
                 {
                     if ( edges[i].face == -1 || edges[edges[i].hedge].face == -1 )
                         continue;
-                    FaceInfo f1 = (FaceInfo) groupFaces.elementAt( edges[i].face );
-                    FaceInfo f2 = (FaceInfo) groupFaces.elementAt( edges[edges[i].hedge].face );
+                    FaceInfo f1 = groupFaces.elementAt( edges[i].face );
+                    FaceInfo f2 = groupFaces.elementAt( edges[edges[i].hedge].face );
                     if ( f1.smoothingGroup == 0 || f1.smoothingGroup != f2.smoothingGroup )
                     {
                         // They are in different smoothing groups.
@@ -325,7 +328,7 @@ public class PMOBJImporter
                             {
                                 int n1 = f1.getVertex( j ).norm;
                                 int n2 = f2.getVertex( k ).norm;
-                                if ( n1 != n2 && ( (Vec3) normal.elementAt( n1 ) ).distance( (Vec3) normal.elementAt( n2 ) ) > 1e-10 )
+                                if ( n1 != n2 && ( normal.elementAt( n1 ) ).distance( normal.elementAt( n2 ) ) > 1e-10 )
                                     edges[i].smoothness = 0.0f;
                                 break;
                             }
@@ -334,13 +337,13 @@ public class PMOBJImporter
                 // Set the texture.  For the moment, assume a single texture per group.  In the future, this could possibly
                 // be improved to deal correctly with per-face textures.
 
-                String texName = ( (FaceInfo) groupFaces.elementAt( 0 ) ).texture;
+                String texName = groupFaces.get(0).texture;
                 if ( texName != null && textureTable.get( texName ) != null )
                 {
-                    Texture tex = (Texture) realizedTextures.get( texName );
+                    Texture tex = realizedTextures.get( texName );
                     if ( tex == null )
                     {
-                        tex = createTexture( (TextureInfo) textureTable.get( texName ), theScene, bfc.getDirectory(), imageMaps, parent );
+                        tex = createTexture( textureTable.get( texName ), theScene, bfc.getDirectory(), imageMaps, parent );
                         realizedTextures.put( texName, tex );
                     }
                     if ( tex instanceof Texture2D )
@@ -353,11 +356,11 @@ public class PMOBJImporter
                         boolean needPerFace = false;
                         for ( int j = 0; j < groupFaces.size() && !needPerFace; j++ )
                         {
-                            FaceInfo fi = (FaceInfo) groupFaces.elementAt( j );
+                            FaceInfo fi = groupFaces.elementAt( j );
                             for ( int k = 0; k < fi.vi.length; k++ )
                             {
                                 VertexInfo vi = fi.getVertex( k );
-                                Vec3 texCoords = (Vec3) ( vi.tex < texture.size() ? texture.elementAt( vi.tex ) : vertex.elementAt( vi.vert ) );
+                                Vec3 texCoords = ( vi.tex < texture.size() ? texture.elementAt( vi.tex ) : vertex.elementAt( vi.vert ) );
                                 Vec2 tc = new Vec2( texCoords.x, texCoords.y );
                                 //per face per vertex texture is not handled in PolyMeshes
                                 //if (uv[realIndex[vi.vert]] != null && !uv[realIndex[vi.vert]].equals(tc))
@@ -402,13 +405,10 @@ public class PMOBJImporter
     private static String[] breakLine( String line )
     {
         StringTokenizer st = new StringTokenizer( line );
-        Vector v = new Vector();
+        List<String> v = new ArrayList<>();
 
-        while ( st.hasMoreTokens() )
-            v.addElement( st.nextToken() );
-        String result[] = new String[v.size()];
-        v.copyInto( result );
-        return result;
+        while (st.hasMoreTokens()) v.add(st.nextToken());
+        return v.toArray(new String[0]);
     }
 
 
@@ -425,7 +425,7 @@ public class PMOBJImporter
      *@exception  Exception  Description of the Exception
      */
 
-    private static VertexInfo parseVertexSpec( String spec, Vector vertex, Vector texture, Vector normal, int lineno )
+    private static VertexInfo parseVertexSpec( String spec, int vertex, int texture, int normal, int lineno )
         throws Exception
     {
         VertexInfo info = new VertexInfo();
@@ -445,11 +445,11 @@ public class PMOBJImporter
                 int index = Integer.parseInt( value );
                 int total = 0;
                 if ( i == 0 )
-                    total = vertex.size();
+                    total = vertex;
                 else if ( i == 1 )
-                    total = texture.size();
+                    total = texture;
                 else
-                    total = normal.size();
+                    total = normal;
                 if ( index < 0 )
                     index += total;
                 else
@@ -484,7 +484,7 @@ public class PMOBJImporter
      *@exception  Exception  Description of the Exception
      */
 
-    private static void parseTextures( String file, File baseDir, Hashtable textures )
+    private static void parseTextures( String file, File baseDir, Map<String, TextureInfo> textures )
         throws Exception
     {
         File f = new File( baseDir, file );
@@ -560,7 +560,7 @@ public class PMOBJImporter
      *@exception  Exception  Description of the Exception
      */
 
-    private static Texture createTexture( TextureInfo info, Scene scene, File baseDir, Hashtable imageMaps, BFrame parent )
+    private static Texture createTexture( TextureInfo info, Scene scene, File baseDir, Map<String, ImageMap> imageMaps, BFrame parent )
         throws Exception
     {
         info.resolveColors();
@@ -619,12 +619,12 @@ public class PMOBJImporter
      *@exception  Exception  Description of the Exception
      */
 
-    private static ImageMap loadMap( String name, Scene scene, File baseDir, Hashtable imageMaps, BFrame parent )
+    private static ImageMap loadMap( String name, Scene scene, File baseDir, Map<String, ImageMap> imageMaps, BFrame parent )
         throws Exception
     {
         if ( name == null )
             return null;
-        ImageMap map = (ImageMap) imageMaps.get( name );
+        ImageMap map = imageMaps.get( name );
         if ( map != null )
             return map;
         File f = new File( baseDir, name );
@@ -659,9 +659,7 @@ public class PMOBJImporter
     {
         if ( fields.length < 4 )
             return null;
-        return new RGBColor( new Double( fields[1] ).doubleValue(),
-                new Double( fields[2] ).doubleValue(),
-                new Double( fields[3] ).doubleValue() );
+        return new RGBColor( Double.parseDouble(fields[1]), Double.parseDouble(fields[2]), Double.parseDouble(fields[3]));
     }
 
 

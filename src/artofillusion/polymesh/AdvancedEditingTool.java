@@ -1,4 +1,5 @@
 /* Copyright (C) 2006-2007 by Francois Guillet
+   Changes copyright (C) 2023 by Maksim Khramov
 
  This program is free software; you can redistribute it and/or modify it under the
  terms of the GNU General Public License as published by the Free Software
@@ -10,8 +11,6 @@
 
 package artofillusion.polymesh;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 
 import artofillusion.Camera;
 import artofillusion.MeshEditorWindow;
@@ -26,6 +25,7 @@ import artofillusion.object.MeshVertex;
 import artofillusion.ui.EditingTool;
 import artofillusion.ui.EditingWindow;
 import artofillusion.ui.MeshEditController;
+import java.util.List;
 
 /**
  * This class provides an advanced behavior over standard editing tools.
@@ -55,15 +55,13 @@ public abstract class AdvancedEditingTool extends EditingTool
      */
     public void toggleManipulator(ViewerCanvas view)
     {
-        ArrayList manipulators = ((PolyMeshViewer)view).getManipulators();
+        List<Manipulator> manipulators = ((PolyMeshViewer)view).getManipulators();
         if ( manipulators.size() == 1 )
             return;
-        Iterator iter = manipulators.iterator();
-        Manipulator manipulator;
+
         Manipulator newActive = null;
-        while (iter.hasNext())
+        for(Manipulator manipulator: manipulators)
         {
-            manipulator = (Manipulator)iter.next();
             if (!manipulator.isActive() && newActive == null)
             {
                 manipulator.setActive(true);

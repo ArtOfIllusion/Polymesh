@@ -1,7 +1,8 @@
 /*
     Copyright (C) 1999-2005 by Peter Eastman, 2007 by Francois Guillet
     Modifications Copyright (C) 2019 by Petri Ihalainen
-    
+    Changes copyright (C) 2023 by Maksim Khramov
+
     This program is free software; you can redistribute it and/or modify it under the 
     terms of the GNU General Public License as published by the Free Software 
     Foundation; either version 2 of the License, or (at your option) any later version.
@@ -23,9 +24,7 @@ import artofillusion.image.*;
 import artofillusion.material.*;
 import artofillusion.math.*;
 import artofillusion.object.*;
-import artofillusion.polymesh.AdvancedEditingTool.SelectionProperties;
 import artofillusion.texture.*;
-import artofillusion.ui.*;
 import static artofillusion.ui.UIUtilities.*;
 import buoy.event.*;
 import buoy.widget.*;
@@ -145,8 +144,8 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
                     }
             }
         });
-        selection = new ArrayList<ObjectInfo>();
-        selPos = new ArrayList<Vec3>();
+        selection = new ArrayList<>();
+        selPos = new ArrayList<>();
         theScene.addTexture(selTexture = new UniformTexture());
         selTexture.diffuseColor = new RGBColor(255, 0, 0);
         sphere = new Sphere(0.03, 0.03, 0.03);
@@ -155,9 +154,7 @@ public class MeshPreviewer extends CustomWidget implements RenderListener
         showSelection = true;
         reverseWheel = ArtOfIllusion.getPreferences().getReverseZooming();
         scrollAmount = 0;
-        scrollTimer = new Timer(250, new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                mouseStoppedScrolling();}});
+        scrollTimer = new Timer(250, (ActionEvent e) -> mouseStoppedScrolling());
         render();
     }
 

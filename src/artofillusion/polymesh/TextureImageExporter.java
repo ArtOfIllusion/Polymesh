@@ -1,4 +1,5 @@
 /* Copyright (C) 2003 by Peter Eastman
+   Changes copyright (C) 2023 by Maksim Khramov
 
  This program is free software; you can redistribute it and/or modify it under the
  terms of the GNU General Public License as published by the Free Software
@@ -13,7 +14,6 @@ package artofillusion.polymesh;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.Hashtable;
 
 import artofillusion.image.ImageSaver;
@@ -28,14 +28,14 @@ import artofillusion.texture.ProceduralTexture2D;
 import artofillusion.texture.Texture;
 import artofillusion.texture.Texture2D;
 import artofillusion.texture.UVMapping;
+import java.util.Collection;
+import java.util.Map;
 
 /** This class can be used by various other exporters.  It collects information about the
  textures used by a set of objects, and writes out image files for the 2D textures. */
 
 public class TextureImageExporter {
-	private Hashtable textureTable;
-
-	private Hashtable imageMapTable;
+	private final Map<Texture, TextureImageInfo> textureTable;
 
 	private File dir;
 
@@ -68,8 +68,8 @@ public class TextureImageExporter {
 
 	public TextureImageExporter(File dir, String baseFilename, int quality,
 			int components, int width, int height) {
-		textureTable = new Hashtable();
-		imageMapTable = new Hashtable();
+		textureTable = new Hashtable<>();
+
 		this.dir = dir;
 		this.baseFilename = baseFilename;
 		this.quality = quality;
@@ -85,7 +85,7 @@ public class TextureImageExporter {
 		Texture tex = obj.object.getTexture();
 		if (tex == null)
 			return;
-		TextureImageInfo info = (TextureImageInfo) textureTable.get(tex);
+		TextureImageInfo info = textureTable.get(tex);
 		if (info == null) {
 			// We haven't encountered this texture before, so create a new TextureImageInfo for it.
 
@@ -173,39 +173,30 @@ public class TextureImageExporter {
 	/** Get the TextureImageInfo (which may be null) for a particular texture. */
 
 	public TextureImageInfo getTextureInfo(Texture tex) {
-		return (TextureImageInfo) textureTable.get(tex);
+            return  textureTable.get(tex);
 	}
 
 	/** Get an Enumeration of all TextureImageInfos. */
 
-	public Enumeration getTextures() {
-		return textureTable.elements();
+	public Collection<TextureImageInfo> getTextures() {
+            return textureTable.values();
 	}
 
 	/** Write out all of the images for the various textures. */
 
 	public void saveImages() throws IOException, InterruptedException {
-		Enumeration enumarate = textureTable.keys();
-		while (enumarate.hasMoreElements()) {
-			Texture tex = (Texture) enumarate.nextElement();
-			TextureImageInfo info = (TextureImageInfo) textureTable.get(tex);
-			if ((components & DIFFUSE) != 0)
-				writeComponentImage(info, Texture2D.DIFFUSE_COLOR_COMPONENT,
-						info.diffuseFilename);
-			if ((components & SPECULAR) != 0)
-				writeComponentImage(info, Texture2D.SPECULAR_COLOR_COMPONENT,
-						info.specularFilename);
-			if ((components & HILIGHT) != 0)
-				writeComponentImage(info, Texture2D.HILIGHT_COLOR_COMPONENT,
-						info.hilightFilename);
-			if ((components & TRANSPARENT) != 0)
-				writeComponentImage(info,
-						Texture2D.TRANSPARENT_COLOR_COMPONENT,
-						info.transparentFilename);
-			if ((components & EMISSIVE) != 0)
-				writeComponentImage(info, Texture2D.EMISSIVE_COLOR_COMPONENT,
-						info.emissiveFilename);
-		}
+            for(TextureImageInfo info: textureTable.values()) {
+                if ((components & DIFFUSE) != 0)
+                        writeComponentImage(info, Texture2D.DIFFUSE_COLOR_COMPONENT, info.diffuseFilename);
+                if ((components & SPECULAR) != 0)
+                        writeComponentImage(info, Texture2D.SPECULAR_COLOR_COMPONENT, info.specularFilename);
+                if ((components & HILIGHT) != 0)
+                        writeComponentImage(info, Texture2D.HILIGHT_COLOR_COMPONENT, info.hilightFilename);
+                if ((components & TRANSPARENT) != 0)
+                        writeComponentImage(info,Texture2D.TRANSPARENT_COLOR_COMPONENT, info.transparentFilename);
+                if ((components & EMISSIVE) != 0)
+                        writeComponentImage(info, Texture2D.EMISSIVE_COLOR_COMPONENT, info.emissiveFilename);
+            }
 	}
 
 	/** Write an image file to disk representating a component of a texture. */

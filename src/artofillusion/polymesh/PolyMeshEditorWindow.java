@@ -1,6 +1,6 @@
 /*
  *  Copyright (C) 2006-2007 by Francois Guillet
- *  Changes copyright (C) 2022 by Maksim Khramov
+ *  Changes copyright (C) 2022-2023 by Maksim Khramov
  *
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.JFormattedTextField;
 import javax.swing.JSpinner;
@@ -116,6 +115,7 @@ import buoy.widget.RowContainer;
 import buoy.widget.Shortcut;
 import buoy.widget.Widget;
 import buoy.xml.WidgetDecoder;
+import java.util.List;
 
 /**
  * The PolyMeshEditorWindow class represents the window for editing PolyMesh
@@ -1974,15 +1974,9 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 * Toggles manipulator view mode (i.e. X,Y,Z U,V and N, P, Q)
 	 */
 	public void toggleManipulatorViewMode() {
-		PolyMeshViewer view = (PolyMeshViewer) getView();
-		ArrayList manipulators = view.getManipulators();
-		Iterator iter = manipulators.iterator();
-		Manipulator manipulator;
-		while (iter.hasNext()) {
-			manipulator = (Manipulator) iter.next();
-			manipulator.toggleViewMode();
-		}
-		view.repaint();
+            PolyMeshViewer view = (PolyMeshViewer) getView();
+            view.getManipulators().forEach(man -> man.toggleViewMode());
+            view.repaint();
 	}
 
 	/**
@@ -2180,16 +2174,11 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	}
 
 	private void doLevelContainerEnable() {
-		boolean enable = false;
-		PolyMesh mesh = (PolyMesh) objInfo.object;
-		if (mesh.getSmoothingMethod() == Mesh.APPROXIMATING)
-			enable = true;
-		Iterator iter = levelContainer.getChildren().iterator();
-		Widget w;
-		while (iter.hasNext()) {
-			w = (Widget) iter.next();
-			w.setEnabled(enable);
-		}
+            boolean enable = false;
+            PolyMesh mesh = (PolyMesh) objInfo.object;
+            if (mesh.getSmoothingMethod() == Mesh.APPROXIMATING)
+                    enable = true;
+            for(Widget widget: levelContainer.getChildren()) widget.setEnabled(enable);
 	}
 
 	/**
@@ -3137,28 +3126,12 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 *                The new number of columns to show
 	 */
 	public static void setSpinnerColumns(BSpinner spinner, int numCol) {
-		NumberEditor ed = (NumberEditor) ((JSpinner) spinner.getComponent())
-				.getEditor();
-		JFormattedTextField field = ed.getTextField();
-		field.setColumns(numCol);
-		((JSpinner) spinner.getComponent()).setEditor(ed);
+            NumberEditor ed = (NumberEditor)spinner.getComponent().getEditor();
+            JFormattedTextField field = ed.getTextField();
+            field.setColumns(numCol);
+            spinner.getComponent().setEditor(ed);
 	}
 
-	/**
-	 * Sets the number of minimum fraction digits for a 'double' spinner
-	 * 
-	 * @param spinner
-	 *                The concerned BSpinner
-	 * @param numDigits
-	 *                The new minimum number of fraction digits
-	 */
-	public static void setSpinnerFractionDigits(BSpinner spinner, int numDigits) {
-		NumberEditor ed = (NumberEditor) ((JSpinner) spinner.getComponent())
-				.getEditor();
-		DecimalFormat format = ed.getFormat();
-		format.setMinimumFractionDigits(1);
-		((JSpinner) spinner.getComponent()).setEditor(ed);
-	}
 
 	/**
 	 * Sets the smoothness of selected vertices or edges
@@ -3183,7 +3156,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 		 */
 		value = ed[i].smoothness;
 		value = 0.001f * (Math.round(valueWidget.getValue() * 1000.0f));
-		smoothness = new ValueSlider(0.0, 1.0, 1000, (double) valueWidget
+		smoothness = new ValueSlider(0.0, 1.0, 1000, valueWidget
 				.getValue());
 		smoothness.addEventLink(ValueChangedEvent.class, new Object() {
 			void processEvent() {
@@ -3385,7 +3358,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	public AdvancedEditingTool.SelectionProperties getSelectionProperties() {
 		PolyMesh mesh = (PolyMesh) objInfo.object;
-		MeshVertex v[] = (MeshVertex[]) mesh.getVertices();
+		MeshVertex v[] = mesh.getVertices();
 		Wedge e[] = mesh.getEdges();
 		Wface f[] = mesh.getFaces();
 		Vec3[] normals = null;
@@ -3484,7 +3457,7 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 
 	public void setSelectionMode(int mode) {
 		PolyMesh mesh = (PolyMesh) objInfo.object;
-		MeshVertex v[] = (MeshVertex[]) mesh.getVertices();
+		MeshVertex v[] = mesh.getVertices();
 		Wedge e[] = mesh.getEdges();
 		Wface f[] = mesh.getFaces();
 		boolean newSel[];
@@ -3725,10 +3698,10 @@ public class PolyMeshEditorWindow extends MeshEditorWindow implements
 	 */
 
 	public void objectChanged() {
-		PolyMesh mesh = (PolyMesh) objInfo.object;
-		((PolyMesh) mesh).resetMesh();
-		setMesh((PolyMesh) mesh);
-		super.objectChanged();
+            PolyMesh mesh = (PolyMesh) objInfo.object;
+            mesh.resetMesh();
+            setMesh(mesh);
+            super.objectChanged();
 	}
 
 	/** Update the parameter which records weights for the currently selected joint. */

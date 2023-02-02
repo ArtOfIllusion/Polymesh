@@ -1,5 +1,5 @@
 /* Copyright (C) 1999-2004 by Peter Eastman
-
+   Changes copyright (C) 2023 by Maksim Khramov
 This program is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
 Foundation; either version 2 of the License, or (at your option) any later version.
@@ -11,12 +11,10 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details. */
 package artofillusion.polymesh;
 
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
 
 import artofillusion.UndoRecord;
 import artofillusion.ViewerCanvas;
@@ -34,7 +32,7 @@ import buoy.event.WidgetMouseEvent;
 
 public class PMCreateFaceTool extends EditingTool
 {
-    private Vector clickPoints;
+    private Vector<Vec3> clickPoints;
     private UndoRecord undo;
     private MeshEditController controller;
     private PolyMesh originalMesh;
@@ -52,7 +50,7 @@ public class PMCreateFaceTool extends EditingTool
     public PMCreateFaceTool(EditingWindow fr, MeshEditController controller)
     {
         super(fr);
-        clickPoints= new Vector();
+        clickPoints= new Vector<>();
         from = to = -1;
         fromPoint = null;
         this.controller = controller;
@@ -66,11 +64,6 @@ public class PMCreateFaceTool extends EditingTool
         clickPoints.clear();
         from = to = -1;
         fromPoint = null;
-    }
-    
-    public int whichClicks()
-    {
-        return ALL_CLICKS;
     }
     
     public String getToolTipText()
@@ -143,7 +136,7 @@ public class PMCreateFaceTool extends EditingTool
                 }
                 for (int i = 0; i < clickPoints.size(); i++ )
                 {
-                    Vec3 cpv = (Vec3) clickPoints.get(i);
+                    Vec3 cpv = clickPoints.get(i);
                     Vec2 ps =  canvas.getCamera().getObjectToScreen().timesXY( cpv );
                     if ( e.x < ps.x - PolyMeshViewer.HANDLE_SIZE / 2 || e.x > ps.x + PolyMeshViewer.HANDLE_SIZE / 2 ||
                             e.y < ps.y - PolyMeshViewer.HANDLE_SIZE / 2 || e.y > ps.y + PolyMeshViewer.HANDLE_SIZE / 2 )
@@ -195,11 +188,10 @@ public class PMCreateFaceTool extends EditingTool
 
     private void addFace()
     {
-        if (clickPoints.size() < 1)
+        if (clickPoints.isEmpty())
             return;
-        Vec3[] newPoints = new Vec3[clickPoints.size()];
-        for (int i = 0; i < clickPoints.size(); i++)
-            newPoints[i] = (Vec3)clickPoints.elementAt(i);
+        Vec3[] newPoints = clickPoints.toArray(new Vec3[0]);
+
         PolyMesh mesh = (PolyMesh)controller.getObject().object;
         PolyMesh origMesh = (PolyMesh) mesh.duplicate();
         if (to != -1)
@@ -240,24 +232,24 @@ public class PMCreateFaceTool extends EditingTool
             view.drawBox( pf.x - PolyMeshViewer.HANDLE_SIZE/2, pf.y - PolyMeshViewer.HANDLE_SIZE/2, PolyMeshViewer.HANDLE_SIZE, PolyMeshViewer.HANDLE_SIZE, Color.red);
             if ( clickPoints.size() > 0)
             {
-                Vec3 v = (Vec3)clickPoints.elementAt(0);
+                Vec3 v =clickPoints.elementAt(0);
                 Vec2 vp = canvas.getCamera().getObjectToScreen().timesXY( v );
                 Point vpp = new Point( (int)Math.round(vp.x), (int)Math.round(vp.y) );
                 Point vppt;
                 view.drawLine( pf, vpp, Color.black );
                 for (int k = 0; k < clickPoints.size() - 1 ; ++k)
                 {
-                    v = (Vec3)clickPoints.elementAt(k);
+                    v = clickPoints.elementAt(k);
                     vp = canvas.getCamera().getObjectToScreen().timesXY( v );
                     vpp = new Point( (int)Math.round(vp.x), (int)Math.round(vp.y) );
-                    v = (Vec3)clickPoints.elementAt(k+1);
+                    v = clickPoints.elementAt(k+1);
                     vp = canvas.getCamera().getObjectToScreen().timesXY( v );
                     vppt = new Point( (int)Math.round(vp.x), (int)Math.round(vp.y) );
                     view.drawLine( vpp, vppt, Color.black );
                 }
                 for (int k = 0; k < clickPoints.size() ; ++k)
                 {
-                    v = (Vec3)clickPoints.elementAt(k);
+                    v = clickPoints.elementAt(k);
                     vp = canvas.getCamera().getObjectToScreen().timesXY( v );
                     vpp = new Point( (int)Math.round(vp.x), (int)Math.round(vp.y) );
                     view.drawBox( vpp.x - PolyMeshViewer.HANDLE_SIZE/2, vpp.y - PolyMeshViewer.HANDLE_SIZE/2, PolyMeshViewer.HANDLE_SIZE, PolyMeshViewer.HANDLE_SIZE, Color.red);

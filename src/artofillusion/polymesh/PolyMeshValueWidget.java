@@ -1,3 +1,13 @@
+/* Changes copyright (C) 2023 by Maksim Khramov
+
+ This program is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ PARTICULAR PURPOSE.  See the GNU General Public License for more details. */
+
 package artofillusion.polymesh;
 
 import java.awt.event.InputEvent;
@@ -337,10 +347,10 @@ public class PolyMeshValueWidget extends BorderContainer
      */
     public static void setSpinnerColumns( BSpinner spinner, int numCol )
     {
-        JSpinner.NumberEditor ed = (JSpinner.NumberEditor) ( (JSpinner) spinner.getComponent() ).getEditor();
+        JSpinner.NumberEditor ed = (JSpinner.NumberEditor)spinner.getComponent().getEditor();
         JFormattedTextField field = ed.getTextField();
         field.setColumns( numCol );
-        ( (JSpinner) spinner.getComponent() ).setEditor( ed );
+        spinner.getComponent().setEditor( ed );
     }
 
 
@@ -352,32 +362,32 @@ public class PolyMeshValueWidget extends BorderContainer
      */
     public static void setSpinnerFractionDigits( BSpinner spinner, int numDigits )
     {
-        JSpinner.NumberEditor ed = (JSpinner.NumberEditor) ( (JSpinner) spinner.getComponent() ).getEditor();
+        JSpinner.NumberEditor ed = (JSpinner.NumberEditor) spinner.getComponent().getEditor();
         DecimalFormat format = ed.getFormat();
         format.setMinimumFractionDigits( 1 );
-        ( (JSpinner) spinner.getComponent() ).setEditor( ed );
+        spinner.getComponent().setEditor( ed );
     }
 
     public double getValueMin()
     {
-        return ( (Double) minSpinner.getValue() ).doubleValue();
+        return  (Double) minSpinner.getValue();
     }
 
     public void setValueMin(double valueMin)
     {
         this.valueMin = valueMin;
-        minSpinner.setValue( new Double( valueMin ) );
+        minSpinner.setValue(valueMin);
     }
 
     public double getValueMax()
     {
-        return ( (Double) maxSpinner.getValue() ).doubleValue();
+        return ( (Double) maxSpinner.getValue() );
     }
 
     public void setValueMax(double valueMax)
     {
         this.valueMax = valueMax;
-        maxSpinner.setValue( new Double( valueMax ) );
+        maxSpinner.setValue(valueMax);
     }
 
     /**

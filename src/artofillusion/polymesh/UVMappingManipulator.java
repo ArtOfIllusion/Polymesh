@@ -1,7 +1,7 @@
 /*
  *  Copyright (C) 2007 by François Guillet
  *  Modifications Copyright (C) 2019 by Petri Ihalainen
- *
+ *  Changes copyright (C) 2023 by Maksim Khramov
  *  This program is free software; you can redistribute it and/or modify it under the 
  *  terms of the GNU General Public License as published by the Free Software 
  *  Foundation; either version 2 of the License, or (at your option) any later version. 
@@ -20,18 +20,11 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
 
 import artofillusion.ArtOfIllusion;
-import artofillusion.math.Mat4;
 import artofillusion.math.Vec2;
-import artofillusion.math.Vec3;
-import artofillusion.object.TriangleMesh;
-import artofillusion.object.TriangleMesh.Edge;
-import artofillusion.object.TriangleMesh.Face;
 import artofillusion.polymesh.UVMappingCanvas.Range;
 import artofillusion.polymesh.UVMappingCanvas.SelectionCommand;
-import artofillusion.polymesh.UnfoldedMesh.UnfoldedEdge;
 import artofillusion.ui.ThemeManager;
 import buoy.event.MouseScrolledEvent;
 import buoy.event.WidgetMouseEvent;
@@ -74,7 +67,7 @@ public class UVMappingManipulator
     private boolean globalScaling; //true if the user moves all pieces at once (shift right drag)
     private boolean globalMoving;//true if the user scales all pieces at once(ctrl right drag)
     private boolean[] curSelection;
-    private ArrayList<Integer> selection;
+    private final ArrayList<Integer> selection;
     public final static short U_MOVE = 0;
     public final static short U_SCALE = 1;
     public final static short V_MOVE = 2;
@@ -96,7 +89,7 @@ public class UVMappingManipulator
         this.canvas = canvas;
         canvas.setManipulator(this);
         this.window = window;
-        selection = new ArrayList();
+        selection = new ArrayList<>();
         for (int i = 0; i < 6; i++)
             boxes[i] = new Rectangle(0, 0, HANDLE_SIZE / 2, HANDLE_SIZE / 2);
         rotationHandle = new UVRotationHandle(64, new Point(), Color.orange);

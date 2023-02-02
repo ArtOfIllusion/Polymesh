@@ -1,12 +1,20 @@
+/*
+ *  Changes copyright (C) 2023 by Maksim Khramov
+ *  This program is free software; you can redistribute it and/or modify it under the
+ *  terms of the GNU General Public License as published by the Free Software
+ *  Foundation; either version 2 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ *  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ *  PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ */
+
 package artofillusion.polymesh;
 
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
 
 import artofillusion.UndoRecord;
 import artofillusion.ViewerCanvas;
@@ -25,7 +33,7 @@ import buoy.event.WidgetMouseEvent;
 
 public class PMExtrudeCurveTool extends EditingTool
 {
-    private Vector clickPoints;
+    private Vector<CurvePoint> clickPoints;
     private PolyMesh orMesh;
     private boolean[] orSel;
     private MeshEditController controller;
@@ -40,7 +48,7 @@ public class PMExtrudeCurveTool extends EditingTool
     public PMExtrudeCurveTool(EditingWindow fr, MeshEditController controller)
     {
         super(fr);
-        clickPoints= new Vector();
+        clickPoints= new Vector<>();
         fromPoint = null;
         this.controller = controller;
         initButton("polymesh:extrudecurve");
@@ -52,11 +60,6 @@ public class PMExtrudeCurveTool extends EditingTool
         theWindow.setHelpText(Translate.text("polymesh:extrudeCurveTool.helpText"));
         clickPoints.clear();
         fromPoint = null;
-    }
-
-    public int whichClicks()
-    {
-        return ALL_CLICKS;
     }
 
     public String getToolTipText()
@@ -74,7 +77,7 @@ public class PMExtrudeCurveTool extends EditingTool
             Point e = ev.getPoint();
             for (int i = 0; i < clickPoints.size(); i++ )
             {
-                if (!((CurvePoint)clickPoints.elementAt(i)).clickedOnto(ev, view))
+                if (!(clickPoints.elementAt(i)).clickedOnto(ev, view))
                     continue;
                 dragging  = i + 1;
                 if ( ( ev.getModifiers() & ActionEvent.CTRL_MASK ) != 0 )
@@ -95,12 +98,12 @@ public class PMExtrudeCurveTool extends EditingTool
     {
          if (dragging < 1)
             return;
-        CurvePoint cp = (CurvePoint)clickPoints.elementAt(dragging-1);
+        CurvePoint cp = clickPoints.elementAt(dragging-1);
         if (dragging == 1)
             cp.mouseDragged(fromPoint, ev.getPoint());
         else
         {
-            Vec3 p =  ((CurvePoint)clickPoints.elementAt(dragging-2)).position;
+            Vec3 p =  clickPoints.elementAt(dragging-2).position;
             cp.mouseDragged(p, ev.getPoint());
         }
         if (previewMode)
@@ -113,7 +116,7 @@ public class PMExtrudeCurveTool extends EditingTool
     {
         Point e = ev.getPoint();
         canvas = view;
-        if ( clickPoints.size() == 0 && fromPoint == null)
+        if ( clickPoints.isEmpty() && fromPoint == null)
         {
             fromPoint = getInitialPoint();
             if (fromPoint == null)
@@ -155,7 +158,7 @@ public class PMExtrudeCurveTool extends EditingTool
 
     private Vec3 getInitialPoint()
     {
-        if (clickPoints.size() == 0)
+        if (clickPoints.isEmpty())
         {
             orSel = controller.getSelection();
             orMesh = (PolyMesh)controller.getObject().object;
@@ -219,6 +222,7 @@ public class PMExtrudeCurveTool extends EditingTool
         }
     }
 
+    @Override
     public void keyPressed(KeyPressedEvent e, ViewerCanvas view)
     {
         if (! (canvas == view) )
@@ -276,22 +280,19 @@ public class PMExtrudeCurveTool extends EditingTool
         Vec3 previous = fromPoint;
         for (int i = 0; i < clickPoints.size(); i++)
         {
-            length += ((CurvePoint)clickPoints.get(i)).position.minus(previous).length();
-            previous = ((CurvePoint)clickPoints.get(i)).position;
+            length += clickPoints.get(i).position.minus(previous).length();
+            previous = clickPoints.get(i).position;
         }
         if (length < 0.005)
-            for (int i = 0; i < clickPoints.size(); i++)
-            {
-                ((CurvePoint)clickPoints.elementAt(i)).amplitude = 1.0;
-            }
+            clickPoints.forEach(cp -> cp.amplitude = 1.0);
         else
         {
             previous = fromPoint;
             for (int i = 0; i < clickPoints.size(); i++)
             {
-                cumul += ((CurvePoint)clickPoints.get(i)).position.minus(previous).length();
-                ((CurvePoint)clickPoints.elementAt(i)).amplitude = 1.0 - cumul/length;
-                previous = ((CurvePoint)clickPoints.get(i)).position;
+                cumul += clickPoints.get(i).position.minus(previous).length();
+                clickPoints.elementAt(i).amplitude = 1.0 - cumul/length;
+                previous = clickPoints.get(i).position;
             }
         }
     }
@@ -317,13 +318,13 @@ public class PMExtrudeCurveTool extends EditingTool
                     normal.add(normals[j]);
             }
             normal.normalize();
-            extdir = ((CurvePoint)clickPoints.get(i)).position.minus(previous);
+            extdir = clickPoints.get(i).position.minus(previous);
             scale = extdir.length();
             extdir.normalize();
             angle = 0;
             if (i < clickPoints.size() - 1)
             {
-                nextdir = ((CurvePoint)clickPoints.get(i+1)).position.minus(((CurvePoint)clickPoints.get(i)).position);
+                nextdir = clickPoints.get(i+1).position.minus(clickPoints.get(i).position);
                 nextdir.normalize();
                 nextdir.add(extdir);
                 nextdir.normalize();
@@ -341,8 +342,8 @@ public class PMExtrudeCurveTool extends EditingTool
             for (int j = 0; j < sel.length; j++)
                 newSel[j] = sel[j];
             sel = newSel;
-            previous = ((CurvePoint)clickPoints.get(i)).position;
-            size = ((CurvePoint)clickPoints.get(i)).amplitude;
+            previous = clickPoints.get(i).position;
+            size = clickPoints.get(i).amplitude;
             if (nextdir != null)
             {
                 Vec3 trans = getInitialPoint(sel, mesh);
@@ -390,24 +391,24 @@ public class PMExtrudeCurveTool extends EditingTool
         {
            if ( clickPoints.size() > 0)
             {
-                Vec3 v = ((CurvePoint)clickPoints.get(0)).position;
+                Vec3 v = clickPoints.get(0).position;
                 Vec2 vp = canvas.getCamera().getObjectToScreen().timesXY( v );
                 Point vpp = new Point( (int)Math.round(vp.x), (int)Math.round(vp.y) );
                 Point vppt;
                 view.drawLine( pf, vpp, Color.black );
                 for (int k = 0; k < clickPoints.size() - 1 ; ++k)
                 {
-                    v = ((CurvePoint)clickPoints.get(k)).position;
+                    v = clickPoints.get(k).position;
                     vp = canvas.getCamera().getObjectToScreen().timesXY( v );
                     vpp = new Point( (int)Math.round(vp.x), (int)Math.round(vp.y) );
-                    v = ((CurvePoint)clickPoints.get(k+1)).position;
+                    v = clickPoints.get(k+1).position;
                     vp = canvas.getCamera().getObjectToScreen().timesXY( v );
                     vppt = new Point( (int)Math.round(vp.x), (int)Math.round(vp.y) );
                     view.drawLine( vpp, vppt, Color.black );
                 }
                 for (int k = 0; k < clickPoints.size() ; ++k)
                 {
-                    ((CurvePoint)clickPoints.get(k)).draw(view);
+                    clickPoints.get(k).draw(view);
                     //v = ((CurvePoint)clickPoints.get(k)).position;
                     //vp = canvas.getCamera().getObjectToScreen().timesXY( v );
                     //vpp = new Point( (int)Math.round(vp.x), (int)Math.round(vp.y) );
