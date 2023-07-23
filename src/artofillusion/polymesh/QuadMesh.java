@@ -1,12 +1,15 @@
-/* Copyright © 2007 by François Guillet
+/* 
+  Copyright © 2007 by François Guillet
+  Edits copyright © 2023 Petri Ihalainen
 
- This program is free software; you can redistribute it and/or modify it under the
- terms of the GNU General Public License as published by the Free Software
- Foundation; either version 2 of the License, or (at your option) any later version.
+  This program is free software; you can redistribute it and/or modify it under the
+  terms of the GNU General Public License as published by the Free Software
+  Foundation; either version 2 of the License, or (at your option) any later version.
 
- This program is distributed in the hope that it will be useful, but WITHOUT ANY 
- WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
- PARTICULAR PURPOSE.  See the GNU General Public License for more details. */
+  This program is distributed in the hope that it will be useful, but WITHOUT ANY 
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+  PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+*/
 
 package artofillusion.polymesh;
 
@@ -1168,13 +1171,16 @@ public class QuadMesh extends Object3D implements FacetedMesh {
                     nextVert = edges[ve[j]].v1;
                 }
                 if (face1 != -1) {
+                    int pv = getPreviousVertex(i, face1);
+                    if (pv == -1)
+                        continue;
                     r = vertices[faces[face1].v1].r.plus(vertices[faces[face1].v2].r);
                     r.add(vertices[faces[face1].v3].r);
                     r.add(vertices[faces[face1].v4].r);
                     r.scale(0.25);
                     pos.add(r);
                     pos.subtract(vertices[nextVert].r.times(1.0 / 4.0));
-                    pos.subtract(vertices[getPreviousVertex(i, face1)].r.times(1.0 / 4.0));
+                    pos.subtract(vertices[pv].r.times(1.0 / 4.0));
                     pos.subtract(vertices[i].r.times(1.0 / 4.0));
                     ++count;
                 }
@@ -1278,6 +1284,11 @@ public class QuadMesh extends Object3D implements FacetedMesh {
             moveVerts[vertices.length + index] = false;
             v1 = edges[i].v1;
             v2 = edges[i].v2;
+            if (v1 == -1 || v2 == -1)
+                // I don't know if this is even theoretically possible, but 
+                // strange things have happened with old PolyMesh models.
+                continue;
+
             face1 = edges[i].f1;
             face2 = edges[i].f2;
             if (face1 == -1 || face2 == -1) {
@@ -1287,6 +1298,8 @@ public class QuadMesh extends Object3D implements FacetedMesh {
             v3 = getPreviousVertex(v1, face1);
             v4 = getNextVertex(v1, face2);
             v6 = getPreviousVertex(v2, face2);
+            if (v3 == -1 || v4 == -1 || v5 == -1 || v6 == -1 )
+                continue;
             v1r = vertices[v1].r;
             v2r = vertices[v2].r;
             v3r = vertices[v3].r;
