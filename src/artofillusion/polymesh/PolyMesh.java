@@ -1,6 +1,7 @@
 /*
- *  Copyright (C) 2005-2007 by Francois Guillet
- *  Changes copyright (C) 2022 by Maksim Khramov
+ *  Copyright © 2005-2007 by Francois Guillet
+ *  Changes copyright © 2022 by Maksim Khramov
+ *  Some code clean up 2023 by Petri Ihalainen
  *
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
@@ -170,12 +171,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     private final static short ONE_BEVEL_NEXT = 3;
     private final static short TWO_BEVEL = 4;
     
-    // smoothing constants
-
-//    private final static short APPROXIMATING_CM = 10;
-//
-//    private final static short APPROXIMATING_BLZ = 11;
-
     /**
      * Area under which faces are collapsed if applyEdgeLengthLimit is selected
      */
@@ -219,18 +214,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Constructor for the PolyMesh object
      * 
-     * @param type
-     *            Mesh type (e.g. cylinder, flat plane, etc.)
-     * @param u
-     *            Size of the mesh (U direction)
-     * @param v
-     *            Position of the mesh (V direction)
-     * @param sx
-     *            Mesh size along x
-     * @param sy
-     *            Mesh size along y
-     * @param sz
-     *            Mesh size along z
+     * @param type Mesh type (e.g. cylinder, flat plane, etc.)
+     * @param u    Size of the mesh (U direction)
+     * @param v    Position of the mesh (V direction)
+     * @param sx   Mesh size along x
+     * @param sy   Mesh size along y
+     * @param sz   Mesh size along z
      */
 
     public PolyMesh(int type, int u, int v, double sx, double sy, double sz) {
@@ -429,6 +418,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Initialization stuff common to several constructors
      */
+
     private void initialize() {
         controlledSmoothing = false;
         minAngle = 0;
@@ -436,7 +426,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         minSmoothness = 1.0f;
         maxSmoothness = 0.0f;
         interactiveSmoothLevel = 1;
-        //display properties
         loadFromDisplayPropertiesPreferences();    
     }
     
@@ -582,7 +571,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             ++uSize;
         if (smesh.isVClosed())
             ++vSize;
-        // System.out.println( uSize + " " + vSize );
         smoothingMethod = smesh.getSmoothingMethod();
         Vec3[] vp = smesh.getVertexPositions();
         planarMesh(uSize, vSize, uSize - 1, vSize - 1);
@@ -773,8 +761,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * Constructor for the PolyMesh object The triangle mesh given as parameter
      * is converted to a polymesh
      * 
-     * @param trimesh
-     *            Traingle Mesh
+     * @param trimesh  Traingle Mesh
      */
 
     public PolyMesh(TriangleMesh trimesh, boolean findQuads,
@@ -791,7 +778,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
         for (int i = 0; i < triVerts.length; ++i) {
             vertices[i] = new Wvertex(triVerts[i].r, -1);
-            // vertices[i].smoothness = triVerts[i].smoothness;
         }
         for (int i = 0; i < triEdges.length; ++i) {
             edges[i] = new Wedge(triEdges[i].v2, i + triEdges.length, -1, -1);
@@ -885,6 +871,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     }
 
     // faceted mesh interface
+
     /**
      * Get the number of faces in this mesh.
      */
@@ -897,8 +884,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Get the number of vertices in a particular face.
      * 
-     * @param face
-     *            the index of the face
+     * @param face  The index of the face
      */
 
     @Override
@@ -909,13 +895,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Get the index of a particular vertex in a particular face.
      * 
-     * @param face
-     *            the index of the face
-     * @param vertex
-     *            the index of the vertex within the face (between 0 and
-     *            getFaceVertexCount(face)-1 inclusive)
-     * @return the index of the corresponding vertex in the list returned by
-     *         getVertices()
+     * @param face    The index of the face
+     * @param vertex  The index of the vertex within the face (between 0 and getFaceVertexCount(face)-1 inclusive)
+     * @return        The index of the corresponding vertex in the list returned by getVertices()
      */
 
     @Override
@@ -929,7 +911,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      */
 
     private void updateResizedMesh() {
+
         // vertex reduction
+
         int vertCount = 0;
         int[] vertTable = new int[vertices.length];
         for (int i = 0; i < vertices.length; ++i) {
@@ -947,7 +931,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         for (int i = 0; i < edges.length; ++i)
             if (edges[i].vertex != -1)
                 edges[i].vertex = vertTable[edges[i].vertex];
+
         // edges reduction
+
         int edgeCount = 0;
         int[] edgeTable = new int[edges.length];
         for (int i = 0; i < edges.length; ++i) {
@@ -976,14 +962,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Creates a planar, grid-like mesh.
      * 
-     * @param uSize
-     *            Number of points along x (u)
-     * @param vSize
-     *            Number of points along y (v)
-     * @param uMax
-     *            Max coordinate along x (mesh starts at 0)
-     * @param vMax
-     *            Max coordinate along y (mesh starts at 0)
+     * @param uSize   Number of points along x (u)
+     * @param vSize   Number of points along y (v)
+     * @param uMax    Max coordinate along x (mesh starts at 0)
+     * @param vMax    Max coordinate along y (mesh starts at 0)
      */
 
     private void planarMesh(int uSize, int vSize, double uMax, double vMax) {
@@ -1076,10 +1058,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * constructor with a faces[][] array which does not meet this condition,
      * and the results are undefined.
      * 
-     * @param v
-     *            Array of vertices positions
-     * @param f
-     *            Array of arrays describing vertex indices for each face
+     * @param v   Array of vertices positions
+     * @param f   Array of arrays describing vertex indices for each face
      */
 
     public PolyMesh(Vec3[] v, int[][] f) {
@@ -1138,6 +1118,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         }
 
         // edges reduction
+
         int edgeCount = 0;
         int[] edgeTable = new int[edges.length];
         for (int i = 0; i < edges.length; ++i) {
@@ -1185,8 +1166,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * it. If the two objects are of different classes, this will throw a
      * ClassCastException.
      * 
-     * @param obj
-     *            Object to copy
+     * @param obj  Object to copy
      */
 
     @Override
@@ -1263,8 +1243,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Sets the smoothing method applied to this PolyMesh object
      * 
-     * @param smoothingMethod
-     *            The new smoothingMethod value
+     * @param smoothingMethod   The new smoothingMethod value
      */
 
     public void setSmoothingMethod(int smoothingMethod) {
@@ -1290,6 +1269,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * 
      * @return The wireframe mesh
      */
+
     @Override
     public WireframeMesh getWireframeMesh() {
         Vec3 point[];
@@ -1319,12 +1299,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Returns a rendering mesh for the PolyMesh object
      * 
-     * @param tol
-     *            Tolerance
-     * @param interactive
-     *            Scene or rendering?
-     * @param info
-     *            The object info holding this mesh
+     * @param tol          Tolerance
+     * @param interactive  Scene or rendering?
+     * @param info         The object info holding this mesh
      * @return The rendering mesh
      */
 
@@ -1351,38 +1328,15 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 break;
             }
         }
-        //long time = new Date().getTime();
         if (smoothingMethod == Mesh.APPROXIMATING) {
-            // long t = System.currentTimeMillis();
-            //PolyMesh mesh = (PolyMesh) duplicate();
-            // System.out.println(System.currentTimeMillis() - t);
-            // mesh.smoothingMethod = NO_SMOOTHING;
             if (interactive) {
-                //mesh.smoothingMethod = NO_SMOOTHING;
-//                for (int i = 0; i < interactiveSmoothLevel; ++i)
-//                    mesh.smoothWholeMesh(i, true, smoothingMethod, false);
-//                cachedMesh = mesh.getRenderingMeshQuadCase();
-                //long time = System.currentTimeMillis(); 
                 QuadMesh qmesh = smoothWholeMesh(tol, true, interactiveSmoothLevel, false);
                 cachedMesh = qmesh.getRenderingMesh();
-                //time = System.currentTimeMillis() - time;
-                //System.out.println( time/1000.0 );
                 subdividedMesh = qmesh;
                 return cachedMesh;
             } else {
-                long time = System.currentTimeMillis(); 
-//                mesh.printSize();
-//                for (int i = 0; i < 6/*renderingSmoothLevel*/; ++i) {
-//                    mesh.smoothWholeMesh(i, false, smoothingMethod, false);
-//                    mesh.printSize();
-//                }
-//                mesh.finalSmoothing = true;
-//                cachedMesh = mesh.getRenderingMesh(tol, interactive, info);
                 QuadMesh qmesh = smoothWholeMesh(tol, false, Integer.MAX_VALUE, false);
-                //System.out.println("vertices: " + qmesh.getVertices().length);
                 cachedMesh = qmesh.getRenderingMesh();
-                //time = System.currentTimeMillis() - time;
-                //System.out.println( time/1000.0 );
                 return cachedMesh;
             }
         }
@@ -1618,9 +1572,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Finds the vertices around a given face
      * 
-     * @param f
-     *            Face to find the vertices for
-     * @return Array of indices for vertices bordering the face
+     * @param f  Face to find the vertices for
+     * @return   Array of indices for vertices bordering the face
      */
 
     public int[] getFaceVertices(Wface f) {
@@ -1650,9 +1603,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Return the number vertices around a given face
      * 
-     * @param f
-     *            Face to find the number of vertices for
-     * @return The number of vertices
+     * @param f  Face to find the number of vertices for
+     * @return   The number of vertices
      */
 
     public int getFaceVertCount(Wface f) {
@@ -1675,12 +1627,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * Finds the vertices around a given face, useful when computing a new mesh
      * and new sets of mesh edges and faces are used
      * 
-     * @param ne
-     *            set of edges
-     * @param nf
-     *            set of faces
-     * @param f
-     *            Face to find the vertices for
+     * @param ne  set of edges
+     * @param nf  set of faces
+     * @param f   Face to find the vertices for
      * @return Array of indices for vertices bordering the face
      */
 
@@ -1711,9 +1660,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Finds the edges around a given face
      * 
-     * @param f
-     *            Face to find the edges for
-     * @return Array of indices for edges bordering the face
+     * @param f  Face to find the edges for
+     * @return   Array of indices for edges bordering the face
      */
 
     public int[] getFaceEdges(Wface f) {
@@ -1743,9 +1691,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Finds the edges that border a given vertex
      * 
-     * @param v
-     *            The vertex for which bordering edges are requested
-     * @return Array of indices for edges around the specified vertex
+     * @param v  The vertex for which bordering edges are requested
+     * @return   Array of indices for edges around the specified vertex
      */
 
     public int[] getVertexEdges(Wvertex v) {
@@ -1775,11 +1722,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Finds the previous edge for a given edge
      * 
-     * @param nEdges
-     *            The edges list (useful when a new edge list is being computed)
-     * @param start
-     *            Index of the edge to find the previous edge of
-     * @return Index of the previous edge
+     * @param nEdges The edges list (useful when a new edge list is being computed)
+     * @param start  Index of the edge to find the previous edge of
+     * @return       Index of the previous edge
      */
 
     public int getPreviousEdge(Wedge[] nEdges, int start) {
@@ -1801,9 +1746,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Finds the previous edge for a given edge
      * 
-     * @param index
-     *            Index of the edge to find the previous edge of
-     * @return Index of the previous edge
+     * @param index Index of the edge to find the previous edge of
+     * @return      Index of the previous edge
      */
 
     public int getPreviousEdge(int index) {
@@ -1824,9 +1768,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Triangulates selected faces Ear clipping algorithm is used
      * 
-     * @param selected
-     *            Faces selected for etriangulation
-     * @return The new face selection
+     * @param selected Faces selected for etriangulation
+     * @return         The new face selection
      */
 
     public boolean[] triangulateFaces(boolean[] selected) {
@@ -1848,9 +1791,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         List<Integer> vertTable = new Vector<>();
         Map<Integer, int[]> facesTextureIndexMap = null;
 
-        // dumpMesh();
         // first let's record any per face per vertex texture parameter
-        // System.out.println(vertices.length);
+
         facesTextureIndexMap = recordFacesTexture(selected);
         vert = new Vector<>();
         for (int i = 0; i < vertices.length; ++i)
@@ -1865,9 +1807,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 v3 = new Vector<>();
                 vertInfo = new Vector<>();
                 faceInfo = new Vector<>();
-                /*
-                 * s1 = null; s2 = null; s3 = null;
-                 */
                 triangulate(vf, i, false);
                 Wvertex[] newVertices = new Wvertex[vert.size()];
                 Wedge[] newEdges = new Wedge[v1.size() * 6 + edges.length];
@@ -1877,17 +1816,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 faceCount = faces.length;
                 for (int j = vertices.length; j < vert.size(); ++j) {
                     newVertices[j] = new Wvertex(vert.get(j), -1);
-                    // newVertices[j].smoothness =
-                    // faces[i].centerSmoothness;
                     vertTable.add(edges[faces[i].edge].vertex);
                 }
-                // System.out.println( v1.size() );
                 for (int j = 0; j < v1.size(); ++j) {
                     vert1 = v1.get(j);
                     vert2 = v2.get(j);
                     vert3 = v3.get(j);
-                    // System.out.println( vert1 + " " + vert2 + " " + vert3
-                    // );
                     face = -1;
                     e1 = findNewEdge(vert1, vert2, newVertices, newEdges);
                     if (e1 >= 0) {
@@ -1983,7 +1917,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     newVertices[vert2].edge = e2;
                     newVertices[vert3].edge = e3;
                 }
+
                 // edges reduction
+
                 edgeCount = 0;
                 int[] edgeTable = new int[newEdges.length];
                 for (int j = 0; j < newEdges.length; ++j) {
@@ -2011,7 +1947,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 faces = newFaces;
             }
         }
+
         // Update the texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
@@ -2108,13 +2046,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * yields the triangulated mesh for the face (ear cutting algorithm). This
      * method is also used to compute face areas.
      * 
-     * @param vf
-     *            Array of vertices indexes
-     * @param face
-     *            Face index
-     * @param areaOnly
-     *            Set this flag to true if you only want to compute face area
-     * @return Face area.
+     * @param vf       Array of vertices indexes
+     * @param face     Face index
+     * @param areaOnly Set this flag to true if you only want to compute face area
+     * @return         Face area.
      */
 
     private double triangulate(int[] vf, int face, boolean areaOnly) {
@@ -2155,11 +2090,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         }
         int i = start + 1;
         int count = 0;
-        // as ear cutting occurs, deleted (cut) vertices are stored in deleted
-        // array
+
+        // as ear cutting occurs, deleted (cut) vertices are stored in deleted array
+
         while (count < getDelLength(deleted) && getDelLength(deleted) > 3) {
-            // first, find a proper starting point with negative dot product
-            // of neighbor segments
+
+            // first, find a proper starting point with negative dot product of neighbor segments
+
             if (i >= vf.length)
                 i -= vf.length;
             prev = getPrev(i, deleted);
@@ -2227,9 +2164,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 ++count;
             }
         }
-        // array v now contains the vertices for trully convex face
+
+        // array v now contains the vertices for truly convex face
+
         if (count == 3) {
+
             // simple triangle
+
             for (i = 0; i < vf.length; ++i) {
                 if (!deleted[i]) {
                     i1 = vf[prev = getPrev(i, deleted)];
@@ -2251,8 +2192,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 }
             }
         } else if (count == 4) {
+
             // quad
             // let's find out where to best place the diagonal
+
             for (i = 0; i < vf.length; ++i) {
                 if (!deleted[i]) {
                     prev = getPrev(i, deleted);
@@ -2330,7 +2273,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 }
             }
         } else if (count > 4) {
+
             // more than square
+
             v.scale(1.0 / (count * 1.0));
             if (!areaOnly) {
                 vert.add(v);
@@ -2422,11 +2367,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * Finds the edge that shares two vertices among the current edges array.
      * Returns -1 if no array is found.
      * 
-     * @param v1
-     *            First vertex
-     * @param v2
-     *            Second vertex
-     * @return The edge value (-1 if no satisfying edge is found)
+     * @param v1 First vertex
+     * @param v2 Second vertex
+     * @return   The edge value (-1 if no satisfying edge is found)
      */
 
     public int getEdge(int v1, int v2) {
@@ -2451,11 +2394,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * Gets the previous vertex of polygon, given the fact that some vertices
      * have been deleted
      * 
-     * @param index
-     *            The index for which the previous vertex is looked for
-     * @param deleted
-     *            A 'deleted' flag array for the vertices
-     * @return The previous index
+     * @param index   The index for which the previous vertex is looked for
+     * @param deleted A 'deleted' flag array for the vertices
+     * @return        The previous index
      */
 
     private int getPrev(int index, boolean[] deleted) {
@@ -2471,14 +2412,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     }
 
     /**
-     * Gets the next vertex of polygon, given the fact that some vertices have
-     * been deleted
+     * Gets the next vertex of polygon, given the fact that some vertices have been deleted
      * 
-     * @param index
-     *            The index for which the next vertex is looked for
-     * @param deleted
-     *            A 'deleted' flag array for the vertices
-     * @return The previous index
+     * @param index   The index for which the next vertex is looked for
+     * @param deleted A 'deleted' flag array for the vertices
+     * @return        The previous index
      */
 
     private int getNext(int index, boolean[] deleted) {
@@ -2577,27 +2515,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     pred = j - 1;
                     if (pred < 0)
                         pred = ve.length - 1;
-                    // if ( ignoreBoundaries && edges[pred].face == -1 )
-                    // continue;
-                    v1 = vertices[edges[ve[pred]].vertex].r
-                            .minus(vertices[i].r);
+                    v1 = vertices[edges[ve[pred]].vertex].r.minus(vertices[i].r);
                     v2 = vertices[edges[ve[j]].vertex].r.minus(vertices[i].r);
-                    // v3 = vertices[i].r.cross(
-                    // vertices[edges[ve[j]].vertex].r );
-                    // v3.add( vertices[edges[ve[j]].vertex].r.cross(
-                    // vertices[edges[ve[pred]].vertex].r ) );
-                    // v3.add( vertices[edges[ve[pred]].vertex].r.cross(
-                    // vertices[i].r ) );
-                    // area = v3.length();
-                    // System.out.println( "area: " + area);
                     v1.normalize();
                     v2.normalize();
                     angle = Math.acos(v1.dot(v2));
-                    // if (edges[ve[j]].face > -1)
-                    // normal = faceNormals[edges[ve[j]].face];
-                    // else
                     normal = v2.cross(v1);
-                    // System.out.println("i : " + normal.length());
                     if (normal.length() > 0.001) {
 
                         normal.normalize();
@@ -2620,7 +2543,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         .minus(vertices[edges[edges[ve[0]].hedge].vertex].r));
                 norm[i].normalize();
             }
-            //System.out.println(norm[i]);
         }
         return cachedNormals = norm;
     }
@@ -2682,10 +2604,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             if (v.length() < 1e-6)
                 v = normals[vi].plus(normals[hvi]);
             v.normalize();
-            // if ( ( hvn.dot( v ) >= 0.9999 ) || ( vn.dot( v ) >= 0.9999 )
-            // )
-            // v.scale( 0 );
-            // v.scale( Math.sin( Math.acos( vn.dot( hvn ) ) ) );
             norm[i] = v;
 
             if (edges[i].face != -1) {
@@ -2710,10 +2628,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             if (v.length() < 1e-6)
                 v = normals[vi].plus(normals[hvi]);
             v.normalize();
-            // if ( ( hvn.dot( v ) >= 0.9999 ) || ( vn.dot( v ) >= 0.9999 )
-            // )
-            // v.scale( 0 );
-            // v.scale( Math.sin( Math.acos( vn.dot( hvn ) ) ) );
             norm[edges[i].hedge] = v;
         }
         return cachedEdgeNormals = norm;
@@ -2806,8 +2720,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     }
 
     /**
-     * Get the skeleton for the object. If it does not have one, this should
-     * return null.
+     * Get the skeleton for the object. If it does not have one, this should return null.
      * 
      * @return The skeleton value
      */
@@ -2820,8 +2733,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Set the skeleton for this object.
      * 
-     * @param s
-     *            The new skeleton value
+     * @param s The new skeleton value
      */
 
     @Override
@@ -2874,12 +2786,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Sets the size of the PolyMesh object
      * 
-     * @param xsize
-     *            The new size value
-     * @param ysize
-     *            The new size value
-     * @param zsize
-     *            The new size value
+     * @param xsize The new size value
+     * @param ysize The new size value
+     * @param zsize The new size value
      */
 
     @Override
@@ -2906,8 +2815,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             vertices[i].r.y *= yscale;
             vertices[i].r.z *= zscale;
         }
-        // if ( xscale * yscale * zscale < 0.0 )
-        // reverseNormals();
         skeleton.scale(xscale, yscale, zscale);
         resetMesh();
     }
@@ -2941,9 +2848,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Convertion to a triangle mesh
      * 
-     * @param tol
-     *            Tolerance - ignored
-     * @return The triangle mesh
+     * @param tol Tolerance - ignored
+     * @return    The triangle mesh
      */
 
     @Override
@@ -3066,7 +2972,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             }
         }
         mesh.copyTextureAndMaterial(this);
+
         // Compute the trimesh texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
@@ -3141,8 +3049,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * Call this method after a call to convertToTriangleMesh in order to know
      * how new faces relate to original polymesh faces.
      * 
-     * @return An array describing which polymesh faces the triangle faces
-     *         relate to.
+     * @return An array describing which polymesh faces the triangle faces relate to.
      */
 
     public int[] getTriangleFaceIndex() {
@@ -3184,6 +3091,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * @return Indices array describing convertion between triangle mesh edges
      *         and polymesh edges.
      */
+
     public TriangleMesh getTriangleMesh() {
         return triangleMesh;
     }
@@ -3197,6 +3105,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * @return Indices array describing convertion between triangle mesh edges
      *         and polymesh edges.
      */
+
     public int[] getPolyEdge() {
         return polyedge;
     }
@@ -3204,13 +3113,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Display a window in which the user can edit this object.
      * 
-     * @param parent
-     *            the window from which this command is being invoked
-     * @param info
-     *            the ObjectInfo corresponding to this object
-     * @param cb
-     *            a callback which will be executed when editing is complete. If
-     *            the user cancels the operation, it will not be called.
+     * @param parent The window from which this command is being invoked
+     * @param info   The ObjectInfo corresponding to this object
+     * @param cb     A callback which will be executed when editing is complete. If
+     *               the user cancels the operation, it will not be called.
      */
 
     @Override
@@ -3280,8 +3186,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Deletes vertices from the mesh
      * 
-     * @param v
-     *            Array of indices of vertices to delete
+     * @param v Array of indices of vertices to delete
      */
 
     public void deleteVertices(int[] v) {
@@ -3310,12 +3215,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * these parameters must be carried out. Use deleteVertices, deleteEdges or
      * deleteFaces instead.
      * 
-     * @param deletedVertices
-     *            An array describing which points must be deleted
-     * @param deletedEdges
-     *            An array describing which edges must be deleted
-     * @param deletedFaces
-     *            An array describing which faces must be deleted
+     * @param deletedVertices An array describing which points must be deleted
+     * @param deletedEdges    An array describing which edges must be deleted
+     * @param deletedFaces    An array describing which faces must be deleted
      */
 
     private int[] deletion(boolean[] deletedVertices, boolean[] deletedEdges,
@@ -3510,7 +3412,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 invMirroredFaces = newInvMirroredFaces;
             }
         }
+
         // Update the texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
@@ -3559,8 +3463,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Deletes edges from the mesh
      * 
-     * @param e
-     *            Array of indices of edges to delete
+     * @param e  Array of indices of edges to delete
      */
 
     public void deleteEdges(int[] e) {
@@ -3595,8 +3498,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Deletes faces from the mesh
      * 
-     * @param f
-     *            Array of indices of faces to delete
+     * @param f  Array of indices of faces to delete
      */
 
     public void deleteFaces(int[] f) {
@@ -3610,8 +3512,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Deletes faces from the mesh
      * 
-     * @param deletedFaces
-     *            Selection of faces to delete
+     * @param deletedFaces  Selection of faces to delete
      */
 
     public void deleteFaces(boolean[] deletedFaces) {
@@ -3621,8 +3522,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Deletes faces from the mesh
      * 
-     * @param deletedFaces
-     *            Selection of faces to delete
+     * @param deletedFaces  Selection of faces to delete
      */
 
     public void deleteFaces(boolean[] deletedFaces, boolean mirrorOp) {
@@ -3649,10 +3549,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Divides segments 2nd version no recursion
      * 
-     * @param sel
-     *            Selected edges
-     * @param nseg
-     *            Number of segments to create
+     * @param sel  Selected edges
+     * @param nseg Number of segments to create
      * @return Array of selected vertices for further selection
      */
 
@@ -3705,9 +3603,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 newEdges[el + index + newEdges.length / 2].smoothness = edges[i].smoothness;
                 newVertices[to].edge = el + index + newEdges.length / 2;
                 fraction = 1 / ((double) (add + 1));
-                // newVertices[vl + index].smoothness = (float) ( fraction *
-                // vertices[to].smoothness + ( 1 - fraction ) * (
-                // vertices[from].smoothness ) );
                 toVert[index] = to;
                 fromVert[index] = from;
                 fract[index] = fraction;
@@ -3726,9 +3621,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     newEdges[el + index + newEdges.length / 2].smoothness = edges[i].smoothness;
                     newVertices[to].edge = el + index + newEdges.length / 2;
                     fraction = (j + 1) / ((double) (add + 1));
-                    // newVertices[vl + index].smoothness = (float) (
-                    // fraction * vertices[to].smoothness + ( 1 - fraction )
-                    // * ( vertices[from].smoothness ) );
                     toVert[index] = to;
                     fromVert[index] = from;
                     fract[index] = fraction;
@@ -3737,7 +3629,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 ++index;
             }
         }
+
         // Update the texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
@@ -3784,7 +3678,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
     /**
      * Divides all mesh segments by 2
-     * 
      */
 
     public void divideAllEdgesByTwo() {
@@ -3796,10 +3689,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         int count = edges.length / 2;
         newVertices = new Wvertex[vertices.length + count];
         newEdges = new Wedge[edges.length + 2 * count];
-//        int[] newProjectEdges = null;
-//        if (projectedEdges != null) {
-//            newProjectEdges = new int[edges.length / 2 + count];
-//        }
         toVert = new int[count];
         fromVert = new int[count];
         translateMesh(newVertices, newEdges, faces);
@@ -3834,15 +3723,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             toVert[index] = to;
             fromVert[index] = from;
             newEdges[newEdges[ed].hedge].next = newEdges[el + index].hedge;
-//            if (projectedEdges != null) {
-//                newProjectEdges[i] = projectedEdges[i];
-//                newProjectEdges[newEdges[i].hedge] = projectedEdges[i];
-//                newProjectEdges[el + index] = projectedEdges[i];
-//                newProjectEdges[newEdges[el + index].hedge] = projectedEdges[i];
-//            }
             ++index;
         }
+
         // Update the texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
@@ -3864,7 +3749,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         count = 2 * fvpv.getFaceVertexCount(j);
                         double val[] = new double[count];
                         if (newEdges[faces[j].edge].vertex < vertices.length) {
-                            //System.out.println(j + ": origine 0");
                             for (int l = 0; l < count; l += 2) {
                                 val[l] = fvpv.getValue(j, l / 2);
                             }
@@ -3875,7 +3759,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                                 val[l] = 0.5 * val[l-1] + 0.5 * val[next];
                             }
                         } else {
-                            //System.out.println(j + ": origine 1");
                             for (int l = 1; l < count; l += 2) {
                                 val[l] = fvpv.getValue(j, l / 2);
                             }
@@ -3897,19 +3780,15 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         edges = newEdges;
         vertices = newVertices;
         resetMesh();
-        //projectedEdges = newProjectEdges;
-
     }
 
 
     /**
      * Merges two boundary edges.
      * 
-     * @param e1
-     *            First edge to merge
-     * @param e2
-     *            Second edge to merge
-     * @return Selection corresponding to merged edge.
+     * @param e1  First edge to merge
+     * @param e2  Second edge to merge
+     * @return    Selection corresponding to merged edge.
      */
 
     public boolean[] mergeEdges(int e1, int e2, boolean center) {
@@ -3959,8 +3838,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             for (int i = 0; i < ve.length; ++i)
                 edges[edges[ve[i]].hedge].vertex = edges[he1].vertex;
         }
-        // System.out.println( "v1: " + pe1 );
-        // System.out.println( "v2: " + pe2 );
         if (re1 == -1)
             edges[pe2].next = ne1;
         else {
@@ -3992,7 +3869,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         else
             nv2 = 0;
         Wvertex[] newVert = new Wvertex[vertices.length - 2 + nv1 + nv2];
-        // System.out.println( newVert.length + " /// " + vertices.length);
         Wedge[] newEdges;
         if (re1 != -1 && re2 != -1)
             newEdges = new Wedge[edges.length - 6];
@@ -4036,16 +3912,15 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             newFaces[j].edge = edgeTable[e];
         }
         for (int j = 0; j < newEdges.length; ++j) {
-            // if (edgeTable[newEdges[j].next] == -1)
-            // System.out.println("warning : " + newEdges[j].next +
-            // "r�f�renc�");
             newEdges[j].next = edgeTable[newEdges[j].next];
             newEdges[j].hedge = edgeTable[newEdges[j].hedge];
             newEdges[j].vertex = vertexTable[newEdges[j].vertex];
         }
         for (int j = 0; j < newVert.length; ++j)
             newVert[j].edge = edgeTable[newVert[j].edge];
+
         // Update the texture parameters.
+
         TextureParameter param[] = getParameters();
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
@@ -4083,9 +3958,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         vertices = newVert;
         edges = newEdges;
         faces = newFaces;
-        // dumpMesh();
         removeTwoEdgeBoundaries();
-        // dumpMesh();
         resetMesh();
         boolean[] newSel = new boolean[edges.length / 2];
         e1 = edgeTable[e1];
@@ -4099,13 +3972,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Merges two boundary edges selections.
      * 
-     * @param e1
-     *            First edge to merge whithin selection
-     * @param e2
-     *            Second edge to merge within selection
-     * @param sel
-     *            Boundary edges seelction (may be null)
-     * @return Selection corresponding to merged edges.
+     * @param e1  First edge to merge whithin selection
+     * @param e2  Second edge to merge within selection
+     * @param sel Boundary edges seelction (may be null)
+     * @return    Selection corresponding to merged edges.
      */
 
     public boolean[] mergeEdges(int e1, int e2, boolean[] sel, boolean center) {
@@ -4120,7 +3990,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             fullSel[i] = sel[i];
             fullSel[edges[i].hedge] = sel[i];
         }
-        // dumpMesh();
         if (edges[e1].face != -1)
             e1 = edges[e1].hedge;
         if (edges[e2].face != -1)
@@ -4172,11 +4041,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         Wedge[] newEdges = null;
         int[] edges1 = null;
         int[] edges2 = null;
-        // System.out.println("beforee1 / aftere1 " + beforee1 + " " + aftere1);
-        // System.out.println("beforee2 / aftere2 " + beforee2 + " " + aftere2);
-        // System.out.println("closed1: " + closed1);
-        // System.out.println("closed2: " + closed2);
-        // if both selection are boundaries, treat this special case
+
+        // If both selection are boundaries, treat this special case.
+
         if (closed1 && closed2) {
             if (beforee1 != beforee2)
                 return null;
@@ -4386,7 +4253,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             for (int j = 0; j < newVert.length; ++j)
                 newVert[j].edge = edgeTable[newVert[j].edge];
         }
+
         // Update the texture parameters.
+
         TextureParameter param[] = getParameters();
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
@@ -4420,7 +4289,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         vertices = newVert;
         edges = newEdges;
         removeTwoEdgeBoundaries();
-        // dumpMesh();
         resetMesh();
         boolean[] newSel = new boolean[edges.length / 2];
         for (int i = 0; i < edges1.length; ++i) {
@@ -4497,7 +4365,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         ArrayList curves = new ArrayList();
         List<Vec3> curve;
         List<Boolean> closed = new ArrayList<>();
+
         // deal with open curves
+
         for (int i = 0; i < edges.length / 2; i++)
             if (sel[i]) {
                 int[] ve = getVertexEdges(vertices[edges[i].vertex]);
@@ -4537,7 +4407,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 curves.add(curve);
                 closed.add(false);
             }
+
         // now deal with closed ones
+
         for (int i = 0; i < edges.length / 2; i++)
             if (sel[i]) {
                 int p = i;
@@ -4575,9 +4447,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * Divides segments according to a fraction array fractions with value
      * between 0 and 1 indicates which segments are to be divided and how
      * 
-     * @param fractions
-     *            Fraction value used to position the new vertices
-     * @return Array of selected vertices for further selection
+     * @param fractions Fraction value used to position the new vertices
+     * @return          Array of selected vertices for further selection
      */
 
     public boolean[] divideEdges(double[] fractions) {
@@ -4627,9 +4498,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 newEdges[el + index + newEdges.length / 2].smoothness = edges[i].smoothness;
                 newVertices[to].edge = el + index + newEdges.length / 2;
                 fraction = fractions[i];
-                // newVertices[vl + index].smoothness = (float) ( fraction *
-                // vertices[to].smoothness + ( 1 - fraction ) * (
-                // vertices[from].smoothness ) );
                 toVert[index] = to;
                 fromVert[index] = from;
                 fract[index] = fraction;
@@ -4637,7 +4505,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 ++index;
             }
         }
+
         // Update the texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
@@ -4686,11 +4556,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Divides segments according to a single fraction value
      * 
-     * @param sel
-     *            Edges selection
-     * @param fraction
-     *            Fraction value used to position the new vertices
-     * @return Array of selected vertices for further selection
+     * @param sel      Edges selection
+     * @param fraction Fraction value used to position the new vertices
+     * @return         Array of selected vertices for further selection
      */
 
     public boolean[] divideEdges(boolean[] sel, double fraction) {
@@ -4755,9 +4623,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 newEdges[el + index].smoothness = edges[i].smoothness;
                 newEdges[el + index + newEdges.length / 2].smoothness = edges[i].smoothness;
                 newVertices[to].edge = el + index + newEdges.length / 2;
-                // newVertices[vl + index].smoothness = (float) ( val *
-                // vertices[to].smoothness + ( 1 - val ) * (
-                // vertices[from].smoothness ) );
                 if (val != fraction) {
                     toVert[index] = from;
                     fromVert[index] = to;
@@ -4769,7 +4634,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 ++index;
             }
         }
+
         // Update the texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
@@ -4817,8 +4684,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Connects selected vertices, creating new faces in the process.
      * 
-     * @param sel
-     *            Array of selected vertices
+     * @param sel  Array of selected vertices
      */
 
     public void connectVertices(boolean[] sel) {
@@ -4839,8 +4705,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Connects selected vertices, creating new faces in the process.
      * 
-     * @param connect
-     *            Array of selected vertices indices
+     * @param connect  Array of selected vertices indices
      */
 
     public void connectVertices(int[] connect) {
@@ -4865,9 +4730,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         if (connect.length < 2)
             return;
 
-        // s1 = null;
-        // s2 = null;
-        // s3 = null;
         for (int i = 1; i < connect.length; ++i) {
             for (int j = 0; j < i; ++j) {
                 i1 = connect[i];
@@ -4876,8 +4738,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 e2 = getVertexEdges(vertices[i2]);
                 add = false;
                 edgeShare = false;
-                // first check: i1 and i2 should border the same face and not be
-                // contiguous
+
+                // first check: i1 and i2 should border the same face and not be contiguous
+
                 for (int k = 0; k < e1.length; ++k) {
                     if (edges[e1[k]].vertex == i2) {
                         edgeShare = true;
@@ -4896,14 +4759,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     }
                 }
                 if (!add) {
-                    // System.out.println( i1 + " " + i2 + " rejected face
-                    // share" );
                     continue;
                 }
-                // System.out.println( i1 + " " + i2 + " candidates for face: "
-                // + face );
 
-                // area calculation : no null area face permitted
+                // Area calculation : No null area face permitted!
+
                 int[] vf = getFaceVertices(faces[face]);
                 if (vf.length == 4) {
                     ll = 0;
@@ -4970,15 +4830,15 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 }
                 area1 = triangulate(vf1, 0, true);
                 area2 = triangulate(vf2, 0, true);
-                // System.out.println( "area: " + area1 + " " + area2 );
                 if ((area1 < 1e-10) || (area2 < 1e-10))
                     continue;
-                // two valid faces can be constructed.
-                // decision depends on penalty factors
+
+                // Two valid faces can be constructed.
+                // Decision depends on penalty factors.
+
                 double penalty = 0;
                 penalty += calcPenalty(vf1);
                 penalty += calcPenalty(vf2);
-                // ll = vf1.length * vf1.length + vf2.length * vf2.length;
                 if (penalty < penaltyMin) {
                     i1min = i1;
                     i2min = i2;
@@ -5045,13 +4905,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         }
         changeFace(newEdges, newEdge, newFace);
         newFaces[newFace] = new Wface(newEdge);
-        // newFaces[newFace].edgeSmoothness = faces[faceMin].edgeSmoothness;
-        // newFaces[newFace].centerSmoothness = faces[faceMin].centerSmoothness;
-        // newFaces[newFace].convex = faces[faceMin].convex;
         for (int i = 0; i < vertices.length; ++i)
             if (vertices[i].edge >= edges.length / 2)
                 vertices[i].edge += newEdges.length / 2 - edges.length / 2;
+
         // Update the texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
@@ -5082,7 +4941,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         }
         faces = newFaces;
         edges = newEdges;
-        // connect any other vertices left selected (recursion)
+
+        // Connect any other vertices left selected (recursion).
+
         connectVertices(connect);
         resetMesh();
 
@@ -5091,10 +4952,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Select an edge loop from a single edge.
      * 
-     * @param startEdge
-     *            the index of the edge from which to find an edge loop
-     * @return a selection containing all the edges in the loop, or null if no
-     *         loop could be found
+     * @param startEdge The index of the edge from which to find an edge loop
+     * @return          A selection containing all the edges in the loop, or null if no
+     *                  loop could be found
      */
 
     private boolean[] findSingleEdgeLoop(int startEdge) {
@@ -5111,11 +4971,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         while (true) {
             if (newSel[currentEdge]) {
                 if (currentEdge == startEdge) {
-                    // System.out.println("good loop");
                     return newSel; // This is a good edge loop.
                 }
-                return null; // The path looped back on itself without
-                // hitting the original edge.
+                return null; // The path looped back on itself without hitting the original edge.
             }
 
             // Find the next edge which is most nearly parallel to this one.
@@ -5185,10 +5043,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Select an edge loop from each edge that is currently selected.
      * 
-     * @param selection
-     *            the current selection (in edge mode)
-     * @return a selection containing all the edges in the loops, or null if no
-     *         loop could be found for one or more edges
+     * @param selection The current selection (in edge mode)
+     * @return          A selection containing all the edges in the loops, or null if no
+     *                  loop could be found for one or more edges
      */
 
     public boolean[] findEdgeLoops(boolean selection[]) {
@@ -5216,11 +5073,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Translates a selection onto a mirrored mesh
      * 
-     * @param mirroredMesh
-     *            The mirrored mesh
-     * @param mirrorSel
-     *            Selection with regard to the mirrored mesh
-     * @return Original mesh selection
+     * @param mirroredMesh The mirrored mesh
+     * @param mirrorSel    Selection with regard to the mirrored mesh
+     * @return             Original mesh selection
      */
 
     private boolean[] getSelectionFromMirror(PolyMesh mirroredMesh,
@@ -5253,11 +5108,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Translates a selection onto a mirrored mesh
      * 
-     * @param mirroredMesh
-     *            The mirrored mesh
-     * @param selection
-     *            Initial selection
-     * @return mirrored mesh selection
+     * @param mirroredMesh The mirrored mesh
+     * @param selection    Initial selection
+     * @return             Mirrored mesh selection
      */
 
     private boolean[] getMirroredSelection(PolyMesh mirroredMesh,
@@ -5289,10 +5142,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Select an edge strip from a single edge.
      * 
-     * @param startEdge
-     *            the index of the edge from which to find an edge strip
-     * @return a selection containing all the edges in the strip, or null if no
-     *         strip could be found
+     * @param startEdge The index of the edge from which to find an edge strip
+     * @return          A selection containing all the edges in the strip, or null if no
+     *                  strip could be found
      */
 
     private boolean[] findSingleEdgeStrip(int startEdge, int every) {
@@ -5316,10 +5168,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Select an edge strip from each edge that is currently selected.
      * 
-     * @param selection
-     *            the current selection (in edge mode)
-     * @return a selection containing all the edges in the strips, or null if no
-     *         strip could be found for one or more edges
+     * @param selection The current selection (in edge mode)
+     * @return          A selection containing all the edges in the strips, or null if no
+     *                  strip could be found for one or more edges
      */
 
     public boolean[] findEdgeStrips(boolean selection[], int every) {
@@ -5347,9 +5198,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * Computes a penalty function depending on the discrepancy between a
      * perfect regular polygon and the specified polygon.
      * 
-     * @param vf
-     *            Vertices of the polygon to compute the penalty factor for
-     * @return Penalty value
+     * @param vf Vertices of the polygon to compute the penalty factor for
+     * @return   Penalty value
      */
 
     private double calcPenalty(int[] vf) {
@@ -5393,12 +5243,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Changes a face reference to another one
      * 
-     * @param ed
-     *            The edge array
-     * @param newFace
-     *            The new face reference
-     * @param eref
-     *            An edge bordering the face
+     * @param ed      The edge array
+     * @param newFace The new face reference
+     * @param eref    An edge bordering the face
      */
 
     private void changeFace(Wedge[] ed, int eref, int newFace) {
@@ -5444,14 +5291,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Constructor for PolyMesh object
      * 
-     * @param in
-     *            The input stream
-     * @param theScene
-     *            The scene the polymesh belongs to
-     * @exception IOException
-     *                Exception that may occur when reading the file
-     * @exception InvalidObjectException
-     *                Signals that the PolyMesh structure is invalid
+     * @param in       The input stream
+     * @param theScene The scene the polymesh belongs to
+     *
+     * @exception IOException            Exception that may occur when reading the file.
+     * @exception InvalidObjectException Signals, that the PolyMesh structure is invalid.
      */
 
     public PolyMesh(DataInputStream in, Scene theScene) throws IOException,
@@ -5492,8 +5336,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     hasNormal = in.readBoolean();
                     if (hasNormal)
                         new Vec3(in);
-//                    if (hasNormal)
-//                    vertices[i].normal = new Vec3(in);
                 }                
             }
         }
@@ -5522,7 +5364,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         }
         if (version > 2) {
             interactiveSmoothLevel = in.readInt();
-            //former renderingSmoothLevel
             in.readInt();
         }
         if (version > 5) {
@@ -5579,18 +5420,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             }
             quad = false;
             if (quad) {
-                //System.out.println("quad mesh direct smoothing");
                 QuadMesh qmesh = getQuadMesh();
-                //qmesh.dumpMesh();
-                //long time = new Date().getTime();
                 qmesh.smoothMesh(tol, calcProjectedEdges, maxNs);
                 projectedEdges = qmesh.getProjectedEdges();
-                //System.out.println("only quad smoothing : " + String.valueOf((new Date().getTime() - time)*1.0/1000.0));
                 return qmesh;
             }
         }
         if (!onePass) {
-            //long time = new Date().getTime();
             PolyMesh smoothedMesh = (PolyMesh)this.duplicate();
             smoothedMesh.smoothWholeMesh(tol, calcProjectedEdges, maxNs, true);
             int[] pe = null;
@@ -5616,15 +5452,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     qfaces[i].mark = QuadFace.FINAL;
                 }
             }
-            //System.out.println("initial poly to quad smoothing : " + String.valueOf((new Date().getTime() - time)*1.0/1000.0));
-            //time = new Date().getTime();
             if (maxNs > 1) {
                 qmesh.smoothMesh(tol, calcProjectedEdges, 1, pe, maxNs);
             } else  {
                 qmesh.setProjectedEdges(pe);
             }
             projectedEdges = qmesh.getProjectedEdges();
-            //System.out.println("quad smoothing : " + String.valueOf((new Date().getTime() - time)*1.0/1000.0));
             return qmesh;
         }
         int ns = 0;
@@ -5639,8 +5472,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             }
         } else
             projectedEdges = null;
+
         // edges subdivision for selected faces
         // first, edges selection
+
         int faceNum = faces.length;
         Wedge e;
         Vec3 pt;
@@ -5654,9 +5489,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             pt.scale(1.0 / vf.length);
             facePos[i] = pt;
         }
+
         // edge subdivision
+
         divideAllEdgesByTwo();
-        // Set edge smoothness to 0 for edges lying on mirror
+
+        // Set edge smoothness to 0 for edges lying on mirror.
+
         float[] edgeSmoothness = null;
         if (mirrorState != NO_MIRROR) {
             edgeSmoothness = new float[edges.length];
@@ -5690,9 +5529,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             }
         }
         int addedVert = vertices.length;
+
         // build a table for selected faces and new vertices
+
         Wvertex[] newVert = new Wvertex[vertices.length + faceNum];
+
         // compute new vertices at the center of selected faces
+
         for (int i = 0; i < vertices.length; ++i)
             newVert[i] = new Wvertex(vertices[i]);
         VertexParamInfo[] vertParamInfo = new VertexParamInfo[newVert.length
@@ -5710,7 +5553,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             index++;
         }
         count /= 2;
+
         // BTW, now we know how many more edges and faces
+
         Wedge[] newEdges = new Wedge[edges.length + count * 2];
         if (calcProjectedEdges) {
             newProjectedEdges = new int[edges.length/2 + count];
@@ -5727,9 +5572,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         if (tol > 0 ) {
             subdivideFaces = new boolean[newFaces.length];
             movedVert = new boolean[newVert.length];
-        }        
-        // Face table will help keep track which is which at texture parameter
-        // computation time
+        }
+
+        // Face table will help keep track, which is which, at texture parameter computation time
+
         int[] paramFaceTable = new int[newFaces.length];
 
         for (int i = 0; i < edges.length / 2; ++i) {
@@ -5752,7 +5598,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         Vec3 pt1;
         Vec3 pt2;
         double smoothness, dist;
+
         // location of old vertices
+
         int n;
         Vec3 pos, oldPos;
         int v1;
@@ -5767,9 +5615,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         smoothEdgeValue[1] = smoothEdgeValue[0] = 1;
         int hardnum;
         Vec3 sharpPt;
+
         // BLZ algorithm
+
         for (int i = 0; i < originalVert; ++i) {
+
             // adjacent polygons
+
             int ve[] = getVertexEdges(vertices[i]);
             if (ve.length > smoothEdgeValue.length) {
                 smoothEdgeValue = new double[ve.length];
@@ -5788,17 +5640,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 face2 = edges[edges[ve[j]].hedge].face;
                 if (face1 != -1) {
                     pos.add(facePos[face1]);
-                    pos
-                    .subtract(vertices[edges[edges[ve[j]].next].vertex].r
-                            .times(1.0 / 4.0));
-                    pos
-                    .subtract(vertices[edges[edges[edges[getPreviousEdge(ve[j])].hedge].next].vertex].r
-                            .times(1.0 / 4.0));
+                    pos.subtract(vertices[edges[edges[ve[j]].next].vertex].r.times(1.0 / 4.0));
+                    pos.subtract(vertices[edges[edges[edges[getPreviousEdge(ve[j])].hedge].next].vertex].r.times(1.0 / 4.0));
                     pos.subtract(vertices[i].r.times(1.0 / 4.0));
                     ++count;
                 }
-                pos.add(vertices[edges[edges[ve[j]].next].vertex].r
-                        .times(3.0 / 2.0));
+                pos.add(vertices[edges[edges[ve[j]].next].vertex].r.times(3.0 / 2.0));
                 if (mirrorState == NO_MIRROR)
                     smoothness = edges[ve[j]].smoothness;
                 else
@@ -5806,8 +5653,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 if (face1 != -1 && face2 != -1)
                     smoothness = (1.0 - smoothness) * QuadMesh.MAX_SMOOTHNESS;
                 else
-                    smoothness = QuadMesh.MAX_SMOOTHNESS; // boundary edges are treated as
-                // hard edges.
+                    smoothness = QuadMesh.MAX_SMOOTHNESS; // boundary edges are treated as hard edges.
                 if (ns + 1 <= smoothness) {
                     if (sharp < 2)
                     {    sharpEdge[sharp] = ve[j];
@@ -5837,14 +5683,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     else if (hardnum == 2) {
                         weight /= 2;
                         sharpPt = new Vec3(newVert[i].r.times(0.75));
-                        sharpPt
-                        .add(vertices[edges[edges[hardEdge[0]].next].vertex].r
-                                .times(0.125));
-                        sharpPt
-                        .add(vertices[edges[edges[hardEdge[1]].next].vertex].r
-                                .times(0.125));
-                        newVert[i].r = pos.times(1 - weight).plus(
-                                sharpPt.times(weight));
+                        sharpPt.add(vertices[edges[edges[hardEdge[0]].next].vertex].r.times(0.125));
+                        sharpPt.add(vertices[edges[edges[hardEdge[1]].next].vertex].r.times(0.125));
+                        newVert[i].r = pos.times(1 - weight).plus(sharpPt.times(weight));
                     } else {
                         weight /= hardnum;
                         newVert[i].r = pos.times(1 - weight).plus(
@@ -5866,12 +5707,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     break;
                 case 2:
                     sharpPt = new Vec3(newVert[i].r.times(0.75));
-                    sharpPt.add(vertices[edges[edges[sharpEdge[0]].next].vertex].r
-                            .times(0.125));
-                    sharpPt.add(vertices[edges[edges[sharpEdge[1]].next].vertex].r
-                            .times(0.125));
-                    //System.out.println(newVert[i].r + " " + edges[edges[sharpEdge[0]].next].vertex);
-                    //System.out.println(sharpPt + " " + edges[edges[sharpEdge[1]].next].vertex);
+                    sharpPt.add(vertices[edges[edges[sharpEdge[0]].next].vertex].r.times(0.125));
+                    sharpPt.add(vertices[edges[edges[sharpEdge[1]].next].vertex].r.times(0.125));
                     if (hardnum == 0) {
                         newVert[i].r = sharpPt;
                     }
@@ -5882,13 +5719,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     }
                     break;
                 default:
-                    //new vertex is marked as corner
-                    //newVert[i].type = Wvertex.CORNER;
                     newVert[i].r = new Vec3(vertices[i].r);
                     break;
                 }
                 if (tol > 0 ) {
-                    //dist = Math.abs(newVert[i].r.minus(oldPos).dot(normals[i]));
                     dist = newVert[i].r.distance(oldPos);
                     if (dist > tol) {
                         movedVert[i] = true;
@@ -5898,6 +5732,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         }
 
         // location of the new midpoints
+
         int v3, v4, v5, v6;
         Vec3 v1r, v2r, v3r, v4r, v5r, v6r;
         int e1, e2, e1h, e2h;
@@ -5935,18 +5770,17 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             if (vertices[v1].type == Wvertex.CREASE) {
                 int k = getVertexEdges(vertices[v1]).length;
                 gamma = 3.0 / 8.0 - Math.cos(Math.PI / (double) k) / 4.0;
-                // System.out.println( gamma + " :1");
             }
             if (vertices[v2].type == Wvertex.CREASE) {
                 int k = getVertexEdges(vertices[v2]).length;
                 gamma = 3.0 / 8.0 + Math.cos(Math.PI / (double) k) / 4.0;
-                // System.out.println( gamma + " :2");
             }
             if (ns + 1 <= smoothness) {
-                // hard edge
-                //do nothing
+                // hard edge, do nothing
             } else if (ns < smoothness) {
+
                 // in between position
+
                 pt = new Vec3(v1r);
                 pt.scale(3.0 / 4.0 - gamma);
                 pt.add(v2r.times(gamma));
@@ -5957,8 +5791,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 pt2.scale(1.0 / 16.0);
                 pt.add(pt2);
                 pt2 = newVert[i].r;
-                newVert[i].r = pt2.times(smoothness - ns).plus(
-                        pt.times(1 - (smoothness - ns)));
+                newVert[i].r = pt2.times(smoothness - ns).plus(pt.times(1 - (smoothness - ns)));
             } else {
                 pt = new Vec3(v1r);
                 pt.scale(3.0 / 4.0 - gamma);
@@ -5975,7 +5808,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 v1r = normals[v1].plus(normals[v2]);
                 v1r.normalize();
                 dist = Math.abs(newVert[i].r.minus(oldPos).dot(v1r));
-                //dist = newVert[i].r.distance(oldPos);
                 if (dist > tol) {
                     movedVert[i] = true;
                 }
@@ -5983,10 +5815,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         }
 
         // new edges
+
         count = edges.length / 2;
         int faceCount = faces.length - faceNum;
-        //Wedge e1w;
-        //Wedge e2w;
         int ref1;
         int ref2;
         int next;
@@ -6040,22 +5871,17 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             }
             newVert[addedVert + i].edge = count + n - 1 + newEdges.length / 2;
             count += n;
-//            if (movedVert != null) {
-//                for (int j = 0; j < vf.length; j++) {
-//                    if (movedVert[vf[j]]) {
-//                        subdivideFaces[i] = true;
-//                        break;
-//                    }
-//                }
-//            }            
         }
         if (subdivideFaces != null) {
             for (int i = 0; i < newFaces.length; i++) {
                 subdivideFaces[i] = true;
             }
         }
+
         // Update the texture parameters.
-        // per face per vertex texture
+
+        // Per face per vertex texture
+
         ParameterValue oldParamVal[] = getParameterValues();
         ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
         int[][] oldFaceVert = null;
@@ -6080,7 +5906,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             newToOldFaceIndex[orFace++] = j;
                         }
                         oldFaceVert[j] = new int[fv.length];
-                                                System.arraycopy(fv, 0, oldFaceVert[j], 0, fv.length);
+                        System.arraycopy(fv, 0, oldFaceVert[j], 0, fv.length);
                     }
                     for (int j = 0; j < newFaces.length; ++j) {
                         fv = getFaceVertices(j, newEdges, newFaces);
@@ -6113,15 +5939,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             }
             for (int i = 0; i < oldParamVal.length; i++) {
                 if (oldParamVal[i] instanceof FaceParameterValue) {
-                    double oldval[] = ((FaceParameterValue) oldParamVal[i])
-                            .getValue();
+                    double oldval[] = ((FaceParameterValue) oldParamVal[i]).getValue();
                     double newval[] = new double[newFaces.length];
                     for (int j = 0; j < newval.length; j++)
                         newval[j] = oldval[paramFaceTable[j]];
                     newParamVal[i] = new FaceParameterValue(newval);
                 } else if (oldParamVal[i] instanceof VertexParameterValue) {
-                    double oldval[] = ((VertexParameterValue) oldParamVal[i])
-                            .getValue();
+                    double oldval[] = ((VertexParameterValue) oldParamVal[i]).getValue();
                     double newval[] = new double[newVert.length];
                     for (int j = 0; j < vertices.length; ++j)
                         newval[j] = oldval[j];
@@ -6148,16 +5972,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                                 // new vertex
                                 orFace = newToOldFaceIndex[j];
                                 val = 0;
-                                int[] vf = vertParamInfo[newFaceVert[j][k]
-                                        - vertices.length].vert;
-                                double[] coef = vertParamInfo[newFaceVert[j][k]
-                                        - vertices.length].coef;
+                                int[] vf = vertParamInfo[newFaceVert[j][k] - vertices.length].vert;
+                                double[] coef = vertParamInfo[newFaceVert[j][k] - vertices.length].coef;
                                 for (int l = 0; l < vf.length; ++l) {
                                     boolean found = false;
                                     for (int m = 0; m < oldFaceVert[orFace].length; m++) {
                                         if (oldFaceVert[orFace][m] == vf[l]) {
-                                            val += coef[l]
-                                                    * fvpv.getValue(orFace, m);
+                                            val += coef[l] * fvpv.getValue(orFace, m);
                                             found = true;
                                             break;
                                         }
@@ -6199,7 +6020,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         }
         QuadMesh qmesh = new QuadMesh(qverts, qedges, qfaces);
         qmesh.copyTextureAndMaterial(this);
+
         //Compute the quadmesh texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
         if (oldParamVal != null) {
@@ -6216,8 +6039,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * When a mesh has been subdivided using smoothWholeMesh, the array returned
      * describes which edges belong to the original mesh
      * 
-     * @return a boolean array which has the same length as the subdivided mesh
-     *         edges array
+     * @return a boolean array which has the same length as the subdivided mesh edges array
      */
 
     int[] getProjectedEdges() {
@@ -6227,27 +6049,27 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Smoothes the mesh according to Catmull-Clark algorithm.
      * 
-     * @param subdivideOnly
-     *            If true, then no smoothing occurs (subdivision only)
-     * @param selected
-     *            faces selected for subdivision
+     * @param subdivideOnly If true, then no smoothing occurs (subdivision only)
+     * @param selected      Faces selected for subdivision
      */
 
     public void smooth(boolean[] selected, boolean subdivideOnly) {
-        // long t = System.currentTimeMillis();
-        // dumpMesh();
         int originalVert = vertices.length;
+
         // edges subdivision for selected faces
 
         // first, edges selection
+
         boolean[] selection = new boolean[edges.length / 2];
         short[] selectType = new short[faces.length];
         int index;
         int faceNum = 0;
         int count;
         Wedge e;
+
         // faces adjacent to smoothed faces have a selection type of 1
         // smoothed faces have a selection type of 2
+
         for (int i = 0; i < faces.length; ++i) {
             if (selected[i]) {
                 selectType[i] = 2;
@@ -6274,7 +6096,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 }
             }
         }
+
         // edges selected for subdivision
+
         for (int i = 0; i < faces.length; ++i) {
             if (selectType[i] > 0) {
                 ++faceNum;
@@ -6287,20 +6111,23 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 }
             }
         }
-        // time3 += System.currentTimeMillis() - t;
+
         // actual edge subdivision
+
         divideEdges(selection, 2);
-        // divideAllEdgesByTwo();
         int addedVert = vertices.length;
+
         // build a table for selected faces and new vertices
+
         int[] faceTable = new int[faceNum];
         count = 0;
         for (int i = 0; i < faces.length; ++i)
             if (selectType[i] > 0)
                 faceTable[count++] = i;
-        // dumpMesh();
         Wvertex[] newVert = new Wvertex[vertices.length + faceNum];
+
         // compute new vertices at the center of selected faces
+
         Vec3 pt;
         for (int i = 0; i < vertices.length; ++i)
             newVert[i] = new Wvertex(vertices[i]);
@@ -6312,7 +6139,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         for (int i = 0; i < faces.length; ++i) {
             int[] vf = getFaceVertices(faces[i]);
             double[] coef = new double[vf.length];
-            // System.out.println( "pair:" + vf.length );
             pt = new Vec3();
             for (int j = 0; j < vf.length; ++j) {
                 pt.add(vertices[vf[j]].r);
@@ -6323,18 +6149,18 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             if (selectType[i] > 0) {
                 count += vf.length / 2;
                 newVert[addedVert + index] = new Wvertex(pt, -1);
-                // newVert[addedVert + index].smoothness =
-                // faces[i].centerSmoothness;
                 vertParamInfo[index] = new VertexParamInfo(vf, coef);
                 index++;
             }
         }
-        // time4 += System.currentTimeMillis() - t;
+
         // BTW, now we know how many more edges and faces
+
         Wedge[] newEdges = new Wedge[edges.length + count * 2];
         Wface[] newFaces = new Wface[count + faces.length - faceNum];
-        // Face table will help keep track which is which at texture parameter
-        // computation time
+
+        // Face table will help keep track which is which at texture parameter computation time.
+
         int[] paramFaceTable = new int[newFaces.length];
 
         for (int i = 0; i < edges.length / 2; ++i) {
@@ -6351,7 +6177,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         for (int i = 0; i < vertices.length; ++i)
             if (newVert[i].edge >= edges.length / 2)
                 newVert[i].edge += newEdges.length / 2 - edges.length / 2;
+
         // copy intact, unselected faces and give them new index reference
+
         count = 0;
         for (int i = 0; i < faces.length; ++i)
             if (selectType[i] == 0) {
@@ -6367,14 +6195,14 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         int face2;
         Vec3 pt1;
         Vec3 pt2;
-        // time5 += System.currentTimeMillis() - t;
+
         // location of the new midpoints
+
         if (!subdivideOnly)
             for (int i = originalVert; i < addedVert; ++i) {
                 e = edges[vertices[i].edge];
                 face1 = e.face;
                 face2 = edges[e.hedge].face;
-                // System.out.println( i + " " + face1 + " " + face2 );
                 pt = null;
                 if (face1 == -1 || face2 == -1)
                     continue;
@@ -6387,9 +6215,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 pt.scale(0.25);
                 pt2.scale(0.5);
                 newVert[i].r = pt;
-                //newVert[i].r = pt.times( e.smoothness ).plus( pt2.times(1 - e.smoothness ) );
             }
+
         // location of old vertices
+
         int n;
         Vec3 pos;
         int v1;
@@ -6401,7 +6230,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 int ve[] = getVertexEdges(vertices[i]);
                 n = ve.length;
                 move = false;
-                // System.out.println( "ve.length " + n );
                 pos = new Vec3();
                 count = 0;
                 move = false;
@@ -6428,13 +6256,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 pt.scale(2.0 / ((double) n * n));
                 pos.add(pt);
                 pos.add(newVert[i].r.times((n * 1.0 - 3.0) / ((double) n)));
-                newVert[i].r = pos; // pos.times( vertices[i].smoothness
-                // ).plus( vertices[i].r.times( 1-
-                // vertices[i].smoothness) );
-
+                newVert[i].r = pos;
             }
-        // time6 += System.currentTimeMillis() - t;
+
         // new edges
+
         count = edges.length / 2;
         int faceCount = faces.length - faceNum;
         Wedge e1;
@@ -6446,11 +6272,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             int[] vf = getFaceVertices(faces[faceTable[i]]);
             n = vf.length / 2;
             newFaces[faceCount] = new Wface(count);
-            // newFaces[faceCount].edgeSmoothness =
-            // faces[faceTable[i]].edgeSmoothness;
-            // newFaces[faceCount].centerSmoothness =
-            // faces[faceTable[i]].centerSmoothness;
-            // newFaces[faceCount].convex = faces[faceTable[i]].convex;
             paramFaceTable[faceCount] = faceTable[i];
             ref1 = faces[faceTable[i]].edge;
             while (edges[ref1].vertex < originalVert)
@@ -6460,25 +6281,17 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             if (next >= edges.length / 2)
                 next += newEdges.length / 2 - edges.length / 2;
             newEdges[next].next = count;
-            newEdges[count] = new Wedge(addedVert + i, count + newEdges.length
-                    / 2, faceCount, count + n - 1 + newEdges.length / 2);
+            newEdges[count] = new Wedge(addedVert + i, count + newEdges.length / 2, faceCount, count + n - 1 + newEdges.length / 2);
             newEdges[count].smoothness = 1.0f;
             next = ref2;
             if (next >= edges.length / 2)
                 next += newEdges.length / 2 - edges.length / 2;
-            newEdges[count + n - 1 + newEdges.length / 2] = new Wedge(
-                    edges[edges[ref2].hedge].vertex, count + n - 1, faceCount,
-                    next);
+            newEdges[count + n - 1 + newEdges.length / 2] = new Wedge(edges[edges[ref2].hedge].vertex, count + n - 1, faceCount, next);
             newEdges[count + n - 1 + newEdges.length / 2].smoothness = 1.0f;
             changeFace(newEdges, count, faceCount);
             ++faceCount;
             for (int j = 1; j < n; ++j) {
                 newFaces[faceCount] = new Wface(count + j);
-                // newFaces[faceCount].edgeSmoothness =
-                // faces[faceTable[i]].edgeSmoothness;
-                // newFaces[faceCount].centerSmoothness =
-                // faces[faceTable[i]].centerSmoothness;
-                // newFaces[faceCount].convex = faces[faceTable[i]].convex;
                 paramFaceTable[faceCount] = faceTable[i];
                 ref2 = edges[ref1].next;
                 ref1 = edges[ref2].next;
@@ -6486,16 +6299,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 if (next >= edges.length / 2)
                     next += newEdges.length / 2 - edges.length / 2;
                 newEdges[next].next = count + j;
-                newEdges[count + j] = new Wedge(addedVert + i, count + j
-                        + newEdges.length / 2, faceCount, count + j - 1
-                        + newEdges.length / 2);
+                newEdges[count + j] = new Wedge(addedVert + i, count + j + newEdges.length / 2, faceCount, count + j - 1 + newEdges.length / 2);
                 newEdges[count + j].smoothness = 1.0f;
                 next = ref2;
                 if (next >= edges.length / 2)
                     next += newEdges.length / 2 - edges.length / 2;
-                newEdges[count + j - 1 + newEdges.length / 2] = new Wedge(
-                        edges[edges[ref2].hedge].vertex, count + j - 1,
-                        faceCount, next);
+                newEdges[count + j - 1 + newEdges.length / 2] = new Wedge(edges[edges[ref2].hedge].vertex, count + j - 1, faceCount, next);
                 newEdges[count + j - 1 + newEdges.length / 2].smoothness = 1.0f;
                 changeFace(newEdges, count + j, faceCount);
                 ++faceCount;
@@ -6503,22 +6312,21 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             newVert[addedVert + i].edge = count + n - 1 + newEdges.length / 2;
             count += n;
         }
-        // time7 += System.currentTimeMillis() - t;
+
         // Update the texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
             for (int i = 0; i < oldParamVal.length; i++) {
                 if (oldParamVal[i] instanceof FaceParameterValue) {
-                    double oldval[] = ((FaceParameterValue) oldParamVal[i])
-                            .getValue();
+                    double oldval[] = ((FaceParameterValue) oldParamVal[i]).getValue();
                     double newval[] = new double[newFaces.length];
                     for (int j = 0; j < newval.length; j++)
                         newval[j] = oldval[paramFaceTable[j]];
                     newParamVal[i] = new FaceParameterValue(newval);
                 } else if (oldParamVal[i] instanceof VertexParameterValue) {
-                    double oldval[] = ((VertexParameterValue) oldParamVal[i])
-                            .getValue();
+                    double oldval[] = ((VertexParameterValue) oldParamVal[i]).getValue();
                     double newval[] = new double[newVert.length];
                     for (int j = 0; j < vertices.length; ++j)
                         newval[j] = oldval[j];
@@ -6550,8 +6358,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         faces = newFaces;
         edges = newEdges;
         resetMesh();
-        // time1 += System.currentTimeMillis() - t;
-        // dumpMesh();
     }
 
     /**
@@ -6596,12 +6402,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Moves selected edges along a given direction
      * 
-     * @param direction
-     *            Which way to go?
-     * @param amount
-     *            Description of the Parameter
-     * @param selected
-     *            Description of the Parameter
+     * @param direction Which way to go?
+     * @param amount    Description of the Parameter
+     * @param selected  Description of the Parameter
      */
 
     public void moveEdges(boolean[] selected, double amount, short direction) {
@@ -6664,12 +6467,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Moves selected faces along a given direction
      * 
-     * @param direction
-     *            Which way to go?
-     * @param amount
-     *            Description of the Parameter
-     * @param selected
-     *            Description of the Parameter
+     * @param direction Which way to go?
+     * @param amount    Description of the Parameter
+     * @param selected  Description of the Parameter
      */
 
     public void moveFaces(boolean[] selected, double amount, short direction) {
@@ -6715,12 +6515,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Extrudes faces marked as selected.
      * 
-     * @param selected
-     *            Faces selected for extrusion
-     * @param direction
-     *            Description of the Parameter
-     * @param value
-     *            Description of the Parameter
+     * @param selected  Faces selected for extrusion
+     * @param direction Description of the Parameter
+     * @param value     Description of the Parameter
      */
 
     public void extrudeFaces(boolean[] selected, double value, Vec3 direction) {
@@ -6730,19 +6527,14 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Extrudes faces marked as selected.
      * 
-     * @param selected
-     *            Faces selected for extrusion
-     * @param direction
-     *            Extrusion direction
-     * @param value
-     *            Extrusion amplitude
-     * @param scale
-     *            Extruded faces scaling coefficient
+     * @param selected  Faces selected for extrusion
+     * @param direction Extrusion direction
+     * @param value     Extrusion amplitude
+     * @param scale     Extruded faces scaling coefficient
      */
 
     public void extrudeFaces(boolean[] selected, double value, Vec3 direction,
             double scale, Vec3 camZ, boolean useNormals, boolean constrainAxis) {
-        // dumpMesh();
         int count = 0;
         if ((Math.abs(value) < 1e-12) && Math.abs(1.0 - scale) < 1e-6)
             return;
@@ -6776,8 +6568,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 int[] fv = getFaceVertices(faces[i]);
                 int[] fe = getFaceEdges(faces[i]);
                 for (int j = 0; j < fv.length; ++j) {
-                    // System.out.println( fv[j] + " " + edges[fe[j]].vertex
-                    // );
                     if (fe[j] >= edges.length / 2)
                         fe[j] += newEdges.length / 2 - edges.length / 2;
                 }
@@ -6793,8 +6583,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     newVertices[newVertCount + j] = new Wvertex(
                             vertices[fv[j]].r, newEdgeCount + 2 * j + 1);
                     newVertices[newVertCount + j].r.add(disp);
-                    // newVertices[newVertCount + j].smoothness =
-                    // newVertices[fv[j]].smoothness;
                     newVertices[fv[j]].edge = newEdgeCount + 2 * j;
                     paramVertexTable[newVertCount + j - vertices.length] = fv[j];
                     newEdges[newEdgeCount + 2 * j] = new Wedge(
@@ -6818,10 +6606,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     newEdges[fe[j]].next = newEdgeCount + 2 * j;
                     newEdges[fe[j]].face = newFaceCount + j;
                     newFaces[newFaceCount + j] = new Wface(newEdgeCount + 2 * j);
-                    // newFaces[newFaceCount + j].edgeSmoothness = 1.0f;
-                    // newFaces[newFaceCount + j].centerSmoothness =
-                    // faces[i].centerSmoothness;
-                    // newFaces[newFaceCount + j].convex = faces[i].convex;
                     paramFaceTable[newFaceCount + j - faces.length] = i;
                 }
                 newFaces[i].edge = newEdgeCount + 1 + newEdges.length / 2;
@@ -6830,7 +6614,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 newFaceCount += fv.length;
             }
         }
+
         // Update the texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
@@ -6889,9 +6675,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
         if (Math.abs(scale) < 0.05)
             removeZeroLengthEdges();
-        // dumpMesh();
         resetMesh();
-
     }
 
     /**
@@ -6899,11 +6683,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * is not seleted or is embedded in the selection (i.e. not bordered by an
      * unselected face) null is returned.)
      * 
-     * @param selected
-     *            Selected faces
-     * @param start
-     *            The index of the contour starting edge
-     * @return Array of edges describing the contour
+     * @param selected Selected faces
+     * @param start    The index of the contour starting edge
+     * 
+     * @return         Array of edges describing the contour
      */
 
     int[] getFaceContour(boolean[] selected, int start) {
@@ -6932,12 +6715,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Extrudes regions consisting in neighboring selected faces.
      * 
-     * @param selected
-     *            Faces selected for extrusion
-     * @param direction
-     *            Direction in which to extrude. null for normal
-     * @param value
-     *            Extrude amplitude
+     * @param selected  Faces selected for extrusion
+     * @param direction Direction in which to extrude. null for normal
+     * @param value     Extrude amplitude
      */
     public void extrudeRegion(boolean[] selected, double value, Vec3 direction) {
         extrudeRegion(selected, value, direction, 1.0, null, false, false);
@@ -6946,19 +6726,14 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Extrudes regions consisting in neighboring selected faces.
      * 
-     * @param selected
-     *            Faces selected for extrusion
-     * @param direction
-     *            Direction in which to extrude. null for normal
-     * @param value
-     *            Extrude amplitude
-     * @param scale
-     *            Scale value for extrude/bevel combo
+     * @param selected  Faces selected for extrusion
+     * @param direction Direction in which to extrude. null for normal
+     * @param value     Extrude amplitude
+     * @param scale     Scale value for extrude/bevel combo
      */
 
     public void extrudeRegion(boolean[] selected, double value, Vec3 direction,
             double scale, Vec3 camZ, boolean useNormals, boolean constrainAxis) {
-        // dumpMesh();
         Vec3[] normals = getNormals();
         int count;
         if ((Math.abs(value) < 1e-12) && Math.abs(1.0 - scale) < 1e-6)
@@ -7057,7 +6832,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     }
                 }
                 if (start == -1 && mean != null) {
+
                     // embedded vertex
+
                     if (useNormals)
                         vertices[i].r = v[i].plus(normals[i].times(scale - 1));
                     else
@@ -7119,9 +6896,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     paramVertexTable[newVertCount + j - vertices.length] = nfv[j];
                     v[nfv[j]] = newVertices[nfv[j]].r;
                     done[nfv[j]] = false;
-                    newEdges[newEdgeCount + 2 * j] = new Wedge(
-                            newVertCount + j, newEdgeCount + 2 * j
-                                    + newEdges.length / 2, newFaceCount + j,
+                    newEdges[newEdgeCount + 2 * j] = new Wedge(newVertCount + j, newEdgeCount + 2 * j + newEdges.length / 2, newFaceCount + j,
                             newEdgeCount + 2 * j + 1);
                     newEdges[newEdgeCount + 2 * j + newEdges.length / 2] = new Wedge(
                             nfv[j], newEdgeCount + 2 * j, newFaceCount + next,
@@ -7138,17 +6913,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                                     + newEdges.length / 2);
                     newEdges[newEdgeCount + 2 * j + 1].smoothness = 1.0f;
                     newEdges[newEdgeCount + 2 * j + 1 + newEdges.length / 2].smoothness = 1.0f;
-                    // System.out.println( "changed next " + nfc[j] + " to "
-                    // + ( newEdgeCount + 2 * j ) );
                     newEdges[nfc[j]].next = newEdgeCount + 2 * j;
                     newEdges[nfc[j]].face = newFaceCount + j;
                     newFaces[newFaceCount + j] = new Wface(newEdgeCount + 2 * j);
-                    // newFaces[newFaceCount + j].edgeSmoothness =
-                    // faces[currentFace].edgeSmoothness;
-                    // newFaces[newFaceCount + j].centerSmoothness =
-                    // faces[currentFace].centerSmoothness;
-                    // newFaces[newFaceCount + j].convex =
-                    // faces[currentFace].convex;
                     newFaces[currentFace].edge = newEdgeCount + 2 * j + 1
                             + newEdges.length / 2;
                     paramFaceTable[newFaceCount + j - faces.length] = currentFace;
@@ -7183,12 +6950,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     if (changed) {
                         newEdges[newEdges[prev].hedge].next = newNext;
                         newEdges[newEdges[prev].hedge].vertex = newVertCount + j;
-                        // System.out.println( "changed next " +
-                        // newEdges[prev].hedge + " to " + newNext );
                     }
                 }
 
                 // Update the texture parameters.
+
                 ParameterValue oldParamVal[] = getParameterValues();
                 if (oldParamVal != null) {
                     ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
@@ -7238,17 +7004,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Extrudes edges, either as a whole or individually.
      * 
-     * @param selected
-     *            Edges selected for extrusion
-     * @param direction
-     *            Direction in which to extrude. null for normal
-     * @param value
-     *            Extrude amplitude
+     * @param selected  Edges selected for extrusion
+     * @param direction Direction in which to extrude. null for normal
+     * @param value     Extrude amplitude
      */
 
     public void extrudeEdges(boolean[] selected, double value, Vec3 direction) {
 
-        // dumpMesh();
         Vec3[] normals = getEdgeNormals();
         if (Math.abs(value) < 1e-12)
             return;
@@ -7306,25 +7068,16 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 newVertices[vindex].r.add(disp);
                 newVertices[vindex + 1].r.add(disp);
             }
-            newEdges[eindex] = new Wedge(vindex + 1, newEdges.length / 2
-                    + eindex, -1, eindex + 1);
-            newEdges[newEdges.length / 2 + eindex] = new Wedge(
-                    newEdges[previous].vertex, eindex, findex, newCurrent);
+            newEdges[eindex] = new Wedge(vindex + 1, newEdges.length / 2 + eindex, -1, eindex + 1);
+            newEdges[newEdges.length / 2 + eindex] = new Wedge(newEdges[previous].vertex, eindex, findex, newCurrent);
             newEdges[eindex].smoothness = newEdges[newEdges.length / 2 + eindex].smoothness = newEdges[newCurrent].smoothness;
             newEdges[previous].next = eindex;
-            newEdges[eindex + 1] = new Wedge(vindex, newEdges.length / 2
-                    + eindex + 1, -1, eindex + 2);
-            newEdges[newEdges.length / 2 + eindex + 1] = new Wedge(vindex + 1,
-                    eindex + 1, findex, newEdges.length / 2 + eindex);
-            newEdges[eindex + 1].smoothness = newEdges[newEdges.length / 2
-                    + eindex + 1].smoothness = newEdges[newCurrent].smoothness;
-            newEdges[eindex + 2] = new Wedge(newEdges[newCurrent].vertex,
-                    newEdges.length / 2 + eindex + 2, -1,
-                    newEdges[newCurrent].next);
-            newEdges[newEdges.length / 2 + eindex + 2] = new Wedge(vindex,
-                    eindex + 2, findex, newEdges.length / 2 + eindex + 1);
-            newEdges[eindex + 2].smoothness = newEdges[newEdges.length / 2
-                    + eindex + 2].smoothness = newEdges[newCurrent].smoothness;
+            newEdges[eindex + 1] = new Wedge(vindex, newEdges.length / 2+ eindex + 1, -1, eindex + 2);
+            newEdges[newEdges.length / 2 + eindex + 1] = new Wedge(vindex + 1, eindex + 1, findex, newEdges.length / 2 + eindex);
+            newEdges[eindex + 1].smoothness = newEdges[newEdges.length / 2 + eindex + 1].smoothness = newEdges[newCurrent].smoothness;
+            newEdges[eindex + 2] = new Wedge(newEdges[newCurrent].vertex, newEdges.length / 2 + eindex + 2, -1, newEdges[newCurrent].next);
+            newEdges[newEdges.length / 2 + eindex + 2] = new Wedge(vindex, eindex + 2, findex, newEdges.length / 2 + eindex + 1);
+            newEdges[eindex + 2].smoothness = newEdges[newEdges.length / 2 + eindex + 2].smoothness = newEdges[newCurrent].smoothness;
             newEdges[newCurrent].next = newEdges.length / 2 + eindex + 2;
             newFaces[findex] = new Wface(newCurrent);
             paramFaceTable[findex - faces.length] = newEdges[newEdges[newCurrent].hedge].face;
@@ -7334,7 +7087,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             eindex += 3;
             vindex += 2;
         }
+
         // Update the texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
@@ -7375,23 +7130,18 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         faces = newFaces;
         vertices = newVertices;
         edges = newEdges;
-        // dumpMesh();
         resetMesh();
     }
 
     /**
      * Extrudes edge regions consisting in neighboring selected edges.
      * 
-     * @param selected
-     *            Edges selected for extrusion
-     * @param direction
-     *            Direction in which to extrude. null for normal
-     * @param value
-     *            Extrude amplitude
+     * @param selected  Edges selected for extrusion
+     * @param direction Direction in which to extrude. null for normal
+     * @param value     Extrude amplitude
      */
 
-    public void extrudeEdgeRegion(boolean[] selected, double value,
-            Vec3 direction) {
+    public void extrudeEdgeRegion(boolean[] selected, double value, Vec3 direction) {
         Vec3[] normals = getEdgeNormals();
         boolean[] tmpSel = new boolean[selected.length];
         if (Math.abs(value) < 1e-12)
@@ -7433,7 +7183,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 e = i;
             else
                 e = edges[i].hedge;
+
             // first, let's get the edge region
+
             firste = laste = e;
             int p = getPreviousEdge(e);
             while (isEdgeSelected(p, tmpSel) && p != e) {
@@ -7452,6 +7204,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             newFirste = newCurrent;
 
             // then three edges are created as per single edge extrusion
+
             previous = getPreviousEdge(current);
             newPrevious = getPreviousEdge(newEdges, newCurrent);
             newVertices[vindex] = new Wvertex(vertices[edges[current].vertex]);
@@ -7506,7 +7259,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             newFaces[findex] = new Wface(newCurrent);
             paramFaceTable[findex - faces.length] = newEdges[newEdges[newCurrent].hedge].face;
             newEdges[newCurrent].face = findex;
+
             // swap edges so selected edge is now the extruded edge
+
             swapEdge(newCurrent, eindex + 1, newVertices, newEdges, newFaces);
             oldCurrent = newCurrent;
             ++findex;
@@ -7520,7 +7275,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 tmpSel[e] = false;
             else
                 tmpSel[edges[e].hedge] = false;
+
             // then 2 edges are extruded for each edge along the selection
+
             while (isEdgeSelected(edges[e].next, tmpSel)) {
                 e = edges[e].next;
                 current = e;
@@ -7535,38 +7292,25 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     newVertices[vindex].edge = eindex + 1;
                     if (direction == null) {
                         if (isEdgeSelected(edges[e].next, selected)) {
-                            newVertices[vindex].r.add(normals[current]
-                                    .times(value * 0.5));
-                            newVertices[vindex].r.add(normals[edges[e].next]
-                                    .times(value * 0.5));
+                            newVertices[vindex].r.add(normals[current].times(value * 0.5));
+                            newVertices[vindex].r.add(normals[edges[e].next].times(value * 0.5));
                         } else
-                            newVertices[vindex].r.add(normals[current]
-                                    .times(value));
+                            newVertices[vindex].r.add(normals[current].times(value));
                     } else
                         newVertices[vindex].r.add(disp);
-                    newEdges[eindex] = new Wedge(vindex, newEdges.length / 2
-                            + eindex, -1, eindex + 1);
-                    newEdges[newEdges.length / 2 + eindex] = new Wedge(
-                            prevVertex, eindex, findex, eindex - 1);
-                    newEdges[eindex].smoothness = newEdges[newEdges.length / 2
-                            + eindex].smoothness = newEdges[newCurrent].smoothness;
+                    newEdges[eindex] = new Wedge(vindex, newEdges.length / 2 + eindex, -1, eindex + 1);
+                    newEdges[newEdges.length / 2 + eindex] = new Wedge(prevVertex, eindex, findex, eindex - 1);
+                    newEdges[eindex].smoothness = newEdges[newEdges.length / 2 + eindex].smoothness = newEdges[newCurrent].smoothness;
                     newEdges[oldCurrent].next = eindex;
-                    newEdges[eindex + 1] = new Wedge(
-                            newEdges[newCurrent].vertex, newEdges.length / 2
-                                    + eindex + 1, -1, newEdges[newCurrent].next);
-                    newEdges[newEdges.length / 2 + eindex + 1] = new Wedge(
-                            vindex, eindex + 1, findex, newEdges.length / 2
-                                    + eindex);
-                    newEdges[eindex + 1].smoothness = newEdges[newEdges.length
-                            / 2 + eindex + 1].smoothness = newEdges[newCurrent].smoothness;
-                    newEdges[newCurrent].next = newEdges.length / 2 + eindex
-                            + 1;
+                    newEdges[eindex + 1] = new Wedge(newEdges[newCurrent].vertex, newEdges.length / 2 + eindex + 1, -1, newEdges[newCurrent].next);
+                    newEdges[newEdges.length / 2 + eindex + 1] = new Wedge(vindex, eindex + 1, findex, newEdges.length / 2 + eindex);
+                    newEdges[eindex + 1].smoothness = newEdges[newEdges.length / 2 + eindex + 1].smoothness = newEdges[newCurrent].smoothness;
+                    newEdges[newCurrent].next = newEdges.length / 2 + eindex + 1;
                     newFaces[findex] = new Wface(newCurrent);
                     paramFaceTable[findex - faces.length] = newEdges[newEdges[newCurrent].hedge].face;
                     newEdges[newCurrent].face = findex;
                     newEdges[eindex - 1].face = findex;
-                    swapEdge(newCurrent, eindex, newVertices, newEdges,
-                            newFaces);
+                    swapEdge(newCurrent, eindex, newVertices, newEdges, newFaces);
                     oldCurrent = newCurrent;
                     ++findex;
                     eindex += 2;
@@ -7574,10 +7318,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     ++vindex;
                 } else // special case, we have to close the extrusion
                 {
-                    newEdges[eindex] = new Wedge(vstart + 1, newEdges.length
-                            / 2 + eindex, -1, newFirste);
-                    newEdges[newEdges.length / 2 + eindex] = new Wedge(
-                            prevVertex, eindex, findex, eindex - 1);
+                    newEdges[eindex] = new Wedge(vstart + 1, newEdges.length / 2 + eindex, -1, newFirste);
+                    newEdges[newEdges.length / 2 + eindex] = new Wedge(prevVertex, eindex, findex, eindex - 1);
                     newEdges[eindex - 1].face = findex;
                     newEdges[newCurrent].face = findex;
                     newEdges[estart].next = newEdges.length / 2 + eindex;
@@ -7585,9 +7327,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     newEdges[oldCurrent].next = eindex;
                     newFaces[findex] = new Wface(newCurrent);
                     paramFaceTable[findex - faces.length] = newEdges[newEdges[newCurrent].hedge].face;
-                    // dumpNewMesh( newVertices, newEdges, newFaces);
-                    swapEdge(newCurrent, eindex, newVertices, newEdges,
-                            newFaces);
+                    swapEdge(newCurrent, eindex, newVertices, newEdges, newFaces);
                     ++findex;
                     ++eindex;
                 }
@@ -7595,10 +7335,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     tmpSel[e] = false;
                 else
                     tmpSel[edges[e].hedge] = false;
-                // dumpMesh();
             }
         }
+
         // clip mesh
+
         if (vindex != newVertices.length) {
             Wvertex[] nverts = new Wvertex[vindex];
             for (int i = 0; i < vindex; ++i)
@@ -7617,7 +7358,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             edges = newEdges;
             faces = newFaces;
         }
+
         // Update the texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
@@ -7655,7 +7398,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             }
             setParameterValues(newParamVal);
         }
-        // dumpMesh();
         resetMesh();
 
     }
@@ -7663,16 +7405,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Swaps two edges within the edge list
      * 
-     * @param e1
-     *            First edge to swap
-     * @param e2
-     *            Second edge to swap
-     * @param v
-     *            Vertices array
-     * @param e
-     *            Edges array
-     * @param f
-     *            Faces array
+     * @param e1  First edge to swap
+     * @param e2  Second edge to swap
+     * @param v   Vertices array
+     * @param e   Edges array
+     * @param f   Faces array
      */
 
     private void swapEdge(int e1, int e2, Wvertex[] v, Wedge e[], Wface f[]) {
@@ -7713,12 +7450,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Mesh thickening.
      * 
-     * @param value
-     *            Thickening amplitude
+     * @param value Thickening amplitude
      */
 
     public void thickenMesh(double value, boolean faceDisplacement) {
-        // dumpMesh();
         if (Math.abs(value) < 1e-12)
             return;
         Vec3 v[] = new Vec3[vertices.length];
@@ -7729,9 +7464,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             for (int i = 0; i < vertices.length; ++i)
                 v[i] = vertices[i].r.plus(normals[i].times(value));
         }
-        // dumpMesh();
-        // first step: delete faces that have all of their vertices on the
-        // plane.
+
+        // first step: delete faces that have all of their vertices on the plane.
+
         int n;
         Wvertex[] newVertices = new Wvertex[vertices.length * 2];
         Wedge[] newEdges = new Wedge[edges.length * 2];
@@ -7743,13 +7478,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         edges = newEdges;
         vertices = newVertices;
         faces = newFaces;
-        // dumpMesh();
         edges = te;
         vertices = tv;
         faces = tf;
-        // System.out.println( "a2" );
         for (int i = 0; i < vertices.length; ++i) {
-            // newVertices[i] = new Wvertex( vertices[i] );
             newVertices[i + vertices.length] = new Wvertex(newVertices[i]);
             if (value > 0)
                 newVertices[i].r = v[i];
@@ -7817,11 +7549,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         vertices = newVertices;
         edges = newEdges;
         faces = newFaces;
-        // dumpMesh();
         newEdges = new Wedge[edges.length + boundaries.size() * 2];
         newFaces = new Wface[faces.length + boundaries.size()];
         translateMesh(vertices, newEdges, newFaces);
-        // System.out.println( "c" );
         int e;
         int en;
         int ve;
@@ -7829,7 +7559,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         int eep;
         int vve;
         int index = edges.length / 2;
-        // System.out.println( boundaries.size() );
         for (int j = 0; j < boundaries.size(); ++j) {
             e = boundaries.get(j);
             ee = e + el / 2;
@@ -7843,9 +7572,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             eep = newEdges[ee].hedge;
             while (newEdges[eep].next != ee)
                 eep = newEdges[newEdges[eep].next].hedge;
-            // System.out.println( "e, en, ee, eep, ve, vve" );
-            // System.out.println( e + " " + en + " " + ee + " " + eep + " "
-            // + ve + " " + vve );
             newEdges[index] = new Wedge(vve, index + newEdges.length / 2, -2,
                     ee);
             newEdges[index + newEdges.length / 2] = new Wedge(ve, index, -2, en);
@@ -7864,7 +7590,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         }
         edges = newEdges;
         faces = newFaces;
+
         // Update the texture parameters.
+
         TextureParameter param[] = getParameters();
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
@@ -7903,27 +7631,19 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             }
             setParameterValues(newParamVal);
         }
-        // dumpMesh();
-        // String s = checkMesh();
-        // System.out.println( s );
         resetMesh();
-        // System.out.println( "f" );
-    }
+     }
 
     /**
      * Translates mesh data structure into new, longer, arrays Helpful when
      * increasing mesh vertices, edges, faces...
      * 
-     * @param newVertices
-     *            New vertices array
-     * @param newEdges
-     *            New edges array
-     * @param newFaces
-     *            New faces array
+     * @param newVertices New vertices array
+     * @param newEdges    New edges array
+     * @param newFaces    New faces array
      */
 
-    private void translateMesh(Wvertex[] newVertices, Wedge[] newEdges,
-            Wface newFaces[]) {
+    private void translateMesh(Wvertex[] newVertices, Wedge[] newEdges, Wface newFaces[]) {
         int max = Math.min(edges.length, newEdges.length);
         for (int i = 0; i < vertices.length; ++i) {
             newVertices[i] = new Wvertex(vertices[i]);
@@ -7932,30 +7652,26 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         }
         for (int i = 0; i < max / 2; ++i) {
             newEdges[i] = new Wedge(edges[i]);
-            newEdges[i].hedge = edges[i].hedge + newEdges.length / 2
-                    - edges.length / 2;
+            newEdges[i].hedge = edges[i].hedge + newEdges.length / 2 - edges.length / 2;
             if (newEdges[i].next >= max / 2)
                 newEdges[i].next += newEdges.length / 2 - edges.length / 2;
             newEdges[newEdges[i].hedge] = new Wedge(edges[edges[i].hedge]);
             if (newEdges[newEdges[i].hedge].next >= max / 2)
-                newEdges[newEdges[i].hedge].next += newEdges.length / 2
-                        - edges.length / 2;
+                newEdges[newEdges[i].hedge].next += newEdges.length / 2 - edges.length / 2;
         }
         for (int i = 0; i < faces.length; ++i) {
             newFaces[i] = new Wface(faces[i]);
-            if (newFaces[i].edge >= max / 2)
-                newFaces[i].edge += newEdges.length / 2 - edges.length / 2;
+            if (newFaces[i].edge >= max / 2) newFaces[i].edge += newEdges.length / 2 - edges.length / 2;
         }
     }
 
     /**
      * Gets vertices positions for a normal displacement of selected edges.
      * 
-     * @param selected
-     *            Edges selection
-     * @param amount
-     *            Movement amplitude in AoI unit
-     * @return The new vertices positions
+     * @param selected Edges selection
+     * @param amount   Movement amplitude in AoI unit
+     *
+     * @return         The new vertices positions
      */
 
     public Vec3[] getVertexPositionsForFacesNormalDisplacement(
@@ -8037,9 +7753,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Gets boundary edges according to initial edge selection
      * 
-     * @param selected
-     *            The edge(s) selected on boundaries
-     * @return The whole boundaries selection
+     * @param selected  The edge(s) selected on boundaries
+     *
+     * @return          The whole boundaries selection
      */
 
     public boolean[] getBoundarySelection(boolean[] selected) {
@@ -8076,9 +7792,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * Closes boundaries based on boundary edge selection. At least one edge
      * must be selected on the boundary.
      * 
-     * @param selected
-     *            Edge selection
-     * @return New face selection
+     * @param selected Edge selection
+     *
+     * @return         New face selection
      */
 
     public boolean[] closeBoundary(boolean[] selected) {
@@ -8113,17 +7829,18 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 for (int j = 0; j < faces.length; ++j)
                     newFaces[j] = faces[j];
                 newFaces[faces.length] = new Wface(start);
+
                 // Update the texture parameters.
+
                 TextureParameter param[] = getParameters();
                 ParameterValue oldParamVal[] = getParameterValues();
                 if (oldParamVal != null) {
                     ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
                     for (int k = 0; k < oldParamVal.length; k++) {
                         if (oldParamVal[k] instanceof FaceParameterValue) {
-                            double oldval[] = ((FaceParameterValue) oldParamVal[k])
-                                    .getValue();
+                            double oldval[] = ((FaceParameterValue) oldParamVal[k]).getValue();
                             double newval[] = new double[newFaces.length];
-                                                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                            System.arraycopy(oldval, 0, newval, 0, oldval.length);
                             for (int j = oldval.length; j < newval.length; j++)
                                 newval[j] = param[k].defaultVal;
                             newParamVal[k] = new FaceParameterValue(newval);
@@ -8158,8 +7875,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Collapses selected faces to single vertices
      * 
-     * @param selected
-     *            Face selection for collapse
+     * @param selected  Face selection for collapse
      */
 
     public void collapseFaces(boolean[] selected) {
@@ -8243,7 +7959,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 }
                 for (int j = 0; j < newVert.length; ++j)
                     newVert[j].edge = edgeTable[newVert[j].edge];
+
                 // Update the texture parameters.
+
                 TextureParameter param[] = getParameters();
                 ParameterValue oldParamVal[] = getParameterValues();
                 if (oldParamVal != null) {
@@ -8306,8 +8024,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Collapses selected edges to single vertices
      * 
-     * @param selected
-     *            Edge selection for collapse
+     * @param selected  Edge selection for collapse
      */
 
     public void collapseEdges(boolean[] selected) {
@@ -8372,8 +8089,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
                     for (int k = 0; k < oldParamVal.length; k++) {
                         if (oldParamVal[k] instanceof VertexParameterValue) {
-                            double oldval[] = ((VertexParameterValue) oldParamVal[k])
-                                    .getValue();
+                            double oldval[] = ((VertexParameterValue) oldParamVal[k]).getValue();
                             double newval[] = new double[newVert.length];
                             for (int j = 0; j < oldval.length; j++)
                                 if (vertexTable[j] != -1)
@@ -8390,8 +8106,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                                 }
                                 newval[j] = val;
                             }
-                            newParamVal[k] = new FaceVertexParameterValue(
-                                    newval);
+                            newParamVal[k] = new FaceVertexParameterValue(newval);
                         } else
                             newParamVal[k] = oldParamVal[k].duplicate();
                     }
@@ -8416,14 +8131,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * Collapses selected vertices through merging selected vertices with
      * neighbors
      * 
-     * @param selected
-     *            Vertices selection for collapse
+     * @param selected Vertices selection for collapse
      */
     public void collapseVertices(boolean[] selected) {
         for (int i = 0; i < selected.length; ++i) {
             if (selected[i]) {
-                // System.out.println( "s��lectionn��: " + i );
-                // dumpMesh();
                 int[] ve = getVertexEdges(vertices[i]);
                 int[] neighbors = new int[ve.length];
                 for (int j = 0; j < neighbors.length; ++j)
@@ -8455,8 +8167,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 }
                 int[] vertexTable = new int[vertices.length];
                 int[] edgeTable = new int[edges.length];
-                Wvertex[] newVert = new Wvertex[vertices.length
-                        - neighbors.length];
+                Wvertex[] newVert = new Wvertex[vertices.length - neighbors.length];
                 Wedge[] newEdges = new Wedge[edges.length - 2 * ve.length];
                 int count = 0;
                 boolean add;
@@ -8484,11 +8195,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     } else
                         edgeTable[j] = -1;
                 }
-                /*
-                 * for ( int j = 0; j < vertices.length; ++j ) { int e =
-                 * vertices[j].edge; while ( edgeTable[e] == -1 ) e =
-                 * edges[edges[e].hedge].next; vertices[j].edge = edgeTable[e]; }
-                 */
+
                 for (int j = 0; j < faces.length; ++j) {
                     int e = faces[j].edge;
                     while (edgeTable[e] == -1)
@@ -8502,15 +8209,16 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 }
                 for (int j = 0; j < newVert.length; ++j)
                     newVert[j].edge = edgeTable[newVert[j].edge];
+
                 // Update the texture parameters.
+
                 TextureParameter param[] = getParameters();
                 ParameterValue oldParamVal[] = getParameterValues();
                 if (oldParamVal != null) {
                     ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
                     for (int k = 0; k < oldParamVal.length; k++) {
                         if (oldParamVal[k] instanceof VertexParameterValue) {
-                            double oldval[] = ((VertexParameterValue) oldParamVal[k])
-                                    .getValue();
+                            double oldval[] = ((VertexParameterValue) oldParamVal[k]).getValue();
                             double newval[] = new double[newVert.length];
                             for (int j = 0; j < oldval.length; j++)
                                 if (vertexTable[j] != -1)
@@ -8574,8 +8282,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         continue;
                     }
                 }
-                // System.out.println( "s��lectionn��: " + i );
-                // dumpMesh();
                 Wvertex[] newVert = new Wvertex[vertices.length - 1];
                 Wedge[] newEdges = new Wedge[edges.length];
                 Wface[] newFaces = new Wface[faces.length + 1];
@@ -8605,40 +8311,28 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     }
                 }
                 newFaces[faces.length] = new Wface(ve[0]);
-                // newFaces[faces.length].edgeSmoothness = 0;
-                // newFaces[faces.length].centerSmoothness = 0;
-                /*
-                 * for ( int j = 0; j < ve.length; ++j ) {
-                 * //newFaces[faces.length].edgeSmoothness +=
-                 * faces[edges[ve[j]].face].edgeSmoothness;
-                 * //newFaces[faces.length].centerSmoothness +=
-                 * faces[edges[ve[j]].face].centerSmoothness; }
-                 */
-                // newFaces[faces.length].edgeSmoothness /= (double) ve.length;
-                // newFaces[faces.length].centerSmoothness /= (double)
-                // ve.length;
                 for (int j = 0; j < newEdges.length; ++j)
                     if (newEdges[j].vertex > i)
                         --newEdges[j].vertex;
+
                 // Update the texture parameters.
+
                 TextureParameter param[] = getParameters();
                 ParameterValue oldParamVal[] = getParameterValues();
                 if (oldParamVal != null) {
                     ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
                     for (int k = 0; k < oldParamVal.length; k++) {
                         if (oldParamVal[k] instanceof FaceParameterValue) {
-                            double oldval[] = ((FaceParameterValue) oldParamVal[k])
-                                    .getValue();
+                            double oldval[] = ((FaceParameterValue) oldParamVal[k]).getValue();
                             double newval[] = new double[newFaces.length];
-                                                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                            System.arraycopy(oldval, 0, newval, 0, oldval.length);
                             newval[newval.length - 1] = 0;
                             for (int j = 0; j < ve.length; ++j)
                                 newval[newval.length - 1] += oldval[edges[ve[j]].face];
                             newval[newval.length - 1] /= (double) ve.length;
                             newParamVal[k] = new FaceParameterValue(newval);
                         } else if (oldParamVal[k] instanceof VertexParameterValue) {
-                            double oldval[] = ((VertexParameterValue) oldParamVal[k])
-                                    .getValue();
+                            double oldval[] = ((VertexParameterValue) oldParamVal[k]).getValue();
                             double newval[] = new double[newVert.length];
                             count = 0;
                             for (int j = 0; j < oldval.length; j++)
@@ -8649,16 +8343,14 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             FaceVertexParameterValue fvpv = (FaceVertexParameterValue) oldParamVal[k];
                             double newval[][] = new double[newFaces.length][];
                             for (int j = 0; j < newFaces.length; ++j) {
-                                int[] fv = getFaceVertices(j, newEdges,
-                                        newFaces);
+                                int[] fv = getFaceVertices(j, newEdges, newFaces);
                                 double val[] = new double[fv.length];
                                 for (int l = 0; l < fv.length; l++) {
                                     val[l] = fvpv.getAverageValue();
                                 }
                                 newval[j] = val;
                             }
-                            newParamVal[k] = new FaceVertexParameterValue(
-                                    newval);
+                            newParamVal[k] = new FaceVertexParameterValue(newval);
                         } else
                             newParamVal[k] = oldParamVal[k].duplicate();
                     }
@@ -8674,7 +8366,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     if (j != i)
                         newSel[count++] = selected[j];
                 selected = newSel;
-                // dumpMesh();
                 selected = removeTwoEdgedFaces(selected);
                 i = -1;
             }
@@ -8687,9 +8378,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * updates any face/edge/vertex selection if the array given is different
      * from null.
      * 
-     * @param selected
-     *            Current selection
-     * @return Updated face selection
+     * @param selected  Current selection
+     *
+     * @return          Updated face selection
      */
 
     private boolean[] removeTwoEdgedFaces(boolean[] selected) {
@@ -8700,8 +8391,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 if (ve.length == 2)
                     if (edges[ve[0]].vertex == edges[ve[1]].vertex) {
                         // lonely vertex
-                        selected = deleteDanglingVertex(edges[fe[0]].vertex,
-                                selected);
+                        selected = deleteDanglingVertex(edges[fe[0]].vertex, selected);
                         --i;
                         continue;
                     }
@@ -8714,8 +8404,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         --i;
                         continue;
                     }
+
                 // remove the face
-                // System.out.println( " face removed " );
+
                 for (int j = 0; j < edges.length; ++j) {
                     if (edges[j].next == edges[fe[1]].hedge)
                         edges[j].next = fe[0];
@@ -8763,15 +8454,16 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 }
                 for (int j = 0; j < vertices.length; ++j)
                     vertices[j].edge = edgeTable[vertices[j].edge];
+
                 // Update the texture parameters.
+
                 TextureParameter param[] = getParameters();
                 ParameterValue oldParamVal[] = getParameterValues();
                 if (oldParamVal != null) {
                     ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
                     for (int k = 0; k < oldParamVal.length; k++) {
                         if (oldParamVal[k] instanceof FaceParameterValue) {
-                            double oldval[] = ((FaceParameterValue) oldParamVal[k])
-                                    .getValue();
+                            double oldval[] = ((FaceParameterValue) oldParamVal[k]).getValue();
                             double newval[] = new double[newFaces.length];
                             for (int j = 0; j < newval.length; j++) {
                                 if (j > i)
@@ -8784,16 +8476,14 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             FaceVertexParameterValue fvpv = (FaceVertexParameterValue) oldParamVal[k];
                             double newval[][] = new double[newFaces.length][];
                             for (int j = 0; j < newFaces.length; ++j) {
-                                int[] fv = getFaceVertices(j, newEdges,
-                                        newFaces);
+                                int[] fv = getFaceVertices(j, newEdges, newFaces);
                                 double val[] = new double[fv.length];
                                 for (int l = 0; l < fv.length; l++) {
                                     val[l] = fvpv.getAverageValue();
                                 }
                                 newval[j] = val;
                             }
-                            newParamVal[k] = new FaceVertexParameterValue(
-                                    newval);
+                            newParamVal[k] = new FaceVertexParameterValue(newval);
                         } else
                             newParamVal[k] = oldParamVal[k].duplicate();
                     }
@@ -8828,11 +8518,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * Deletes a single, dangling vertex linked to antoher vertex through two
      * edges. This situation can occur when a two edge face is along a boundary.
      * 
-     * @param vert
-     *            The dangling vertex to remove.
-     * @param selected
-     *            Current selection
-     * @return Updated selection
+     * @param vert     The dangling vertex to remove.
+     * @param selected Current selection
+     *
+     * @return         Updated selection
      */
 
     private boolean[] deleteDanglingVertex(int vert, boolean[] selected) {
@@ -8844,14 +8533,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         int removedFace = edges[ve[0]].face;
         if (removedFace == -1)
             removedFace = edges[edges[ve[0]].hedge].face;
-        // System.out.println( "Face: " + removedFace );
         int count = 0;
         for (int i = 0; i < edges.length; ++i)
             if (i != ve[0] && i != edges[ve[0]].hedge && i != ve[1]
                     && i != edges[ve[1]].hedge) {
                 newEdges[count] = new Wedge(edges[i]);
-                if (newEdges[count].next == edges[ve[0]].hedge
-                        || newEdges[count].next == edges[ve[1]].hedge)
+                if (newEdges[count].next == edges[ve[0]].hedge || newEdges[count].next == edges[ve[1]].hedge)
                     newEdges[count].next = edges[edges[edges[i].next].next].next;
                 edgeTable[i] = count++;
             } else
@@ -8878,15 +8565,16 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             if (newEdges[i].vertex > vert)
                 --newEdges[i].vertex;
         }
+
         // Update the texture parameters.
+
         TextureParameter param[] = getParameters();
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
             for (int k = 0; k < oldParamVal.length; k++) {
                 if (oldParamVal[k] instanceof FaceParameterValue) {
-                    double oldval[] = ((FaceParameterValue) oldParamVal[k])
-                            .getValue();
+                    double oldval[] = ((FaceParameterValue) oldParamVal[k]).getValue();
                     double newval[] = new double[newFaces.length];
                     count = 0;
                     for (int j = 0; j < oldval.length; j++)
@@ -8894,8 +8582,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             newval[count++] = oldval[j];
                     newParamVal[k] = new FaceParameterValue(newval);
                 } else if (oldParamVal[k] instanceof VertexParameterValue) {
-                    double oldval[] = ((VertexParameterValue) oldParamVal[k])
-                            .getValue();
+                    double oldval[] = ((VertexParameterValue) oldParamVal[k]).getValue();
                     double newval[] = new double[newVert.length];
                     count = 0;
                     for (int j = 0; j < oldval.length; j++)
@@ -8950,21 +8637,17 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Merge selected edges, provided they share the same face and a vertex
      * 
-     * @param selected
-     *            edges
-     * @return New selection
+     * @param selected  Edges
+     *
+     * @return          New selection
      */
 
     public boolean[] mergeEdges(boolean[] selected) {
-        // dumpMesh();
-        // for ( int i = 0; i < selected.length; ++i )
-        // System.out.println( i + " " + selected[i] );
         for (int i = 0; i < edges.length; ++i) {
             int esel = i;
             if (esel >= edges.length / 2)
                 esel = edges[i].hedge;
             if (selected[esel]) {
-                // System.out.println( "i:" + i );
                 int face1 = edges[i].face;
                 int face2 = edges[edges[i].hedge].face;
                 int count = 0;
@@ -8972,21 +8655,19 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 esel = e;
                 if (esel >= edges.length / 2)
                     esel = edges[e].hedge;
-                // System.out.println( i + " / " + e + " " + edges[e].face + " "
-                // + selected[esel] );
+
                 while (edges[e].face == face1
                         && edges[edges[e].hedge].face == face2
                         && selected[esel] && e != i) {
-                    // System.out.println( "e:" + e );
                     ++count;
                     e = edges[e].next;
                     esel = e;
                     if (esel >= edges.length / 2)
                         esel = edges[e].hedge;
                 }
-                // System.out.println( "count " + count );
                 if (count == 0)
                     continue;
+
                 Wvertex[] newVert = new Wvertex[vertices.length - count];
                 int[] vertexTable = new int[vertices.length];
                 Wedge[] newEdges = new Wedge[edges.length - 2 * count];
@@ -8998,6 +8679,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 count = 1;
                 e = edges[i].next;
                 esel = e;
+
                 if (esel >= edges.length / 2)
                     esel = edges[e].hedge;
                 while (edges[e].face == face1
@@ -9011,6 +8693,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     if (esel >= edges.length / 2)
                         esel = edges[e].hedge;
                 }
+
                 count = 0;
                 boolean add;
                 for (int j = 0; j < vertices.length; ++j) {
@@ -9026,11 +8709,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     } else
                         vertexTable[j] = -1;
                 }
-                /*
-                 * for ( int k = 0; k < edgeLink.length; ++k ) {
-                 * System.out.println( k + " edge link " + edgeLink[k] );
-                 * System.out.println( k + " vertex link " + vertexLink[k] ); }
-                 */
+
                 count = 0;
                 for (int j = 0; j < edges.length; ++j) {
                     add = true;
@@ -9045,6 +8724,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     } else
                         edgeTable[j] = -1;
                 }
+
                 newEdges[edgeTable[edgeLink[0]]].vertex = edges[edgeLink[edgeLink.length - 1]].vertex;
                 newEdges[edgeTable[edgeLink[0]]].next = edges[edgeLink[edgeLink.length - 1]].next;
                 for (int j = 0; j < newVert.length; ++j)
@@ -9065,14 +8745,15 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 for (int j = 0; j < selected.length; ++j)
                     if (edgeTable[j] != -1)
                         newSel[count++] = selected[j];
+
                 // Update the texture parameters.
+
                 ParameterValue oldParamVal[] = getParameterValues();
                 if (oldParamVal != null) {
                     ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
                     for (int k = 0; k < oldParamVal.length; k++) {
                         if (oldParamVal[k] instanceof VertexParameterValue) {
-                            double oldval[] = ((VertexParameterValue) oldParamVal[k])
-                                    .getValue();
+                            double oldval[] = ((VertexParameterValue) oldParamVal[k]).getValue();
                             double newval[] = new double[newVert.length];
                             for (int j = 0; j < oldval.length; j++)
                                 if (vertexTable[j] != -1)
@@ -9103,16 +8784,14 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 i = -1;
             }
         }
-        System.out.println();
         return selected;
     }
 
     /**
      * Merge selected faces, provided they share at least an edge
      * 
-     * @param selected
-     *            faces
-     * @return New selection
+     * @param selected Faces
+     * @return         New selection
      */
 
     public boolean[] mergeFaces(boolean[] selected) {
@@ -9124,8 +8803,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     return sel;
                 }
                 if (selected[i] && selected[l]) {
-                    // first, edge merge to simplify boundary between face1
-                    // and face 2
+
+                    // first, edge merge to simplify boundary between face1 and face 2
+
                     boolean[] edgeSel = new boolean[edges.length / 2];
                     boolean merge = false;
                     for (int j = 0; j < edges.length / 2; ++j) {
@@ -9148,10 +8828,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         }
                     }
                     if (count > 1) {
-                        // System.out.println( "pb with count" );
                         new BStandardDialog(Translate.text("polymesh:errorTitle"),
-                                UIUtilities.breakString(Translate
-                                        .text("polymesh:illegalMeshStructure")),
+                                UIUtilities.breakString(Translate.text("polymesh:illegalMeshStructure")),
                                 BStandardDialog.ERROR).showMessageDialog(null);
                         return selected;
                     }
@@ -9201,7 +8879,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     for (int j = 0; j < selected.length; ++j)
                         if (j != i)
                             newSel[count++] = selected[j];
+
                     // Update the texture parameters.
+
                     ParameterValue oldParamVal[] = getParameterValues();
                     if (oldParamVal != null) {
                         ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
@@ -9248,11 +8928,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Bevels selected edges
      * 
-     * @param selected
-     *            Edges selected for bevel
-     * @param value
-     *            Bevel amplitude
-     * @return Description of the Return Value
+     * @param selected Edges selected for bevel
+     * @param value    Bevel amplitude
+     *
+     * @return         Description of the Return Value
      */
 
     public boolean[] bevelEdges(boolean[] selected, double value) {
@@ -9282,7 +8961,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         int faceCount = 0;
         double prod;
 
-        // dumpMesh();
         boolean[] fullSel;
         fullSel = new boolean[edges.length];
         boolean[] newSel;
@@ -9295,7 +8973,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         for (int i = 0; i < edges.length / 2; ++i) {
             if (selected[i]) {
                 fullSel[i] = fullSel[edges[i].hedge] = true;
-
                 ++edgeCount;
             }
             cutsTable[i] = cutsTable[edges[i].hedge] = -1;
@@ -9311,17 +8988,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             }
             if (!cut)
                 continue;
-            // System.out.println( "one vertex to cut: " + i );
-            // vertices[i] counts against vertices to add.
             vertAdded = -1;
-            // v = new Vec3[e.length];
-            // for ( int j = 0; j < v.length; ++j )
-            // {
-            // v[j] = vertices[edges[e[j]].vertex].r.plus( vertices[i].r );
-            // v[j].scale( 0.5 );
-            // }
             for (int j = 0; j < e.length; ++j) {
-                // System.out.println( e[j] + " :1/2: " + edges[e[j]].hedge );
                 ed = edges[e[j]].hedge;
                 ned = edges[ed].next;
                 ped = j - 1;
@@ -9335,74 +9003,54 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 if (fullSel[ed] && fullSel[ned]) {
 
                     // plane intersections
+
                     if ((prod > 1e-4) && (e.length > 2)) {
-                        // System.out.println( "prod: " + prod );
                         p1 = vertices[edges[ned].vertex].r.minus(vertices[i].r);
                         p1.normalize();
                         a1 = Math.acos(edgeNormals[ed].times(-1.0).dot(p1));
                         a1 = Math.sin(a1);
                         if (a1 < 0)
                             System.out.println("a1 negative");
-                        // System.out.println( "a1: " + a1 );
                         if (Math.abs(a1) > 1e-6)
                             t = value / (2.0 * a1);
                         else
-                            t = vertices[edges[ned].vertex].r.minus(
-                                    vertices[i].r).length();
-                        a1 = vertices[edges[ned].vertex].r.minus(vertices[i].r)
-                                .length();
+                            t = vertices[edges[ned].vertex].r.minus(vertices[i].r).length();
+                        a1 = vertices[edges[ned].vertex].r.minus(vertices[i].r).length();
                         if (t > a1)
                             t = a1;
                         p1 = vertices[i].r.plus(p1.times(t));
-
-                        p2 = vertices[edges[edges[ed].hedge].vertex].r
-                                .minus(vertices[i].r);
+                        p2 = vertices[edges[edges[ed].hedge].vertex].r.minus(vertices[i].r);
                         p2.normalize();
-                        a2 = Math.acos(edgeNormals[edges[ned].hedge]
-                                .times(-1.0).dot(p2));
+                        a2 = Math.acos(edgeNormals[edges[ned].hedge].times(-1.0).dot(p2));
                         a2 = Math.sin(a2);
                         if (a2 < 0)
                             System.out.println("a2 negative");
-                        // System.out.println( "a2: " + a2 );
                         if (Math.abs(a2) > 1e-6)
                             t = value / (2.0 * a2);
                         else
-                            t = vertices[edges[edges[ed].hedge].vertex].r
-                                    .minus(vertices[i].r).length();
-                        a2 = vertices[edges[edges[ed].hedge].vertex].r.minus(
-                                vertices[i].r).length();
+                            t = vertices[edges[edges[ed].hedge].vertex].r.minus(vertices[i].r).length();
+                        a2 = vertices[edges[edges[ed].hedge].vertex].r.minus(vertices[i].r).length();
                         if (t > a2)
                             t = a2;
                         p2 = vertices[i].r.plus(p2.times(t));
-
                         p3 = vertices[i].r;
                         n1 = new Vec3(edgeNormals[ed]);
                         n2 = new Vec3(edgeNormals[edges[ned].hedge]);
-                        n3 = vertices[edges[ned].vertex].r
-                                .minus(vertices[i].r)
-                                .cross(
-                                        vertices[edges[edges[ed].hedge].vertex].r
-                                                .minus(vertices[i].r));
+                        n3 = vertices[edges[ned].vertex].r.minus(vertices[i].r).cross(vertices[edges[edges[ed].hedge].vertex].r.minus(vertices[i].r));
                         if (n3.length() > 1e-6)
                             n3.normalize();
                         else if (edges[ed].face != -1)
                             n3 = faceNormals[edges[ed].face];
                         else
                             n3 = faceNormals[edges[e[j]].face];
-
-                        // System.out.println( "dot product: " + Math.abs(
-                        // n1.dot( n2.cross( n3 ) ) ) );
-
-                        if (Math.abs(n1.dot(n2.cross(n3))) < 1e-4) {
+                            if (Math.abs(n1.dot(n2.cross(n3))) < 1e-4) {
                             if (edges[ed].face != -1)
                                 n1 = faceNormals[edges[ed].face];
                             else
                                 n1 = faceNormals[edges[e[j]].face];
-                            p1 = vertices[edges[ned].vertex].r
-                                    .minus(vertices[i].r);
+                            p1 = vertices[edges[ned].vertex].r.minus(vertices[i].r);
                             p1.normalize();
-                            p2 = vertices[i].r
-                                    .minus(vertices[edges[e[j]].vertex].r);
+                            p2 = vertices[i].r.minus(vertices[edges[e[j]].vertex].r);
                             p2.normalize();
                             p1.add(p2);
                             p1.normalize();
@@ -9412,7 +9060,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             a1 = Math.sin(a1);
                             if (a1 < 0)
                                 System.out.println("a1 negative");
-                            // System.out.println( "a1: " + a1 );
                             if (Math.abs(a1) > 1e-6)
                                 t = value / (2.0 * a1);
                             else
@@ -9432,7 +9079,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                                     1.0 / n1.dot(n2.cross(n3)));
                         }
                     } else {
+
                         // intersection of ed bevel with ned.
+
                         if (edges[ed].face != -1)
                             n1 = faceNormals[edges[ed].face];
                         else
@@ -9450,7 +9099,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         a1 = Math.sin(a1);
                         if (a1 < 0)
                             System.out.println("a1 negative");
-                        // System.out.println( "a1: " + a1 );
                         if (Math.abs(a1) > 1e-6)
                             t = value / (2.0 * a1);
                         else
@@ -9464,17 +9112,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
                     }
 
-                    // p1.subtract( n1.times( a1 ) );
-                    // p2.subtract( n2.times( a2 ) );
-
                     cutsQuality[ed] = TWO_BEVEL;
                     if (vertAdded == -1)
                         cutsTable[ed] = i;
                     else
                         cutsTable[ed] = vertAdded + vertCount + vertices.length;
                     ++vertAdded;
-                    // System.out.println( "vert count inc TWO_BEVEL" );
-
                 } else if (fullSel[ed]) {
 
                     if ((e.length == 2) || (prod < 1e-4)) {
@@ -9484,8 +9127,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             n1 = faceNormals[edges[e[j]].face];
                         p1 = vertices[edges[ned].vertex].r.minus(vertices[i].r);
                         p1.normalize();
-                        p2 = vertices[i].r
-                                .minus(vertices[edges[e[j]].vertex].r);
+                        p2 = vertices[i].r.minus(vertices[edges[e[j]].vertex].r);
                         p2.normalize();
                         p1.add(p2);
                         p1.normalize();
@@ -9495,14 +9137,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         a1 = Math.sin(a1);
                         if (a1 < 0)
                             System.out.println("a1 negative");
-                        // System.out.println( "a1: " + a1 );
                         if (Math.abs(a1) > 1e-6)
                             t = value / (2.0 * a1);
                         else
-                            t = vertices[edges[ned].vertex].r.minus(
-                                    vertices[i].r).length();
-                        a1 = vertices[edges[ned].vertex].r.minus(vertices[i].r)
-                                .length();
+                            t = vertices[edges[ned].vertex].r.minus(vertices[i].r).length();
+                        a1 = vertices[edges[ned].vertex].r.minus(vertices[i].r).length();
                         if (t > a1)
                             t = a1;
                         cuts[ed] = vertices[i].r.plus(p1.times(t));
@@ -9510,8 +9149,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         if (vertAdded == -1)
                             cutsTable[ed] = i;
                         else
-                            cutsTable[ed] = vertAdded + vertCount
-                                    + vertices.length;
+                            cutsTable[ed] = vertAdded + vertCount + vertices.length;
                         ++vertAdded;
                         if (e.length == 2) {
                             p1 = vertices[edges[ned].vertex].r
@@ -9522,29 +9160,26 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                                 t = value / 2;
                                 if (t > p1.length())
                                     t = p1.length();
-                                cuts[ed + edges.length] = vertices[i].r.plus(p1
-                                        .times(t));
+                                cuts[ed + edges.length] = vertices[i].r.plus(p1.times(t));
                             }
-                            cutsTable[ed + edges.length] = vertAdded
-                                    + vertCount + vertices.length;
+                            cutsTable[ed + edges.length] = vertAdded + vertCount + vertices.length;
                             ++vertAdded;
                         }
                     } else {
+
                         // intersection of ed bevel with ned.
+
                         p1 = vertices[edges[ned].vertex].r.minus(vertices[i].r);
                         p1.normalize();
                         a1 = Math.acos(edgeNormals[ed].times(-1.0).dot(p1));
                         a1 = Math.sin(a1);
                         if (a1 < 0)
                             System.out.println("a1 negative");
-                        // System.out.println( "a1: " + a1 );
                         if (Math.abs(a1) > 1e-6)
                             t = value / (2.0 * a1);
                         else
-                            t = vertices[edges[ned].vertex].r.minus(
-                                    vertices[i].r).length();
-                        a1 = vertices[edges[ned].vertex].r.minus(vertices[i].r)
-                                .length();
+                            t = vertices[edges[ned].vertex].r.minus(vertices[i].r).length();
+                        a1 = vertices[edges[ned].vertex].r.minus(vertices[i].r).length();
                         if (t > a1)
                             t = a1;
                         cuts[ed] = vertices[i].r.plus(p1.times(t));
@@ -9556,18 +9191,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             cutsTable[ed] = vertAdded + vertCount
                                     + vertices.length;
                         ++vertAdded;
-                        // System.out.println( "vert count inc ONE_BEVEL" );
                         if (j == e.length - 1)
-                            if (cutsQuality[edges[ned].hedge] == ONE_BEVEL_NEXT
-                                    && e.length > 2) {
-                                cuts[ed] = cuts[ed]
-                                        .plus(cuts[edges[ned].hedge])
-                                        .times(0.5);
+                            if (cutsQuality[edges[ned].hedge] == ONE_BEVEL_NEXT && e.length > 2) {
+                                cuts[ed] = cuts[ed].plus(cuts[edges[ned].hedge]).times(0.5);
                                 cuts[edges[ned].hedge] = cuts[ed];
                                 cutsTable[ed] = cutsTable[edges[ned].hedge];
                                 --vertAdded;
-                                // System.out.println( "vertex MERGED ONE_BEVEL"
-                                // );
                             }
                     }
                 } else if (fullSel[ned]) {
@@ -9579,8 +9208,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             n1 = faceNormals[edges[e[j]].face];
                         p1 = vertices[edges[ned].vertex].r.minus(vertices[i].r);
                         p1.normalize();
-                        p2 = vertices[i].r
-                                .minus(vertices[edges[e[j]].vertex].r);
+                        p2 = vertices[i].r.minus(vertices[edges[e[j]].vertex].r);
                         p2.normalize();
                         p1.add(p2);
                         p1.normalize();
@@ -9602,7 +9230,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             t = a1;
                         cuts[ed] = vertices[i].r.plus(p1.times(t));
                     } else {
+
                         // intersection of ed bevel with ned.
+
                         p2 = vertices[edges[edges[ed].hedge].vertex].r
                                 .minus(vertices[i].r);
                         p2.normalize();
@@ -9628,20 +9258,18 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     else
                         cutsTable[ed] = vertAdded + vertCount + vertices.length;
                     ++vertAdded;
-                    // System.out.println( "vert count inc ONE_BEVEL_NEXT"
-                    // );
                     if (j != 0) {
                         if (cutsQuality[ped] == ONE_BEVEL && e.length > 2) {
                             cuts[ed] = cuts[ed].plus(cuts[ped]).times(0.5);
                             cuts[ped] = cuts[ed];
                             cutsTable[ed] = cutsTable[ped];
                             --vertAdded;
-                            // System.out.println( "vertex MERGED
-                            // ONE_BEVEL_NEXT" );
                         }
                     }
                 } else if (!fullSel[ped]) {
+
                     // intersection of vertex bevel with ed.
+
                     cuts[ed] = null;
                     cutsQuality[ed] = VERTEX_BEVEL;
                     if (vertAdded == -1)
@@ -9649,13 +9277,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     else
                         cutsTable[ed] = vertAdded + vertCount + vertices.length;
                     ++vertAdded;
-                    // System.out.println( "vert count inc VERTEX_BEVEL" );
                 }
             }
             p3 = new Vec3();
             int k = 0;
             for (int j = 0; j < e.length; ++j) {
-                // System.out.println( e[j] + " :1/2: " + edges[e[j]].hedge );
                 ed = edges[e[j]].hedge;
                 if ((cutsTable[ed] != -1) && (cuts[ed] != null)) {
                     p3.add(cuts[ed]);
@@ -9681,26 +9307,16 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             cuts[ed] = vertices[i].r.plus(p1.times(t));
                         }
                     } else {
-                        // intersection of vertex bevel with ed.
-                        // System.out.println( "intersection of vertex bevel
-                        // with ed" );
                         n3 = normals[i];
                         d = -p3.dot(n3);
-                        n1 = vertices[edges[edges[ed].hedge].vertex].r
-                                .minus(vertices[i].r);
-                        t = Math.abs(-(n3.dot(vertices[i].r) + d)
-                                / (n3.dot(n1)));
+                        n1 = vertices[edges[edges[ed].hedge].vertex].r.minus(vertices[i].r);
+                        t = Math.abs(-(n3.dot(vertices[i].r) + d) / (n3.dot(n1)));
                         if (t * n1.length() <= value) {
-                            // t = -t;
-                            // p1 = vertices[edges[e[j]].vertex].r.minus(
-                            // vertices[i].r );
                             if (n1.length() < 1e-4)
                                 cuts[ed] = vertices[i].r;
                             else {
-                                // t = value / 2;
                                 if (t > 1)
                                     t = 1;
-                                // n1.normalize();
                                 cuts[ed] = vertices[i].r.plus(n1.times(t));
                             }
                         } else {
@@ -9716,19 +9332,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             vertCount += vertAdded;
         }
 
-        // System.out.println( "vertCount: " + vertCount );
-        // System.out.println( "edgeCount: " + edgeCount );
-        // System.out.println( "faceCount: " + faceCount );
-
-        /*
-         * for ( int i = 0; i < edges.length; ++i ) { System.out.println( "cuts
-         * table " + i + " : " + cutsTable[i] + " / " + cutsTable[i +
-         * edges.length] ); System.out.println( "cuts " + i + " : " + cuts[i] ); }
-         */
-
         Wvertex newVertices[] = new Wvertex[vertices.length + vertCount];
-        Wedge newEdges[] = new Wedge[edges.length + edgeCount * 6 + 4
-                * vertCount];
+        Wedge newEdges[] = new Wedge[edges.length + edgeCount * 6 + 4 * vertCount];
         newSel = new boolean[newEdges.length];
         for (int i = 0; i < selected.length; ++i)
             newSel[i] = selected[i];
@@ -9737,8 +9342,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         int[] faceParmTable = new int[newFaces.length];
         faceCount = faces.length;
         edgeCount = edges.length / 2;
-        // System.out.println( edges.length + " " + newEdges.length + " " +
-        // edgeCount );
         translateMesh(newVertices, newEdges, newFaces);
         Wedge[] te = edges;
         Wvertex[] tv = vertices;
@@ -9757,15 +9360,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             e = getVertexEdges(vertices[i]);
             cut = false;
             for (int j = 0; j < e.length; ++j) {
-                // System.out.println( e[j] + " :1/2: " + edges[e[j]].hedge );
                 e[j] = edges[e[j]].hedge;
                 if (fullSel[e[j]])
                     cut = true;
             }
             if (!cut)
                 continue;
-            // System.out.println( "Face creation for: " + i + " " +
-            // e.length );
             edges = newEdges;
             vertices = newVertices;
             faces = newFaces;
@@ -9779,8 +9379,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     next = 0;
                 if (cutsTable[e[j] + el] != -1)
                     ++count;
-                if ((cutsTable[e[next]] != cutsTable[e[j]])
-                        && (cutsTable[e[j]] != -1))
+                if ((cutsTable[e[next]] != cutsTable[e[j]]) && (cutsTable[e[j]] != -1))
                     ++count;
             }
             if (count > 2 && e.length < 3) {
@@ -9790,62 +9389,39 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     n = 1;
                 ed = e[n];
                 ned = te[ed].next;
-                // System.out.println( ed + " " + ned );
                 if (cutsTable[ed] < vl)
                     newVertices[cutsTable[ed]].r = cuts[ed];
                 else if (newVertices[cutsTable[ed]] == null) {
                     newVertices[cutsTable[ed]] = new Wvertex(cuts[ed], -1);
                     vertParmTable[cutsTable[ed]] = i;
-                    // newVertices[cutsTable[ed]].smoothness =
-                    // vertices[i].smoothness;
                 }
                 newVertices[cutsTable[ed]].edge = edgeCount;
                 newEdges[ee[n]].vertex = cutsTable[ed];
                 newVertices[cutsTable[ed]].edge = newEdges[ee[n]].hedge;
                 newVertices[cutsTable[ed]].edge = newEdges[ee[n]].hedge;
-                newVertices[cutsTable[ed + el]] = new Wvertex(cuts[ed + el],
-                        edgeCount + 2);
+                newVertices[cutsTable[ed + el]] = new Wvertex(cuts[ed + el], edgeCount + 2);
                 vertParmTable[cutsTable[ed + el]] = i;
-                // newVertices[cutsTable[ed + el]].smoothness =
-                // vertices[i].smoothness;
-                newEdges[newEdges[newEdges[ee[n]].next].hedge].vertex = cutsTable[ed
-                        + el];
+                newEdges[newEdges[newEdges[ee[n]].next].hedge].vertex = cutsTable[ed + el];
                 newEdges[newEdges[newEdges[ee[n]].next].hedge].next = edgeCount + 2;
                 if (cutsTable[te[ned].hedge] < vl)
                     newVertices[cutsTable[te[ned].hedge]].r = cuts[te[ned].hedge];
                 else if (newVertices[cutsTable[te[ned].hedge]] == null) {
-                    newVertices[cutsTable[te[ned].hedge]] = new Wvertex(
-                            cuts[te[ned].hedge], -1);
+                    newVertices[cutsTable[te[ned].hedge]] = new Wvertex(cuts[te[ned].hedge], -1);
                     vertParmTable[cutsTable[te[ned].hedge]] = i;
-                    // newVertices[cutsTable[te[ned].hedge]].smoothness =
-                    // vertices[i].smoothness;
                 }
                 newVertices[cutsTable[te[ned].hedge]].edge = edgeCount + 1;
-                newEdges[edgeCount] = new Wedge(cutsTable[ed + el], edgeCount
-                        + newEdges.length / 2, newEdges[ee[n]].face,
-                        newEdges[ee[n]].next);
+                newEdges[edgeCount] = new Wedge(cutsTable[ed + el], edgeCount + newEdges.length / 2, newEdges[ee[n]].face, newEdges[ee[n]].next);
                 newEdges[ee[n]].next = edgeCount;
                 newEdges[edgeCount].smoothness = newEdges[ee[n]].smoothness;
-                newEdges[edgeCount + newEdges.length / 2] = new Wedge(
-                        cutsTable[ed], edgeCount, faceCount, edgeCount + 1
-                                + newEdges.length / 2);
+                newEdges[edgeCount + newEdges.length / 2] = new Wedge(cutsTable[ed], edgeCount, faceCount, edgeCount + 1 + newEdges.length / 2);
                 newEdges[edgeCount + newEdges.length / 2].smoothness = newEdges[ee[n]].smoothness;
-                newEdges[edgeCount + 1] = new Wedge(cutsTable[ed], edgeCount
-                        + 1 + newEdges.length / 2,
-                        newEdges[newEdges[ee[n]].hedge].face,
-                        newEdges[ee[n]].hedge);
+                newEdges[edgeCount + 1] = new Wedge(cutsTable[ed], edgeCount + 1 + newEdges.length / 2, newEdges[newEdges[ee[n]].hedge].face, newEdges[ee[n]].hedge);
                 newEdges[edgeCount + 1].smoothness = newEdges[ee[n]].smoothness;
-                newEdges[edgeCount + 1 + newEdges.length / 2] = new Wedge(
-                        cutsTable[te[ned].hedge], edgeCount + 1, faceCount,
-                        edgeCount + 2 + newEdges.length / 2);
+                newEdges[edgeCount + 1 + newEdges.length / 2] = new Wedge(cutsTable[te[ned].hedge], edgeCount + 1, faceCount, edgeCount + 2 + newEdges.length / 2);
                 newEdges[edgeCount + 1 + newEdges.length / 2].smoothness = newEdges[ee[n]].smoothness;
-                newEdges[edgeCount + 2] = new Wedge(cutsTable[te[ned].hedge],
-                        edgeCount + 2 + newEdges.length / 2,
-                        newEdges[newEdges[ee[n]].hedge].face, edgeCount + 1);
+                newEdges[edgeCount + 2] = new Wedge(cutsTable[te[ned].hedge], edgeCount + 2 + newEdges.length / 2, newEdges[newEdges[ee[n]].hedge].face, edgeCount + 1);
                 newEdges[edgeCount + 2].smoothness = newEdges[ee[n]].smoothness;
-                newEdges[edgeCount + 2 + newEdges.length / 2] = new Wedge(
-                        cutsTable[ed + el], edgeCount + 2, faceCount, edgeCount
-                                + newEdges.length / 2);
+                newEdges[edgeCount + 2 + newEdges.length / 2] = new Wedge(cutsTable[ed + el], edgeCount + 2, faceCount, edgeCount + newEdges.length / 2);
                 newEdges[edgeCount + 2 + newEdges.length / 2].smoothness = newEdges[ee[n]].smoothness;
                 newFaces[faceCount] = new Wface(edgeCount + newEdges.length / 2);
                 faceParmTable[faceCount] = te[e[n]].face;
@@ -9866,11 +9442,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         if (cutsTable[e[j]] < vl)
                             newVertices[cutsTable[e[j]]].r = cuts[e[j]];
                         else if (newVertices[cutsTable[e[j]]] == null) {
-                            newVertices[cutsTable[e[j]]] = new Wvertex(
-                                    cuts[e[j]], -1);
+                            newVertices[cutsTable[e[j]]] = new Wvertex(cuts[e[j]], -1);
                             vertParmTable[cutsTable[e[j]]] = i;
-                            // newVertices[cutsTable[e[j]]].smoothness =
-                            // vertices[i].smoothness;
                         }
                         newEdges[ee[j]].vertex = cutsTable[e[j]];
                         newVertices[cutsTable[e[j]]].edge = newEdges[ee[j]].hedge;
@@ -9884,11 +9457,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         if (cutsTable[e[j]] < vl)
                             newVertices[cutsTable[e[j]]].r = cuts[e[j]];
                         else if (newVertices[cutsTable[e[j]]] == null) {
-                            newVertices[cutsTable[e[j]]] = new Wvertex(
-                                    cuts[e[j]], -1);
+                            newVertices[cutsTable[e[j]]] = new Wvertex(cuts[e[j]], -1);
                             vertParmTable[cutsTable[e[j]]] = i;
-                            // newVertices[cutsTable[e[j]]].smoothness =
-                            // vertices[i].smoothness;
                         }
                         newEdges[ee[j]].vertex = cutsTable[e[j]];
                         newVertices[cutsTable[e[j]]].edge = newEdges[ee[j]].hedge;
@@ -9907,24 +9477,14 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         newEdges[edgeCount].smoothness = 1.0f;
                     newSel[edgeCount] = true;
                     if (first) {
-                        newEdges[edgeCount + newEdges.length / 2] = new Wedge(
-                                newEdges[ee[j]].vertex, edgeCount, faceCount,
-                                edgeCount + count - 1 + newEdges.length / 2);
-                        // System.out.println( ( edgeCount + newEdges.length / 2
-                        // ) + " :next: " + ( edgeCount + count - 1 +
-                        // newEdges.length / 2 ) );
+                        newEdges[edgeCount + newEdges.length / 2] = new Wedge(newEdges[ee[j]].vertex, edgeCount, faceCount, edgeCount + count - 1 + newEdges.length / 2);
                         first = false;
                     } else
-                        newEdges[edgeCount + newEdges.length / 2] = new Wedge(
-                                newEdges[ee[j]].vertex, edgeCount, faceCount,
-                                edgeCount - 1 + newEdges.length / 2);
+                        newEdges[edgeCount + newEdges.length / 2] = new Wedge(newEdges[ee[j]].vertex, edgeCount, faceCount, edgeCount - 1 + newEdges.length / 2);
                     newEdges[edgeCount + newEdges.length / 2].smoothness = newEdges[edgeCount].smoothness;
                     ++edgeCount;
-                    // System.out.println( j + " / " + e.length + " ec: " +
-                    // edgeCount );
                 }
-                newFaces[faceCount] = new Wface(edgeCount - 1 + newEdges.length
-                        / 2);
+                newFaces[faceCount] = new Wface(edgeCount - 1 + newEdges.length / 2);
                 faceParmTable[faceCount] = te[e[0]].face;
                 if (faceParmTable[faceCount] == -1)
                     faceParmTable[faceCount] = te[te[e[0]].hedge].face;
@@ -9937,9 +9497,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         edges = newEdges;
         vertices = newVertices;
         faces = newFaces;
-        // System.out.println( "Face terminée: " + edgeCount + " / " +
-        // newEdges.length / 2 );
-        // dumpMesh();
         edges = te;
         vertices = tv;
         faces = tf;
@@ -9961,10 +9518,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         int hec2;
         int ved[];
         for (int i = 0; i < edges.length / 2; ++i) {
-            // System.out.println( "i :" + i );
             if (selected[i]) {
-
-                // System.out.println( "i :" + i );
                 hed = edges[i].hedge;
                 nhed = newEdges[i].hedge;
                 if (cutsTable[i] < vertices.length)
@@ -9972,16 +9526,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 else if (newVertices[cutsTable[i]] == null) {
                     newVertices[cutsTable[i]] = new Wvertex(cuts[i], -1);
                     vertParmTable[cutsTable[i]] = edges[i].vertex;
-                    // newVertices[cutsTable[i]].smoothness =
-                    // vertices[edges[i].vertex].smoothness;
                 }
                 if (cutsTable[hed] < vertices.length)
                     newVertices[cutsTable[hed]].r = cuts[hed];
                 else if (newVertices[cutsTable[hed]] == null) {
                     newVertices[cutsTable[hed]] = new Wvertex(cuts[hed], -1);
                     vertParmTable[cutsTable[hed]] = edges[edges[i].hedge].vertex;
-                    // newVertices[cutsTable[hed]].smoothness =
-                    // vertices[edges[edges[i].hedge].vertex].smoothness;
                 }
                 ed1 = edges[edges[i].next].hedge;
                 while (edges[ed1].next != hed)
@@ -9994,8 +9544,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 else if (newVertices[cutsTable[ed1]] == null) {
                     newVertices[cutsTable[ed1]] = new Wvertex(cuts[ed1], -1);
                     vertParmTable[cutsTable[ed1]] = edges[i].vertex;
-                    // newVertices[cutsTable[ed1]].smoothness =
-                    // vertices[edges[i].vertex].smoothness;
                 }
 
                 ed2 = edges[edges[hed].next].hedge;
@@ -10009,10 +9557,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 else if (newVertices[cutsTable[ed2]] == null) {
                     newVertices[cutsTable[ed2]] = new Wvertex(cuts[ed2], -1);
                     vertParmTable[cutsTable[ed2]] = edges[edges[i].hedge].vertex;
-                    // newVertices[cutsTable[ed2]].smoothness =
-                    // vertices[edges[edges[i].hedge].vertex].smoothness;
                 }
-                // System.out.println( i + " " + ed1 + " " + hed + " " + ed2 );
                 edges = newEdges;
                 vertices = newVertices;
                 faces = newFaces;
@@ -10020,13 +9565,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 ref2 = findEdge(cutsTable[ed2], cutsTable[hed]);
                 if (ref1 != -1) {
                     if (newEdges[i].next == ref1) {
-                        // swap
-                        // System.out.println( "*REF1 SWAP*" );
-                        // dumpMesh();
                         nn1 = i;
                         while (newEdges[nn1].next != newEdges[i].hedge)
                             nn1 = newEdges[newEdges[nn1].next].hedge;
-                        // System.out.println( "nn1 done" );
                         newVertices[newEdges[newEdges[ref1].hedge].vertex].edge = ref1;
                         newEdges[i].vertex = cutsTable[i];
                         newEdges[i].next = newEdges[ref1].next;
@@ -10034,8 +9575,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         newFaces[newEdges[i].face].edge = i;
                         newEdges[ref1].face = newEdges[newEdges[i].hedge].face;
                         newEdges[ref1].next = newEdges[i].hedge;
-                        // System.out.println( "*REF1 SWAP DONE*" );
-                        // dumpMesh();
                     }
                 } else {
                     ved = getVertexEdges(vertices[newEdges[i].vertex]);
@@ -10046,13 +9585,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
                 if (ref2 != -1) {
                     if (newEdges[newEdges[i].hedge].next != ref2) {
-                        // swap
-                        // System.out.println( "*REF2 SWAP*" );
                         newEdges[newEdges[i].hedge].vertex = cutsTable[ed2];
                         nn2 = newEdges[ref2].hedge;
                         while (newEdges[nn2].next != ref2)
                             nn2 = newEdges[newEdges[nn2].next].hedge;
-                        // System.out.println( "nn2 done" );
                         newEdges[nn2].next = i;
                         newEdges[ref2].next = newEdges[newEdges[i].hedge].next;
                         newEdges[newEdges[i].hedge].next = ref2;
@@ -10070,11 +9606,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 if (ref1 == -1) {
                     newVertices[cutsTable[i]].edge = nn1;
                     nn1 = i;
-                    // System.out.println( "nn1 2" );
                     while (newEdges[nn1].next != newEdges[ned1].hedge)
                         nn1 = newEdges[newEdges[nn1].next].hedge;
-                    // System.out.println( "nn1 2 done" );
-
                 }
                 edges = te;
                 vertices = tv;
@@ -10082,7 +9615,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
                 ed = newEdges[nhed].next;
                 if (ref2 != -1) {
-                    // System.out.println( "found ref2" );
                     ec = ref2;
                     hec = newEdges[ec].hedge;
                     ed = newEdges[ec].next;
@@ -10094,7 +9626,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 ec1 = edgeCount + 1;
                 hec1 = edgeCount + 1 + newEdges.length / 2;
                 if (ref1 != -1) {
-                    // System.out.println( "found ref1" );
                     ec2 = ref1;
                     hec2 = newEdges[ref1].hedge;
                     --edgeCount;
@@ -10166,13 +9697,14 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 edges = newEdges;
                 vertices = newVertices;
                 faces = newFaces;
-                // dumpMesh();
                 edges = te;
                 vertices = tv;
                 faces = tf;
             }
         }
+
         // edges reduction
+
         edgeCount = 0;
         int[] edgeTable = new int[newEdges.length];
         for (int i = 0; i < newEdges.length; ++i) {
@@ -10202,17 +9734,18 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             edges = newEdges;
         vertices = newVertices;
         faces = newFaces;
+
         // Update the texture parameters.
+
         TextureParameter param[] = getParameters();
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
             for (int k = 0; k < oldParamVal.length; k++) {
                 if (oldParamVal[k] instanceof FaceParameterValue) {
-                    double oldval[] = ((FaceParameterValue) oldParamVal[k])
-                            .getValue();
+                    double oldval[] = ((FaceParameterValue) oldParamVal[k]).getValue();
                     double newval[] = new double[faces.length];
-                                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                    System.arraycopy(oldval, 0, newval, 0, oldval.length);
                     for (int j = oldval.length; j < newval.length; j++) {
                         if (faceParmTable[j] != -1)
                             newval[j] = oldval[faceParmTable[j]];
@@ -10221,10 +9754,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     }
                     newParamVal[k] = new FaceParameterValue(newval);
                 } else if (oldParamVal[k] instanceof VertexParameterValue) {
-                    double oldval[] = ((VertexParameterValue) oldParamVal[k])
-                            .getValue();
+                    double oldval[] = ((VertexParameterValue) oldParamVal[k]).getValue();
                     double newval[] = new double[vertices.length];
-                                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                    System.arraycopy(oldval, 0, newval, 0, oldval.length);
                     for (int j = oldval.length; j < newval.length; j++)
                         newval[j] = oldval[vertParmTable[j]];
                     newParamVal[k] = new VertexParameterValue(newval);
@@ -10245,8 +9777,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             }
             setParameterValues(newParamVal);
         }
-        // System.out.println( checkMesh() );
-        // dumpMesh();
         removeZeroLengthEdges();
         if (applyEdgeLengthLimit)
             removeSmallEdgeLengths();
@@ -10260,15 +9790,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * A utility method to find an edge between two vertices
      * 
-     * @param fromVert
-     *            First edge vertex
-     * @param toVert
-     *            Second edge vertex
-     * @return The edge number if found, -1 otherwise.
+     * @param fromVert First edge vertex
+     * @param toVert   Second edge vertex
+     *
+     * @return         The edge number if found, -1 otherwise.
      */
 
     private int findEdge(int fromVert, int toVert) {
-        // System.out.println( "find edge: " + fromVert + " " + toVert );
         int i = vertices[fromVert].edge;
         if (i == -1)
             return -1;
@@ -10284,20 +9812,15 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * A utility method to find an edge between two vertices
      * 
-     * @param fromVert
-     *            First edge vertex
-     * @param toVert
-     *            Second edge vertex
-     * @param newVertices
-     *            Description of the Parameter
-     * @param newEdges
-     *            Description of the Parameter
-     * @return The edge number if found, -1 otherwise.
+     * @param fromVert    First edge vertex
+     * @param toVert      Second edge vertex
+     * @param newVertices Description of the Parameter
+     * @param newEdges    Description of the Parameter
+     * 
+     * @return            The edge number if found, -1 otherwise.
      */
 
-    private int findNewEdge(int fromVert, int toVert, Wvertex[] newVertices,
-            Wedge[] newEdges) {
-        // System.out.println( "find edge: " + fromVert + " " + toVert );
+    private int findNewEdge(int fromVert, int toVert, Wvertex[] newVertices, Wedge[] newEdges) {
         int i = newVertices[fromVert].edge;
         if (i == -1)
             return -1;
@@ -10315,7 +9838,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      */
 
     public void removeZeroLengthEdges() {
-
         boolean reduction = false;
         for (int i = 0; i < edges.length / 2; ++i) {
             if (vertices[edges[i].vertex].r
@@ -10325,15 +9847,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             }
         }
         if (reduction) {
-            // System.out.println( "Avant reduction: " + edges.length );
             boolean[] redSel = new boolean[edges.length / 2];
             for (int i = 0; i < edges.length / 2; ++i) {
-                if (vertices[edges[i].vertex].r
-                        .distance(vertices[edges[edges[i].hedge].vertex].r) < 1e-6)
+                if (vertices[edges[i].vertex].r.distance(vertices[edges[edges[i].hedge].vertex].r) < 1e-6)
                     redSel[i] = true;
             }
             collapseEdges(redSel);
-            // System.out.println( "Apres reduction: " + edges.length );
         }
     }
 
@@ -10342,22 +9861,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      */
 
     private void removeSmallEdgeLengths() {
-
-        /*
-         * int[] vf; double area; boolean[] sel = new boolean[edges.length];
-         * boolean remove = false; double elimit = Math.sqrt( edgeLengthLimit );
-         * 
-         * for ( int i = 0; i < faces.length; ++i ) { vf = getFaceVertices(
-         * faces[i] ); area = triangulate( vf, 0, true ); System.out.println(
-         * area ); if ( area < edgeLengthLimit ) { int[] fe = getFaceEdges(
-         * faces[i] ); for (int j = 0; j < fe.length; j++) { Vec3 v =
-         * vertices[edges[fe[j]].vertex].r.minus(
-         * vertices[edges[edges[fe[j]].hedge].vertex].r ); if ( v.length() <
-         * elimit ) {
-         * 
-         * sel[fe[j]] = sel[edges[fe[j]].hedge] = true; remove = true; } } } }
-         */
-
         boolean[] sel = new boolean[edges.length];
         boolean remove = false;
         for (int i = 0; i < edges.length; ++i) {
@@ -10377,11 +9880,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Bevels selected vertices
      * 
-     * @param selected
-     *            Vertices selected for bevel
-     * @param value
-     *            Description of the Parameter
-     * @return Description of the Return Value
+     * @param selected Vertices selected for bevel
+     * @param value    Description of the Parameter
+     * 
+     * @return         Description of the Return Value
      */
 
     public boolean[] bevelVertices(boolean[] selected, double value) {
@@ -10422,8 +9924,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         if (t > 1)
                             t = 1;
                     } else {
-                        t = -(normals[i].dot(vertices[i].r) + d)
-                                / (normals[i].dot(v[j]));
+                        t = -(normals[i].dot(vertices[i].r) + d) / (normals[i].dot(v[j]));
                         if (t < 0)
                             t = -t;
                         if (t > 1)
@@ -10450,15 +9951,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     vertices[i] = new Wvertex(v[0], e[0]);
                     newSel[i] = true;
                     vertices[vertices.length - 1] = new Wvertex(v[1], e[1]);
-                    // vertices[vertices.length - 1].smoothness =
-                    // vertices[i].smoothness;
                     newSel[vertices.length - 1] = true;
                     vertTable[0] = i;
-                    edges[el / 2] = new Wedge(i, edges.length - 1,
-                            edges[e[0]].face, e[0]);
+                    edges[el / 2] = new Wedge(i, edges.length - 1, edges[e[0]].face, e[0]);
                     edges[edges[e[0]].hedge].next = edges.length - 1;
-                    edges[edges.length - 1] = new Wedge(vertices.length - 1,
-                            el / 2, edges[e[1]].face, e[1]);
+                    edges[edges.length - 1] = new Wedge(vertices.length - 1, el / 2, edges[e[1]].face, e[1]);
                     edges[edges[e[1]].hedge].next = el / 2;
                     edges[edges[e[1]].hedge].vertex = vertices.length - 1;
                 } else {
@@ -10488,8 +9985,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         else
                             edges[edges[e[j]].hedge].next = el / 2;
                         vertices[vl + j - 1] = new Wvertex(v[j], e[j]);
-                        // vertices[vl + j - 1].smoothness =
-                        // vertices[i].smoothness;
                         newSel[vl + j - 1] = true;
                         vertTable[j - 1] = i;
                     }
@@ -10501,7 +9996,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         edges[el / 2 + j] = new Wedge(to, el + v.length + j,
                                 edges[e[j]].face, e[j]);
                         edges[el / 2 + j].smoothness = 1.0f;
-                        // faces[edges[e[j]].face].edge = el / 2 + j;
                         from = j - 1;
                         if (from == 0)
                             from = i;
@@ -10521,25 +10015,25 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     }
                     faces[faces.length - 1] = new Wface(edges.length - 1);
                 }
+
                 // Update the texture parameters.
+
                 TextureParameter param[] = getParameters();
                 ParameterValue oldParamVal[] = getParameterValues();
                 if (oldParamVal != null) {
                     ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
                     for (int k = 0; k < oldParamVal.length; k++) {
                         if (oldParamVal[k] instanceof FaceParameterValue) {
-                            double oldval[] = ((FaceParameterValue) oldParamVal[k])
-                                    .getValue();
+                            double oldval[] = ((FaceParameterValue) oldParamVal[k]).getValue();
                             double newval[] = new double[faces.length];
-                                                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                            System.arraycopy(oldval, 0, newval, 0, oldval.length);
                             for (int j = oldval.length; j < newval.length; j++)
                                 newval[j] = oldval[faceTable];
                             newParamVal[k] = new FaceParameterValue(newval);
                         } else if (oldParamVal[k] instanceof VertexParameterValue) {
-                            double oldval[] = ((VertexParameterValue) oldParamVal[k])
-                                    .getValue();
+                            double oldval[] = ((VertexParameterValue) oldParamVal[k]).getValue();
                             double newval[] = new double[vertices.length];
-                                                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                            System.arraycopy(oldval, 0, newval, 0, oldval.length);
                             for (int j = oldval.length; j < newval.length; j++)
                                 newval[j] = oldval[vertTable[j - oldval.length]];
                             newParamVal[k] = new VertexParameterValue(newval);
@@ -10547,16 +10041,14 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             FaceVertexParameterValue fvpv = (FaceVertexParameterValue) oldParamVal[k];
                             double newval[][] = new double[newFaces.length][];
                             for (int j = 0; j < newFaces.length; ++j) {
-                                int[] fv = getFaceVertices(j, newEdges,
-                                        newFaces);
+                                int[] fv = getFaceVertices(j, newEdges,newFaces);
                                 double val[] = new double[fv.length];
                                 for (int l = 0; l < fv.length; l++) {
                                     val[l] = fvpv.getAverageValue();
                                 }
                                 newval[j] = val;
                             }
-                            newParamVal[k] = new FaceVertexParameterValue(
-                                    newval);
+                            newParamVal[k] = new FaceVertexParameterValue(newval);
                         } else
                             newParamVal[k] = oldParamVal[k].duplicate();
                     }
@@ -10576,14 +10068,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
     public PolyMesh getMirroredMesh() {
         if (mirroredMesh != null) {
-            // System.out.println( "non null mirrored mesh : " +
-            // invMirroredVerts );
             return mirroredMesh;
         }
         short state = mirrorState;
         mirrorState = NO_MIRROR;
         PolyMesh mesh = (PolyMesh) this.duplicate();
-        //dumpMesh();
         mesh.setMirrorState(state);
         mesh.mirrorMesh();
         mirroredVerts = mesh.mirroredVerts;
@@ -10604,8 +10093,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     public void mirrorMesh() {
         if (mirrorState == NO_MIRROR)
             return;
-        // first step: delete faces that have all of their vertices on the
-        // plane.
+
+        // first step: delete faces that have all of their vertices on the plane.
+
         boolean changed = false;
         boolean[] sel = new boolean[faces.length];
         int n;
@@ -10666,14 +10156,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             for (int i = 0; i < vertices.length; ++i) {
                 newVertices[i + vertices.length] = new Wvertex(newVertices[i]);
                 if ((mirrorState & MIRROR_ON_XY) != 0)
-                    newVertices[i + vertices.length].r.z = -newVertices[i
-                            + vertices.length].r.z;
+                    newVertices[i + vertices.length].r.z = -newVertices[i + vertices.length].r.z;
                 else if ((mirrorState & MIRROR_ON_YZ) != 0)
-                    newVertices[i + vertices.length].r.x = -newVertices[i
-                            + vertices.length].r.x;
+                    newVertices[i + vertices.length].r.x = -newVertices[i + vertices.length].r.x;
                 else if ((mirrorState & MIRROR_ON_XZ) != 0)
-                    newVertices[i + vertices.length].r.y = -newVertices[i
-                            + vertices.length].r.y;
+                    newVertices[i + vertices.length].r.y = -newVertices[i + vertices.length].r.y;
                 mirrorVertTable[i] = i;
                 mirrorVertTable[i + vertices.length] = i;
             }
@@ -10684,10 +10171,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 while (newEdges[n].next != i)
                     n = newEdges[newEdges[n].next].hedge;
                 newEdges[i + edges.length / 2].next = n + edges.length / 2;
-                newEdges[i + edges.length / 2].vertex = newEdges[newEdges[i].hedge].vertex
-                        + vertices.length;
-                newVertices[newEdges[i + edges.length / 2].vertex].edge = newEdges[i].hedge
-                        + edges.length / 2;
+                newEdges[i + edges.length / 2].vertex = newEdges[newEdges[i].hedge].vertex + vertices.length;
+                newVertices[newEdges[i + edges.length / 2].vertex].edge = newEdges[i].hedge + edges.length / 2;
                 if (newEdges[i + edges.length / 2].face != -1)
                     newEdges[i + edges.length / 2].face += faces.length;
             }
@@ -10698,10 +10183,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 while (newEdges[n].next != i)
                     n = newEdges[newEdges[n].next].hedge;
                 newEdges[i + edges.length / 2].next = n + edges.length / 2;
-                newEdges[i + edges.length / 2].vertex = newEdges[newEdges[i].hedge].vertex
-                        + vertices.length;
-                newVertices[newEdges[i + edges.length / 2].vertex].edge = newEdges[i].hedge
-                        + edges.length / 2;
+                newEdges[i + edges.length / 2].vertex = newEdges[newEdges[i].hedge].vertex + vertices.length;
+                newVertices[newEdges[i + edges.length / 2].vertex].edge = newEdges[i].hedge + edges.length / 2;
                 if (newEdges[i + edges.length / 2].face != -1)
                     newEdges[i + edges.length / 2].face += faces.length;
             }
@@ -10816,24 +10299,25 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             vertices = nv;
             edges = ne;
             faces = newFaces;
+
             // Update the texture parameters.
+
             TextureParameter param[] = getParameters();
             ParameterValue oldParamVal[] = getParameterValues();
             if (oldParamVal != null) {
                 ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
                 for (int k = 0; k < oldParamVal.length; k++) {
                     if (oldParamVal[k] instanceof FaceParameterValue) {
-                        double oldval[] = ((FaceParameterValue) oldParamVal[k])
-                                .getValue();
+                        double oldval[] = ((FaceParameterValue) oldParamVal[k]).getValue();
                         double newval[] = new double[faces.length];
-                                                System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
                         for (int j = oldval.length; j < newval.length; j++)
                             newval[j] = oldval[parmFaceTable[j - oldval.length]];
                         newParamVal[k] = new FaceParameterValue(newval);
                     } else if (oldParamVal[k] instanceof VertexParameterValue) {
                         double oldval[] = ((VertexParameterValue) oldParamVal[k]).getValue();
                         double newval[] = new double[vertices.length];
-                                                System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
                         for (int j = oldval.length; j < newval.length; j++)
                             newval[j] = oldval[parmVertTable[j]];
                         newParamVal[k] = new VertexParameterValue(newval);
@@ -10919,11 +10403,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Joins two boundaries given a vertex on each boundary
      * 
-     * @param one
-     *            Index of a vertex on the first boundary
-     * @param two
-     *            Index of a vertex on the second boundary
-     * @return True if boundaries have been joined successfully
+     * @param one Index of a vertex on the first boundary
+     * @param two Index of a vertex on the second boundary
+     * 
+     * @return     True if boundaries have been joined successfully
      */
 
     public boolean joinBoundaries(int one, int two) {
@@ -10934,8 +10417,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         int op;
         int tp;
 
-        // System.out.println( one + " " + two );
-        // dumpMesh();
         for (int i = 0; i < oe.length; ++i) {
             if (edges[oe[i]].face == -1)
                 ob = oe[i];
@@ -10944,7 +10425,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             if (edges[te[i]].face == -1)
                 tb = te[i];
         }
-        // System.out.println( ob + " " + tb );
         if (ob == -1 || tb == -1)
             return false;
         Wedge[] newEdges = new Wedge[edges.length + 2];
@@ -10954,7 +10434,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             ++tb;
         if (ob >= edges.length / 2)
             ++ob;
-        // System.out.println( ob + " " + tb );
         op = newEdges[ob].hedge;
         while (newEdges[op].next != ob)
             op = newEdges[newEdges[op].next].hedge;
@@ -10994,11 +10473,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             tp = newEdges[tp].next;
         }
 
-        newEdges[newEdges.length / 2 - 1] = new Wedge(one, newEdges.length - 1,
-                faces.length, ob);
+        newEdges[newEdges.length / 2 - 1] = new Wedge(one, newEdges.length - 1, faces.length, ob);
         newEdges[tp].next = newEdges.length / 2 - 1;
-        newEdges[newEdges.length - 1] = new Wedge(two, newEdges.length / 2 - 1,
-                faces.length, tb);
+        newEdges[newEdges.length - 1] = new Wedge(two, newEdges.length / 2 - 1, faces.length, tb);
         newEdges[op].next = newEdges.length - 1;
         newFaces[faces.length] = new Wface(newEdges.length / 2 - 1);
         edges = newEdges;
@@ -11009,10 +10486,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
             for (int k = 0; k < oldParamVal.length; k++) {
                 if (oldParamVal[k] instanceof FaceParameterValue) {
-                    double oldval[] = ((FaceParameterValue) oldParamVal[k])
-                            .getValue();
+                    double oldval[] = ((FaceParameterValue) oldParamVal[k]).getValue();
                     double newval[] = new double[faces.length];
-                                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                    System.arraycopy(oldval, 0, newval, 0, oldval.length);
                     for (int j = oldval.length; j < newval.length; j++)
                         newval[j] = param[k].defaultVal;
                     newParamVal[k] = new FaceParameterValue(newval);
@@ -11028,7 +10504,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             sv = ov;
         }
         int k;
-        // dumpMesh();
         for (int i = 0; i < lv.length; ++i) {
             k = (int) Math.round(((double) i * sv.length)
                     / ((double) lv.length));
@@ -11036,7 +10511,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 k = 0;
             blindConnectVertices(lv[i], sv[k]);
         }
-        // dumpMesh();
         resetMesh();
         return true;
     }
@@ -11044,10 +10518,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Connects two vertices
      * 
-     * @param one
-     *            First vertex to connect
-     * @param two
-     *            Second vertex to connect
+     * @param one  First vertex to connect
+     * @param two  Second vertex to connect
      */
 
     private void blindConnectVertices(int one, int two) {
@@ -11084,11 +10556,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         tp = newEdges[tb].hedge;
         while (newEdges[tp].next != tb)
             tp = newEdges[newEdges[tp].next].hedge;
-        newEdges[newEdges.length / 2 - 1] = new Wedge(one, newEdges.length - 1,
-                newEdges[ob].face, ob);
+        newEdges[newEdges.length / 2 - 1] = new Wedge(one, newEdges.length - 1, newEdges[ob].face, ob);
         newEdges[tp].next = newEdges.length / 2 - 1;
-        newEdges[newEdges.length - 1] = new Wedge(two, newEdges.length / 2 - 1,
-                faces.length, tb);
+        newEdges[newEdges.length - 1] = new Wedge(two, newEdges.length / 2 - 1, faces.length, tb);
         newEdges[op].next = newEdges.length - 1;
         newFaces[faces.length] = new Wface(newEdges.length - 1);
         newFaces[newEdges[ob].face].edge = newEdges.length / 2 - 1;
@@ -11106,10 +10576,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
             for (int k = 0; k < oldParamVal.length; k++) {
                 if (oldParamVal[k] instanceof FaceParameterValue) {
-                    double oldval[] = ((FaceParameterValue) oldParamVal[k])
-                            .getValue();
+                    double oldval[] = ((FaceParameterValue) oldParamVal[k]).getValue();
                     double newval[] = new double[faces.length];
-                                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                    System.arraycopy(oldval, 0, newval, 0, oldval.length);
                     for (int j = oldval.length; j < newval.length; j++)
                         newval[j] = param[k].defaultVal;
                     newParamVal[k] = new FaceParameterValue(newval);
@@ -11142,8 +10611,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 newEdges[i + edges.length / 2].hedge += edges.length;
             else
                 newEdges[i + edges.length / 2].hedge += edges.length / 2;
-            newEdges[i + edges.length / 2 + newEdges.length / 2] = new Wedge(
-                    addedEdges[i + addedEdges.length / 2]);
+            newEdges[i + edges.length / 2 + newEdges.length / 2] = new Wedge(addedEdges[i + addedEdges.length / 2]);
             newEdges[i + edges.length / 2 + newEdges.length / 2].vertex += vertices.length;
             if (newEdges[i + edges.length / 2 + newEdges.length / 2].face != -1)
                 newEdges[i + edges.length / 2 + newEdges.length / 2].face += faces.length;
@@ -11178,25 +10646,25 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         vertices = newVerts;
         edges = newEdges;
         faces = newFaces;
+
         // Update the texture parameters.
+
         TextureParameter param[] = getParameters();
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
             for (int k = 0; k < oldParamVal.length; k++) {
                 if (oldParamVal[k] instanceof FaceParameterValue) {
-                    double oldval[] = ((FaceParameterValue) oldParamVal[k])
-                            .getValue();
+                    double oldval[] = ((FaceParameterValue) oldParamVal[k]).getValue();
                     double newval[] = new double[faces.length];
-                                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                    System.arraycopy(oldval, 0, newval, 0, oldval.length);
                     for (int j = oldval.length; j < newval.length; j++)
                         newval[j] = param[k].defaultVal;
                     newParamVal[k] = new FaceParameterValue(newval);
                 } else if (oldParamVal[k] instanceof VertexParameterValue) {
-                    double oldval[] = ((VertexParameterValue) oldParamVal[k])
-                            .getValue();
+                    double oldval[] = ((VertexParameterValue) oldParamVal[k]).getValue();
                     double newval[] = new double[vertices.length];
-                                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                    System.arraycopy(oldval, 0, newval, 0, oldval.length);
                     for (int j = oldval.length; j < newval.length; j++)
                         newval[j] = param[k].defaultVal;
                     newParamVal[k] = new VertexParameterValue(newval);
@@ -11226,26 +10694,21 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
      * This method finds similar faces based on orientation or shape
      * similarities. Criteria can be combined.
      * 
-     * @param selected
-     *            The starting face selection
-     * @param normal
-     *            True if the criterion is based on normal orientation
-     * @param normalTol
-     *            tolerance on face orientation
-     * @param loose
-     *            True if the criterion is based on face shape, loose meaning
-     * @param looseTol
-     *            tolerance on face shape (loose)
-     * @param strict
-     *            True if the criterion is based on face shape, strict meaning
-     * @param strictTol
-     *            tolerance on face shape (strict)
-     * @return a similar faces selection
+     * @param selected  The starting face selection
+     * @param normal    True if the criterion is based on normal orientation
+     * @param normalTol Tolerance on face orientation
+     * @param loose     True if the criterion is based on face shape, loose meaning
+     * @param looseTol  Tolerance on face shape (loose)
+     * @param strict    True if the criterion is based on face shape, strict meaning
+     * @param strictTol Tolerance on face shape (strict)
+     * 
+     * @return          A similar faces selection
      */
 
-    public boolean[] findSimilarFaces(boolean[] selected, boolean normal,
-            double normalTol, boolean loose, double looseTol, boolean strict,
-            double strictTol) {
+    public boolean[] findSimilarFaces(boolean[] selected, 
+                                      boolean   normal, double normalTol, 
+                                      boolean   loose,  double looseTol, 
+                                      boolean   strict, double strictTol) {
         if (!(normal || strict || loose))
             return selected;
         boolean newSel[] = new boolean[selected.length];
@@ -11288,8 +10751,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     if (i == j)
                         continue;
                     newSel[j] = true;
-                    if (normal
-                            && (faceNormals[i].dot(faceNormals[j]) < normalCrit))
+                    if (normal && (faceNormals[i].dot(faceNormals[j]) < normalCrit))
                         newSel[j] = false;
                     if (loose) {
                         fe = getFaceVertices(faces[j]);
@@ -11309,16 +10771,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                                         pred = fe.length - 1;
                                     if (next == fe.length)
                                         next = 0;
-                                    v1 = vertices[fe[pred]].r
-                                            .minus(vertices[fe[current]].r);
-                                    v2 = vertices[fe[next]].r
-                                            .minus(vertices[fe[current]].r);
+                                    v1 = vertices[fe[pred]].r.minus(vertices[fe[current]].r);
+                                    v2 = vertices[fe[next]].r.minus(vertices[fe[current]].r);
                                     v1.normalize();
                                     v2.normalize();
-                                    diff += Math.pow(
-                                            (Math.acos(v1.dot(v2)) - fia[k])
-                                                    / fia[k], 2);
-
+                                    diff += Math.pow((Math.acos(v1.dot(v2)) - fia[k]) / fia[k], 2);
                                 }
                                 diff = Math.sqrt(diff) / fe.length;
                                 if (diff < looseTol) {
@@ -11348,17 +10805,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                                         pred = fe.length - 1;
                                     if (next == fe.length)
                                         next = 0;
-                                    v1 = vertices[fe[pred]].r
-                                            .minus(vertices[fe[current]].r);
-                                    diff += Math.pow((v1.length() - fil[k])
-                                            / fil[k], 2);
-                                    // v2 =
-                                    // vertices[fe[next]].r.minus(vertices[fe[current]].r);
-                                    // v1.normalize();
-                                    // v2.normalize();
-                                    // diff +=
-                                    // Math.pow((Math.acos(v1.dot(v2)) -
-                                    // fia[k])/fia[k], 2);
+                                    v1 = vertices[fe[pred]].r.minus(vertices[fe[current]].r);
+                                    diff += Math.pow((v1.length() - fil[k]) / fil[k], 2);
                                 }
                                 diff = Math.sqrt(diff) / fe.length;
                                 if (diff < strictTol) {
@@ -11381,12 +10829,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
     /**
      * This method finds edges with similar length.
-     * 
-     * @param selected
-     *            The starting edge selection
-     * @param tol
-     *            tolerance on edge length
-     * @return New edge selection
+     *
+     * @param selected The starting edge selection
+     * @param tol      Tolerance on edge length
+     *
+     * @return         New edge selection
      */
 
     public boolean[] findSimilarEdges(boolean[] selected, double tol) {
@@ -11423,9 +10870,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Marks edges as seams
      * 
-     * @param newSeams
-     *            The edges that are to consider as seams (maybe null to clear
-     *            seams)
+     * @param newSeams The edges that are to consider as seams (maybe null to clear seams)
      */
 
     public void setSeams(boolean[] newSeams) {
@@ -11456,8 +10901,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         Wface[] newFaces;
         boolean[] seamsCopy = new boolean[seams.length];
         ArrayList<Integer> vertTable = new ArrayList<Integer>();
-        // System.out.println("Open seams " + seams);
-        // dumpMesh();
         int count = 0;
         for (int i = 0; i < edges.length / 2; i++) {
             seamsCopy[i] = seams[i];
@@ -11490,43 +10933,38 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     bv2 = getBoundaryEdgeOnVertex(newEdges[i].vertex,
                             newVertices, newEdges);
                     if (bv1 == -1 && bv2 == -1) {
-                        // each side of the edge is a boundary vertex
-                        // let's see if the next vertex is also selected so we
-                        // can open the mesh
+
+                        // Each side of the edge is a boundary vertex.
+                        // Let's see, if the next vertex is also selected so we can open the mesh.
+
                         e1 = e2 = -1;
                         nextSeam = -1;
                         index = newEdges[i].next;
                         while (index != newEdges[i].hedge && nextSeam == -1) {
-                            int boundary = getBoundaryEdgeOnVertex(
-                                    newEdges[index].vertex, newVertices,
-                                    newEdges);
+                            int boundary = getBoundaryEdgeOnVertex(newEdges[index].vertex, newVertices, newEdges);
                             if (boundary == -1) {
-                                if (index < edges.length / 2
-                                        && seamsCopy[index]) {
+                                if (index < edges.length / 2 && seamsCopy[index]) {
                                     nextSeam = index;
                                     seamsCopy[index] = false;
                                     seamsCopy[i] = false;
                                     e1 = i;
                                     e2 = nextSeam;
-                                    // System.out.println("ouverture #0a " +
-                                    // i + ":" + index);
                                 } else if (index >= newEdges.length / 2) {
-                                    if (newEdges[index].hedge < edges.length / 2
-                                            && seamsCopy[newEdges[index].hedge]) {
+                                    if (newEdges[index].hedge < edges.length / 2 && seamsCopy[newEdges[index].hedge]) {
                                         nextSeam = index;
                                         seamsCopy[newEdges[index].hedge] = false;
                                         seamsCopy[i] = false;
                                         e1 = i;
                                         e2 = nextSeam;
-                                        // System.out.println("ouverture #0b " +
-                                        // i + ":" + newEdges[index].hedge);
                                     }
                                 }
                             }
                             index = newEdges[newEdges[index].hedge].next;
                         }
                         if (nextSeam == -1) {
+
                             // maybe on the other side ?
+
                             index = newEdges[newEdges[i].hedge].next;
                             while (index != i && nextSeam == -1) {
                                 int boundary = getBoundaryEdgeOnVertex(
@@ -11540,8 +10978,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                                         seamsCopy[index] = false;
                                         e1 = newEdges[i].hedge;
                                         e2 = nextSeam;
-                                        // System.out.println("ouverture #0c " +
-                                        // i + ":" + index);
                                     } else if (index >= newEdges.length / 2) {
                                         if (newEdges[index].hedge < edges.length / 2
                                                 && seamsCopy[newEdges[index].hedge]) {
@@ -11550,9 +10986,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                                             seamsCopy[newEdges[index].hedge] = false;
                                             e1 = newEdges[i].hedge;
                                             e2 = nextSeam;
-                                            // System.out.println("ouverture
-                                            // #0d " + i + ":" +
-                                            // newEdges[index].hedge);
                                         }
                                     }
                                 }
@@ -11560,7 +10993,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             }
                         }
                         if (e1 != -1 && e2 != -1) {
+
                             // we've found two contiguous seamsCopy
+
                             v1 = newEdges[newEdges[e1].hedge].vertex;
                             v2 = newEdges[e1].vertex;
                             v3 = newEdges[e2].vertex;
@@ -11572,23 +11007,20 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             ne2 = ne1 + 1;
                             nhe1 = ne1 + newEdges.length / 2;
                             nhe2 = ne2 + newEdges.length / 2;
-                            newVertices[vertCount] = new Wvertex(
-                                    newVertices[v2].r, ne2);
+                            newVertices[vertCount] = new Wvertex(newVertices[v2].r, ne2);
                             ref = v2;
                             while (ref >= orVertsLength)
                                 ref = vertTable.get(ref - orVertsLength);
                             vertTable.add(ref);
                             newEdges[ne1] = new Wedge(vertCount, nhe1, -1, ne2);
-                            newEdges[nhe1] = new Wedge(v1, ne1,
-                                    newEdges[he1].face, newEdges[he1].next);
+                            newEdges[nhe1] = new Wedge(v1, ne1, newEdges[he1].face, newEdges[he1].next);
                             newFaces[newEdges[he1].face].edge = nhe1;
                             newEdges[he1].next = ne1;
                             newEdges[he1].face = -1;
                             newEdges[phe1].next = nhe1;
                             newVertices[v1].edge = e1;
                             newEdges[ne2] = new Wedge(v3, nhe2, -1, he2);
-                            newEdges[nhe2] = new Wedge(vertCount, ne2,
-                                    newEdges[he2].face, newEdges[he2].next);
+                            newEdges[nhe2] = new Wedge(vertCount, ne2, newEdges[he2].face, newEdges[he2].next);
                             newFaces[newEdges[he2].face].edge = nhe2;
                             newEdges[he2].next = he1;
                             newEdges[he2].face = -1;
@@ -11602,11 +11034,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             }
                             ++vertCount;
                             edgeCount += 2;
-                            // System.out.println("ouverture #1 " + i);
                         }
-                    } else if ((bv1 != -1 && bv2 == -1)
-                            || (bv1 == -1 && bv2 != -1)) {
+                    } else if ((bv1 != -1 && bv2 == -1) || (bv1 == -1 && bv2 != -1)) {
+
                         // only one side of the edge is a boundary vertex
+
                         if (bv1 != -1) {
                             e = i;
                         } else {
@@ -11637,7 +11069,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         newEdges[bv1].next = edgeCount;
                         newEdges[bv1].vertex = vertCount;
                         newEdges[phe].next = nhe;
-                        // dumpNewMesh(newVertices, newEdges, newFaces);
                         index = newEdges[newEdges[nhe].next].hedge;
                         while (index != bv1) {
                             newEdges[index].vertex = vertCount;
@@ -11646,9 +11077,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         ++edgeCount;
                         ++vertCount;
                         seamsCopy[i] = false;
-                        // System.out.println("ouverture #2 " + i);
                     } else if (bv1 != -1 && bv2 != -1) {
+
                         // both sides of the edge are boundary vertices
+
                         e = i;
                         v1 = newEdges[newEdges[i].hedge].vertex;
                         v2 = newEdges[i].vertex;
@@ -11658,14 +11090,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         he = newEdges[e].hedge;
                         nhe = edgeCount + newEdges.length / 2;
                         phe = getPreviousEdge(newEdges, he);
-                        newEdges[edgeCount] = new Wedge(nv2, nhe, -1,
-                                newEdges[bv2].next);
-                        newEdges[nhe] = new Wedge(nv1, edgeCount,
-                                newEdges[he].face, newEdges[he].next);
-                        newVertices[nv1] = new Wvertex(new Vec3(
-                                newVertices[v1].r), edgeCount);
-                        newVertices[nv2] = new Wvertex(new Vec3(
-                                newVertices[v2].r), nhe);
+                        newEdges[edgeCount] = new Wedge(nv2, nhe, -1, newEdges[bv2].next);
+                        newEdges[nhe] = new Wedge(nv1, edgeCount, newEdges[he].face, newEdges[he].next);
+                        newVertices[nv1] = new Wvertex(new Vec3(newVertices[v1].r), edgeCount);
+                        newVertices[nv2] = new Wvertex(new Vec3(newVertices[v2].r), nhe);
                         ref = v1;
                         while (ref >= orVertsLength)
                             ref = vertTable.get(ref - orVertsLength);
@@ -11697,7 +11125,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         ++edgeCount;
                         vertCount += 2;
                         seamsCopy[i] = false;
-                        // System.out.println("ouverture #3 " + i);
                     }
                 }
             }
@@ -11707,7 +11134,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 if (seamsCopy[i])
                     toDo++;
         } while (toDo < done);
-        // System.out.println("toDo left " + toDo);
         faces = newFaces;
         if (newVertices.length != vertCount) {
                     vertices = new Wvertex[vertCount];
@@ -11715,24 +11141,23 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         } else
                     vertices = newVertices;
         if (edgeCount < newEdges.length / 2) {
-            // System.out.println("translating Mesh " + edgeCount*2 + " " +
-            // newEdges.length);
             edges = newEdges;
             newEdges = new Wedge[edgeCount * 2];
             translateMesh(vertices, newEdges, faces);
             edges = newEdges;
         } else
             edges = newEdges;
+
         // Update the texture parameters.
+
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
             for (int k = 0; k < oldParamVal.length; k++) {
                 if (oldParamVal[k] instanceof VertexParameterValue) {
-                    double oldval[] = ((VertexParameterValue) oldParamVal[k])
-                            .getValue();
+                    double oldval[] = ((VertexParameterValue) oldParamVal[k]).getValue();
                     double newval[] = new double[vertices.length];
-                                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                    System.arraycopy(oldval, 0, newval, 0, oldval.length);
                     for (int j = oldval.length; j < newval.length; j++)
                         newval[j] = oldval[vertTable.get(j - oldval.length)];
                     newParamVal[k] = new VertexParameterValue(newval);
@@ -11757,18 +11182,15 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
     /**
      * For internal use by openEdge.
-     * 
-     * @param index
-     *            The vertex to get boundary for
-     * @param newVertices
-     *            The current vertex array
-     * @param newEdges
-     *            The current edges array
+     *
+     * @param index       The vertex to get boundary for
+     * @param newVertices The current vertex array
+     * @param newEdges    The current edges array
+     *
      * @return
      */
 
-    private int getBoundaryEdgeOnVertex(int index, Wvertex[] newVertices,
-            Wedge[] newEdges) {
+    private int getBoundaryEdgeOnVertex(int index, Wvertex[] newVertices, Wedge[] newEdges) {
         int start = newEdges[newVertices[index].edge].hedge;
         if (newEdges[start].face == -1)
             return start;
@@ -11783,9 +11205,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
 
     //TDDO: Delete this method together with PolymeshEditorWindow.doFindSeams
+
     /**
      * Finds appropriate seams in a mesh. Postponed to a later date.
      */
+
     public void findSeams() {
         // seams = new boolean[edges.length/2];
         // TriangleMesh triMesh = convertToTriangleMesh(0.0);
@@ -11816,12 +11240,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             if (i != 0)
                 prevEdge = edges.length / 2 + i - 1 + newEdges.length / 2;
             else
-                prevEdge = edges.length / 2 + newPoints.length - 1
-                        + newEdges.length / 2;
-            newEdges[edges.length / 2 + i] = new Wedge(t, edges.length / 2 + i
-                    + newEdges.length / 2, faces.length, nextEdge);
-            newEdges[edges.length / 2 + i + newEdges.length / 2] = new Wedge(f,
-                    edges.length / 2 + i, -1, prevEdge);
+                prevEdge = edges.length / 2 + newPoints.length - 1 + newEdges.length / 2;
+            newEdges[edges.length / 2 + i] = new Wedge(t, edges.length / 2 + i + newEdges.length / 2, faces.length, nextEdge);
+            newEdges[edges.length / 2 + i + newEdges.length / 2] = new Wedge(f, edges.length / 2 + i, -1, prevEdge);
         }
         for (int i = 0; i < newPoints.length; ++i) {
             f = edges.length / 2 + i + 1;
@@ -11842,13 +11263,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 if (oldParamVal[k] instanceof VertexParameterValue) {
                     double oldval[] = ((VertexParameterValue) oldParamVal[k]).getValue();
                     double newval[] = new double[newVertices.length];
-                                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                    System.arraycopy(oldval, 0, newval, 0, oldval.length);
                     for (int j = oldval.length; j < newVertices.length; ++j)
                         newval[j] = param[k].defaultVal;
                     newParamVal[k] = new VertexParameterValue(newval);
                 } else if (oldParamVal[k] instanceof FaceParameterValue) {
-                    double oldval[] = ((FaceParameterValue) oldParamVal[k])
-                            .getValue();
+                    double oldval[] = ((FaceParameterValue) oldParamVal[k]).getValue();
                     double newval[] = new double[faces.length];
                     for (int j = 0; j < faces.length - 1; ++j)
                         newval[j] = oldval[faceInfo.get(j)];
@@ -11870,7 +11290,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     newParamVal[k] = oldParamVal[k].duplicate();
             }
             setParameterValues(newParamVal);
-
         }
         resetMesh();
     }
@@ -11966,12 +11385,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     t = from;
             } else
                 t += vertices.length;
-            newEdges[edges.length / 2 + i] = new Wedge(t, edges.length / 2 + i
-                    + newEdges.length / 2, faces.length, edges.length / 2 + i
-                    + 1);
-            newEdges[edges.length / 2 + i + newEdges.length / 2] = new Wedge(f,
-                    edges.length / 2 + i, -1, edges.length / 2 + i - 1
-                            + newEdges.length / 2);
+            newEdges[edges.length / 2 + i] = new Wedge(t, edges.length / 2 + i + newEdges.length / 2, faces.length, edges.length / 2 + i + 1);
+            newEdges[edges.length / 2 + i + newEdges.length / 2] = new Wedge(f, edges.length / 2 + i, -1, edges.length / 2 + i - 1 + newEdges.length / 2);
         }
         int index = v.get(0);
         newEdges[edges.length / 2 + newPoints.length].next = index;
@@ -11987,8 +11402,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                 index = edges[ve[i]].hedge;
                 if (index >= edges.length / 2)
                     index += newEdges.length / 2 - edges.length / 2;
-                newEdges[index].next = edges.length / 2 + newPoints.length
-                        + newEdges.length / 2;
+                newEdges[index].next = edges.length / 2 + newPoints.length + newEdges.length / 2;
                 break;
             }
         }
@@ -11997,34 +11411,31 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         newEdges[index].next = edges.length / 2;
         for (int i = 0; i < newPoints.length; ++i) {
             if (!invert)
-                newVertices[vertices.length + i] = new Wvertex(
-                        newPoints[newPoints.length - 1 - i], edges.length / 2
-                                + i + 1);
+                newVertices[vertices.length + i] = new Wvertex(newPoints[newPoints.length - 1 - i], edges.length / 2 + i + 1);
             else
-                newVertices[vertices.length + i] = new Wvertex(newPoints[i],
-                        edges.length / 2 + i + 1);
+                newVertices[vertices.length + i] = new Wvertex(newPoints[i], edges.length / 2 + i + 1);
         }
         newFaces[faces.length] = new Wface(edges.length / 2);
         vertices = newVertices;
         edges = newEdges;
         faces = newFaces;
+
         // Update the texture parameters.
+
         TextureParameter param[] = getParameters();
         ParameterValue oldParamVal[] = getParameterValues();
         if (oldParamVal != null) {
             ParameterValue newParamVal[] = new ParameterValue[oldParamVal.length];
             for (int k = 0; k < oldParamVal.length; k++) {
                 if (oldParamVal[k] instanceof VertexParameterValue) {
-                    double oldval[] = ((VertexParameterValue) oldParamVal[k])
-                            .getValue();
+                    double oldval[] = ((VertexParameterValue) oldParamVal[k]).getValue();
                     double newval[] = new double[newVertices.length];
-                                        System.arraycopy(oldval, 0, newval, 0, oldval.length);
+                    System.arraycopy(oldval, 0, newval, 0, oldval.length);
                     for (int j = oldval.length; j < newVertices.length; ++j)
                         newval[j] = param[k].defaultVal;
                     newParamVal[k] = new VertexParameterValue(newval);
                 } else if (oldParamVal[k] instanceof FaceParameterValue) {
-                    double oldval[] = ((FaceParameterValue) oldParamVal[k])
-                            .getValue();
+                    double oldval[] = ((FaceParameterValue) oldParamVal[k]).getValue();
                     double newval[] = new double[faces.length];
                     for (int j = 0; j < faces.length - 1; ++j)
                         newval[j] = oldval[j];
@@ -12046,7 +11457,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     newParamVal[k] = oldParamVal[k].duplicate();
             }
             setParameterValues(newParamVal);
-
         }
         resetMesh();
         return true;
@@ -12227,12 +11637,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
     /**
      * Get a MeshViewer which can be used for viewing this mesh.
-     * 
-     * @param controller
-     *            Description of the Parameter
-     * @param options
-     *            Description of the Parameter
-     * @return Description of the Return Value
+     *
+     * @param controller Description of the Parameter
+     * @param options    Description of the Parameter
+     *
+     * @return           Description of the Return Value
      */
 
     @Override
@@ -12243,10 +11652,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * When setting the texture, we need to clear the caches.
      * 
-     * @param tex
-     *            The new texture value
-     * @param mapping
-     *            The new texture value
+     * @param tex     The new texture value
+     * @param mapping The new texture value
      */
 
     @Override
@@ -12259,8 +11666,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * When setting texture parameters, we need to clear the caches.
      * 
-     * @param val
-     *            The new parameterValues value
+     * @param val The new parameterValues value
      */
 
     @Override
@@ -12273,10 +11679,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * When setting texture parameters, we need to clear the caches.
      * 
-     * @param param
-     *            The new parameterValue value
-     * @param val
-     *            The new parameterValue value
+     * @param param The new parameterValue value
+     * @param val   The new parameterValue value
      */
 
     @Override
@@ -12301,8 +11705,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     protected void dumpNewMesh(Wvertex[] vertices, Wedge[] edges, Wface[] faces) {
         for (int i = 0; i < vertices.length; ++i) {
             if (vertices[i] != null)
-                System.out.println("vertex " + i + " " + vertices[i].edge + " "
-                        + vertices[i].r);
+                System.out.println("vertex " + i + " " + vertices[i].edge + " " + vertices[i].r);
         }
         for (int i = 0; i < faces.length; ++i) {
 
@@ -12346,8 +11749,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Sets the mirror state attribute of the PolyMesh object
      * 
-     * @param state
-     *            The new mirrorState value
+     * @param state The new mirrorState value
      */
 
     public void setMirrorState(short state) {
@@ -12420,12 +11822,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Writes the poly mesh to an output stream (file, presumably)
      * 
-     * @param out
-     *            The output stream
-     * @param theScene
-     *            Scene which contains the mesh
-     * @exception IOException
-     *                I/O exception
+     * @param out      The output stream
+     * @param theScene Scene which contains the mesh
+     * @exception      IOException I/O exception
      */
 
     @Override
@@ -12441,15 +11840,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         for (int i = 0; i < vertices.length; i++) {
             vertices[i].r.writeToFile(out);
             out.writeInt(vertices[i].edge);
-            // out.writeFloat( vertices[i].smoothness );
             out.writeInt(vertices[i].ikJoint);
             out.writeDouble(vertices[i].ikWeight);
             out.writeShort(vertices[i].type);
-//            if (vertices[i].normal != null) {
-//                out.writeBoolean(true);
-//                vertices[i].normal.writeToFile(out);
-//            } else
-//                out.writeBoolean(false);
         }
         out.writeInt(edges.length);
         for (int i = 0; i < edges.length; i++) {
@@ -12462,9 +11855,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         out.writeInt(faces.length);
         for (int i = 0; i < faces.length; i++) {
             out.writeInt(faces[i].edge);
-            // out.writeFloat( 1.0f );
-            // out.writeFloat( faces[i].centerSmoothness );
-            // out.writeBoolean( faces[i].convex );
         }
         out.writeBoolean(controlledSmoothing);
         out.writeDouble(minAngle);
@@ -12472,7 +11862,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         out.writeFloat(minSmoothness);
         out.writeFloat(maxSmoothness);
         out.writeInt(interactiveSmoothLevel);
-        out.writeInt(0); //former renderingSmoothLevel
+        out.writeInt(0);
         if (seams == null) {
             out.writeBoolean(false);
         } else {
@@ -12538,8 +11928,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     /**
      * Modify this object based on a pose keyframe.
      * 
-     * @param k
-     *            Description of the Parameter
+     * @param k  Description of the Parameter
      */
 
     @Override
@@ -12549,19 +11938,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         for (int i = 0; i < vertices.length; i++) {
             Wvertex v = vertices[i];
             v.r.set(key.vertPos[i]);
-            // v.smoothness = (float) key.vertSmoothness[i];
         }
         if (texParam != null && texParam.length > 0)
             for (int i = 0; i < texParam.length; i++)
                 paramValue[i] = key.paramValue[i].duplicate();
         for (int i = 0; i < edges.length; i++)
             edges[i].smoothness = (float) key.edgeSmoothness[i];
-        /*
-         * for ( int i = 0; i < faces.length; i++ ) { //1.0f = (float)
-         * key.faceEdgeSmoothness[i]; //faces[i].centerSmoothness = (float)
-         * key.facePointSmoothness[i]; //faces[i].convex = (boolean)
-         * key.faceConvex[i]; }
-         */
         skeleton.copy(key.skeleton);
         resetMesh();
     }
@@ -12600,31 +11982,24 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
     public static class PolyMeshKeyframe extends MeshGesture {
         Vec3 vertPos[];
-
         float edgeSmoothness[];
-
         ParameterValue paramValue[];
-
         Skeleton skeleton;
-
         PolyMesh mesh;
 
         /**
          * Constructor for the PolyMeshKeyframe object
          * 
-         * @param mesh
-         *            The polymesh
+         * @param mesh  The polymesh
          */
         public PolyMeshKeyframe(PolyMesh mesh) {
             this.mesh = mesh;
             skeleton = mesh.getSkeleton().duplicate();
             vertPos = new Vec3[mesh.vertices.length];
-            // vertSmoothness = new float[mesh.vertices.length];
             edgeSmoothness = new float[mesh.edges.length];
             for (int i = 0; i < vertPos.length; i++) {
                 Wvertex v = mesh.vertices[i];
                 vertPos[i] = new Vec3(v.r);
-                // vertSmoothness[i] = v.smoothness;
             }
             for (int i = 0; i < edgeSmoothness.length; i++)
                 edgeSmoothness[i] = mesh.edges[i].smoothness;
@@ -12688,8 +12063,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Set the skeleton for this pose.
          * 
-         * @param s
-         *            The new skeleton value
+         * @param s  The new skeleton value
          */
 
         @Override
@@ -12700,7 +12074,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Create a duplicate of this keyframe.
          * 
-         * @return Description of the Return Value
+         * @return  Description of the Return Value
          */
 
         @Override
@@ -12711,9 +12085,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Description of the Method
          * 
-         * @param owner
-         *            Description of the Parameter
-         * @return Description of the Return Value
+         * @param owner  Description of the Parameter
+         *
+         * @return       Description of the Return Value
          */
 
         @Override
@@ -12722,11 +12096,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             k.mesh = (PolyMesh) owner;
             k.skeleton = skeleton.duplicate();
             k.vertPos = new Vec3[vertPos.length];
-            // k.vertSmoothness = new float[vertSmoothness.length];
             k.edgeSmoothness = new float[edgeSmoothness.length];
             for (int i = 0; i < vertPos.length; i++) {
                 k.vertPos[i] = new Vec3(vertPos[i]);
-                // k.vertSmoothness[i] = vertSmoothness[i];
             }
                         System.arraycopy(edgeSmoothness, 0, k.edgeSmoothness, 0, edgeSmoothness.length);
             k.paramValue = new ParameterValue[paramValue.length];
@@ -12749,8 +12121,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Set the list of graphable values for this keyframe.
          * 
-         * @param values
-         *            The new graphValues value
+         * @param values The new graphValues value
          */
 
         @Override
@@ -12762,14 +12133,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
          * this one and one, two, or three others. These methods should never be
          * called, since PolyMeshes can only be keyframed by converting them to
          * Actors.
-         * 
-         * @param o2
-         *            Description of the Parameter
-         * @param weight1
-         *            Description of the Parameter
-         * @param weight2
-         *            Description of the Parameter
-         * @return Description of the Return Value
+         *
+         * @param o2      Description of the Parameter
+         * @param weight1 Description of the Parameter
+         * @param weight2 Description of the Parameter
+         *
+         * @return        Description of the Return Value
          */
 
         @Override
@@ -12779,48 +12148,36 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
         /**
          * Description of the Method
-         * 
-         * @param o2
-         *            Description of the Parameter
-         * @param o3
-         *            Description of the Parameter
-         * @param weight1
-         *            Description of the Parameter
-         * @param weight2
-         *            Description of the Parameter
-         * @param weight3
-         *            Description of the Parameter
-         * @return Description of the Return Value
+         *
+         * @param o2       Description of the Parameter
+         * @param o3       Description of the Parameter
+         * @param weight1  Description of the Parameter
+         * @param weight2  Description of the Parameter
+         * @param weight3  Description of the Parameter
+         *
+         * @return         Description of the Return Value
          */
         @Override
-        public Keyframe blend(Keyframe o2, Keyframe o3, double weight1,
-                double weight2, double weight3) {
+        public Keyframe blend(Keyframe o2, Keyframe o3, double weight1, double weight2, double weight3) {
             return null;
         }
 
         /**
          * Description of the Method
-         * 
-         * @param o2
-         *            Description of the Parameter
-         * @param o3
-         *            Description of the Parameter
-         * @param o4
-         *            Description of the Parameter
-         * @param weight1
-         *            Description of the Parameter
-         * @param weight2
-         *            Description of the Parameter
-         * @param weight3
-         *            Description of the Parameter
-         * @param weight4
-         *            Description of the Parameter
-         * @return Description of the Return Value
+         *
+         * @param o2      Description of the Parameter
+         * @param o3      Description of the Parameter
+         * @param o4      Description of the Parameter
+         * @param weight1 Description of the Parameter
+         * @param weight2 Description of the Parameter
+         * @param weight3 Description of the Parameter
+         * @param weight4 Description of the Parameter
+         *
+         * @return        Description of the Return Value
          */
 
         @Override
-        public Keyframe blend(Keyframe o2, Keyframe o3, Keyframe o4,
-                double weight1, double weight2, double weight3, double weight4) {
+        public Keyframe blend(Keyframe o2, Keyframe o3, Keyframe o4, double weight1, double weight2, double weight3, double weight4) {
             return null;
         }
 
@@ -12831,12 +12188,9 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
          * skeleton, and all vertex positions are based on the offsets from the
          * joints they are bound to.
          * 
-         * @param average
-         *            the Gesture to modify to be an average of other Gestures
-         * @param p
-         *            the list of Gestures to average
-         * @param weight
-         *            the weights for the different Gestures
+         * @param average The Gesture to modify to be an average of other Gestures
+         * @param p       The list of Gestures to average
+         * @param weight  The weights for the different Gestures
          */
 
         @Override
@@ -12846,21 +12200,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             PolyMeshKeyframe avg = (PolyMeshKeyframe) average;
             for (int i = 0; i < weight.length; i++) {
                 PolyMeshKeyframe key = (PolyMeshKeyframe) p[i];
-                // for ( int j = 0; j < vertSmoothness.length; j++ )
-                // avg.vertSmoothness[j] += (float) ( weight[i] * (
-                // key.vertSmoothness[j] - vertSmoothness[j] ) );
                 for (int j = 0; j < edgeSmoothness.length; j++)
-                    avg.edgeSmoothness[j] += weight[i]
-                            * (key.edgeSmoothness[j] - edgeSmoothness[j]);
+                    avg.edgeSmoothness[j] += weight[i] * (key.edgeSmoothness[j] - edgeSmoothness[j]);
             }
 
             // Make sure all smoothness values are within legal bounds.
 
-            /*
-             * for ( int i = 0; i < vertSmoothness.length; i++ ) { if (
-             * avg.vertSmoothness[i] < 0.0 ) avg.vertSmoothness[i] = 0.0f; if (
-             * avg.vertSmoothness[i] > 1.0 ) avg.vertSmoothness[i] = 1.0f; }
-             */
             for (int i = 0; i < edgeSmoothness.length; i++) {
                 if (avg.edgeSmoothness[i] < 0.0)
                     avg.edgeSmoothness[i] = 0.0f;
@@ -12871,10 +12216,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
         /**
          * Determine whether this keyframe is identical to another one.
-         * 
-         * @param k
-         *            Description of the Parameter
-         * @return Description of the Return Value
+         *
+         * @param k Description of the Parameter
+         *
+         * @return  Description of the Return Value
          */
 
         @Override
@@ -12885,8 +12230,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             for (int i = 0; i < vertPos.length; i++) {
                 if (!vertPos[i].equals(key.vertPos[i]))
                     return false;
-                // if ( vertSmoothness[i] != key.vertSmoothness[i] )
-                // return false;
             }
             for (int i = 0; i < paramValue.length; i++)
                 if (!paramValue[i].equals(key.paramValue[i]))
@@ -12902,25 +12245,21 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Update the texture parameter values when the texture is changed.
          * 
-         * @param oldParams
-         *            Description of the Parameter
-         * @param newParams
-         *            Description of the Parameter
+         * @param oldParams Description of the Parameter
+         * @param newParams Description of the Parameter
          */
 
         @Override
-        public void textureChanged(TextureParameter oldParams[],
-                TextureParameter newParams[]) {
+        public void textureChanged(TextureParameter oldParams[], TextureParameter newParams[]) {
             ParameterValue newval[] = new ParameterValue[newParams.length];
 
             for (int i = 0; i < newParams.length; i++) {
                 int j;
-                for (j = 0; j < oldParams.length
-                        && !oldParams[j].equals(newParams[i]); j++)
+                for (j = 0; j < oldParams.length && !oldParams[j].equals(newParams[i]); j++)
                     ;
                 if (j == oldParams.length) {
-                    // This is a new parameter, so copy the value from the
-                    // mesh.
+
+                    // This is a new parameter, so copy the value from the mesh.
 
                     for (int k = 0; k < mesh.texParam.length; k++)
                         if (mesh.texParam[k].equals(newParams[i])) {
@@ -12928,6 +12267,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                             break;
                         }
                 } else {
+
                     // This is an old parameter, so copy the values over.
 
                     newval[i] = paramValue[j];
@@ -12939,13 +12279,14 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Get the value of a per-vertex texture parameter.
          * 
-         * @param p
-         *            Description of the Parameter
-         * @return The textureParameter value
+         * @param p  Description of the Parameter
+         * 
+         * @return   The textureParameter value
          */
 
         @Override
         public ParameterValue getTextureParameter(TextureParameter p) {
+
             // Determine which parameter to get.
 
             for (int i = 0; i < mesh.texParam.length; i++)
@@ -12957,14 +12298,13 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Set the value of a per-vertex texture parameter.
          * 
-         * @param p
-         *            The new textureParameter value
-         * @param value
-         *            The new textureParameter value
+         * @param p     The new textureParameter value
+         * @param value The new textureParameter value
          */
 
         @Override
         public void setTextureParameter(TextureParameter p, ParameterValue value) {
+
             // Determine which parameter to set.
 
             int which;
@@ -12979,20 +12319,19 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Write out a representation of this keyframe to a stream.
          * 
-         * @param out
-         *            Description of the Parameter
-         * @exception IOException
-         *                Description of the Exception
+         * @param out Description of the Parameter
+         * @exception IOException Description of the Exception
          */
 
         @Override
         public void writeToStream(DataOutputStream out) throws IOException {
             out.writeShort(2);
+
             // version
+
             out.writeInt(vertPos.length);
             for (int i = 0; i < vertPos.length; i++) {
                 vertPos[i].writeToFile(out);
-                // out.writeFloat( vertSmoothness[i] );
             }
             for (int i = 0; i < paramValue.length; i++) {
                 out.writeUTF(paramValue[i].getClass().getName());
@@ -13014,14 +12353,11 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Reconstructs the keyframe from its serialized representation.
          * 
-         * @param in
-         *            Description of the Parameter
-         * @param parent
-         *            Description of the Parameter
-         * @exception IOException
-         *                Description of the Exception
-         * @exception InvalidObjectException
-         *                Description of the Exception
+         * @param in     Description of the Parameter
+         * @param parent Description of the Parameter
+         *
+         * @exception IOException             Description of the Exception
+         * @exception InvalidObjectException  Description of the Exception
          */
 
         public PolyMeshKeyframe(DataInputStream in, Object parent)
@@ -13033,7 +12369,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
             mesh = (PolyMesh) parent;
             int numVert = in.readInt();
             vertPos = new Vec3[numVert];
-            // vertSmoothness = new float[numVert];
             float smoothness;
             paramValue = new ParameterValue[mesh.texParam.length];
             for (int i = 0; i < numVert; i++) {
@@ -13080,7 +12415,6 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
          */
         public int edge;
         public short type;
-        //public Vec3 normal;
         public final static short NONE = 0;
         public final static short CREASE = 1;
         public final static short CORNER = 2;
@@ -13088,48 +12422,42 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Constructor for the Wvertex object
          * 
-         * @param p
-         *            Vertex position
-         * @param edge
-         *            half edge that starts at this vertex
+         * @param p    Vertex position
+         * @param edge Half edge that starts at this vertex
          */
 
         public Wvertex(Vec3 p, int edge) {
             super(new Vec3(p));
             this.edge = edge;
-            // smoothness = 1.0f;
-        }
+         }
 
         /**
          * Constructor for the Wvertex object
          * 
-         * @param vertex
-         *            Vertex to duplicate
+         * @param vertex Vertex to duplicate
          */
         public Wvertex(Wvertex vertex) {
             super(vertex);
             this.edge = vertex.edge;
             type = vertex.type;
-//            if (vertex.normal != null)
-//                normal = new Vec3(vertex.normal);
-            // this.smoothness = vertex.smoothness;
         }
     }
 
     /**
      * Checks if a face is selected. Voids are not selected by nature
-     * 
-     * @param selected
-     *            Selection array
-     * @param f
-     *            Index of face to test selection for
-     * @return The faceSelected value
+     *
+     * @param selected Selection array
+     * @param f        Index of face to test selection for
+     *
+     * @return          The faceSelected value
      */
 
     private boolean isFaceSelected(boolean[] selected, int f) {
         if (f == -1)
             return false;
+
         // a void is never selected!
+
         else
             return selected[f];
     }
@@ -13176,14 +12504,10 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Constructor for the Wedge object
          * 
-         * @param vertex
-         *            The vertex the edge points to
-         * @param hedge
-         *            The other half edge
-         * @param face
-         *            The face this half edge borders
-         * @param next
-         *            Next half edge around the face
+         * @param vertex The vertex the edge points to
+         * @param hedge  The other half edge
+         * @param face   The face this half edge borders
+         * @param next   Next half edge around the face
          */
 
         public Wedge(int vertex, int hedge, int face, int next) {
@@ -13197,8 +12521,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Constructor for the Wedge object
          * 
-         * @param edge
-         *            An edge to be duplicated
+         * @param edge An edge to be duplicated
          */
 
         public Wedge(Wedge edge) {
@@ -13217,8 +12540,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
 
         @Override
         public String toString() {
-            return ("vertex:" + vertex + " hedge:" + hedge + " face:" + face
-                    + " next:" + next + " smoothness:" + smoothness);
+            return ("vertex:" + vertex + " hedge:" + hedge + " face:" + face + " next:" + next + " smoothness:" + smoothness);
         }
     }
 
@@ -13240,8 +12562,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Constructor for the Edge object
          * 
-         * @param edge
-         *            An edge of this face
+         * @param edge An edge of this face
          */
 
         public Wface(int edge) {
@@ -13251,8 +12572,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Constructor for the Wface object
          * 
-         * @param face
-         *            Face to duplicate
+         * @param face Face to duplicate
          */
 
         public Wface(Wface face) {
@@ -13284,10 +12604,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         /**
          * Constructor for the VertexParamInfo object
          * 
-         * @param vert
-         *            Vertices indices
-         * @param coef
-         *            Vertices weights
+         * @param vert Vertices indices
+         * @param coef Vertices weights
          */
 
         public VertexParamInfo(int[] vert, double[] coef) {
@@ -13305,8 +12623,7 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
     }
 
     /**
-     * @param mappingData
-     *            the mappingData to set
+     * @param mappingData The mappingData to set
      */
 
     public void setMappingData(UVMappingData mappingData) {
