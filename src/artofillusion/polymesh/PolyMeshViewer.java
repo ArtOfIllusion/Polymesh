@@ -2,7 +2,7 @@
  *  Copyright (C) 1999-2004 by Peter Eastman (TriMeshViewer.java),
  *  Modifications for Winged Edge Mesh Copyright (C) 2004-2005 by François Guillet
  *  Modifications for mouse buttons Copyright (C) 2019 by Petri Ihalainen
- *
+ *  Changes copyright (C) 2024 by Maksim Khramov
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
  *  Foundation; either version 2 of the License, or (at your option) any later version.
@@ -357,29 +357,17 @@ public class PolyMeshViewer extends MeshViewer
             else
                 ref = i;
 
+            Color color = selected[ref] && visible[i] ? selectedVertColor : vertColor;
+
             if (renderMode == RENDER_WIREFRAME || renderMode == RENDER_TRANSPARENT)
             {
-                if (!selected[ref] && visible[i])
-                    drawBox(screenVert[i].x - handleSize / 2, screenVert[i].y - handleSize / 2, handleSize, handleSize, vertColor);
+                drawBox(screenVert[i].x - handleSize / 2, screenVert[i].y - handleSize / 2, handleSize, handleSize, color);
             }
             else
             {
-                if (!selected[ref] && visible[i])
-                    renderBox(screenVert[i].x - handleSize / 2, screenVert[i].y - handleSize / 2, handleSize, handleSize, screenZ[i] - 0.01, vertColor);
+                renderBox(screenVert[i].x - handleSize / 2, screenVert[i].y - handleSize / 2, handleSize, handleSize, screenZ[i] - 0.01, color);
             }
 
-            // Now draw the selected portions.
-
-            if (renderMode == RENDER_WIREFRAME || renderMode == RENDER_TRANSPARENT)
-            {
-                if (selected[ref] && visible[i])
-                    drawBox(screenVert[i].x - handleSize / 2, screenVert[i].y - handleSize / 2, handleSize, handleSize, selectedVertColor);
-            }
-            else 
-            {
-                if (selected[ref] && visible[i])
-                    renderBox(screenVert[i].x - handleSize / 2, screenVert[i].y - handleSize / 2, handleSize, handleSize, screenZ[i] - 0.01, selectedVertColor);
-            }
         }
     }
 
