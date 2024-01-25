@@ -357,7 +357,7 @@ public class PolyMeshViewer extends MeshViewer
             else
                 ref = i;
 
-            Color color = selected[ref] && visible[i] ? selectedVertColor : vertColor;
+            Color color = !selected[ref] && visible[i] ? selectedVertColor : vertColor;
 
             if (renderMode == RENDER_WIREFRAME || renderMode == RENDER_TRANSPARENT)
             {
