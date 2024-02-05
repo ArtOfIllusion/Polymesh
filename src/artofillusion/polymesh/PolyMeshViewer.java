@@ -352,12 +352,14 @@ public class PolyMeshViewer extends MeshViewer
 
         for (int i = 0; i < screenVert.length; i++)
         {
+            if(!visible[i]) continue;
+            
             if (mirror)
                 ref = invVertTable[i];
             else
                 ref = i;
 
-            Color color = !selected[ref] && visible[i] ? selectedVertColor : vertColor;
+            Color color = selected[ref] ? selectedVertColor : vertColor;
 
             if (renderMode == RENDER_WIREFRAME || renderMode == RENDER_TRANSPARENT)
             {
