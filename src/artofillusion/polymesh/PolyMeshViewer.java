@@ -330,7 +330,7 @@ public class PolyMeshViewer extends MeshViewer
         }
         // First, draw any unselected portions of the object.
         boolean selected[] = controller.getSelection();
-        int ref = 0;
+        
         boolean mirror = false;
         int[] invVertTable = mesh.getInvMirroredVerts();
 
@@ -354,12 +354,7 @@ public class PolyMeshViewer extends MeshViewer
         {
             if(!visible[i]) continue;
             
-            if (mirror)
-                ref = invVertTable[i];
-            else
-                ref = i;
-
-            Color color = selected[ref] ? selectedVertColor : vertColor;
+            Color color = selected[ mirror ? invVertTable[i] : i] ? selectedVertColor : vertColor;
 
             if (renderMode == RENDER_WIREFRAME || renderMode == RENDER_TRANSPARENT)
             {
