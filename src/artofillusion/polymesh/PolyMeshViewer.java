@@ -3,6 +3,7 @@
  *  Modifications for Winged Edge Mesh Copyright (C) 2004-2005 by François Guillet
  *  Modifications for mouse buttons Copyright (C) 2019 by Petri Ihalainen
  *  Changes copyright (C) 2024 by Maksim Khramov
+ *
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
  *  Foundation; either version 2 of the License, or (at your option) any later version.
@@ -353,8 +354,9 @@ public class PolyMeshViewer extends MeshViewer
         for (int i = 0; i < screenVert.length; i++)
         {
             if(!visible[i]) continue;
-            
-            Color color = selected[ mirror ? invVertTable[i] : i] ? selectedVertColor : vertColor;
+
+            int ref = mirror ? invVertTable[i] : i;
+            Color color = selected[ref] ? selectedVertColor : vertColor;
 
             if (renderMode == RENDER_WIREFRAME || renderMode == RENDER_TRANSPARENT)
             {
