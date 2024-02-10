@@ -2,6 +2,7 @@
  *  Copyright (C) 1999-2004 by Peter Eastman (TriMeshViewer.java),
  *  Modifications for Winged Edge Mesh Copyright (C) 2004-2005 by François Guillet
  *  Modifications for mouse buttons Copyright (C) 2019 by Petri Ihalainen
+ *  Changes copyright (C) 2024 by Maksim Khramov
  *
  *  This program is free software; you can redistribute it and/or modify it under the
  *  terms of the GNU General Public License as published by the Free Software
@@ -330,7 +331,7 @@ public class PolyMeshViewer extends MeshViewer
         }
         // First, draw any unselected portions of the object.
         boolean selected[] = controller.getSelection();
-        int ref = 0;
+        
         boolean mirror = false;
         int[] invVertTable = mesh.getInvMirroredVerts();
 
@@ -352,34 +353,20 @@ public class PolyMeshViewer extends MeshViewer
 
         for (int i = 0; i < screenVert.length; i++)
         {
-            if (mirror)
-                ref = invVertTable[i];
-            else
-                ref = i;
+            if(!visible[i]) continue;
+
+            int ref = mirror ? invVertTable[i] : i;
+            Color color = selected[ref] ? selectedVertColor : vertColor;
 
             if (renderMode == RENDER_WIREFRAME || renderMode == RENDER_TRANSPARENT)
             {
-                if (!selected[ref] && visible[i])
-                    drawBox(screenVert[i].x - handleSize / 2, screenVert[i].y - handleSize / 2, handleSize, handleSize, vertColor);
+                drawBox(screenVert[i].x - handleSize / 2, screenVert[i].y - handleSize / 2, handleSize, handleSize, color);
             }
             else
             {
-                if (!selected[ref] && visible[i])
-                    renderBox(screenVert[i].x - handleSize / 2, screenVert[i].y - handleSize / 2, handleSize, handleSize, screenZ[i] - 0.01, vertColor);
+                renderBox(screenVert[i].x - handleSize / 2, screenVert[i].y - handleSize / 2, handleSize, handleSize, screenZ[i] - 0.01, color);
             }
 
-            // Now draw the selected portions.
-
-            if (renderMode == RENDER_WIREFRAME || renderMode == RENDER_TRANSPARENT)
-            {
-                if (selected[ref] && visible[i])
-                    drawBox(screenVert[i].x - handleSize / 2, screenVert[i].y - handleSize / 2, handleSize, handleSize, selectedVertColor);
-            }
-            else 
-            {
-                if (selected[ref] && visible[i])
-                    renderBox(screenVert[i].x - handleSize / 2, screenVert[i].y - handleSize / 2, handleSize, handleSize, screenZ[i] - 0.01, selectedVertColor);
-            }
         }
     }
 
