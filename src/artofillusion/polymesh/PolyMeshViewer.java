@@ -336,14 +336,6 @@ public class PolyMeshViewer extends MeshViewer
             mirror = true;
             viewMesh = mesh.getMirroredMesh();
         }
-        QuadMesh subMesh = null;
-
-        boolean project = (controller instanceof PolyMeshEditorWindow && ((PolyMeshEditorWindow) controller).getProjectOntoSurface());
-        if (project && viewMesh.getSubdividedMesh() != null)
-        {
-            subMesh = viewMesh.getSubdividedMesh();
-
-        }
 
 
 
