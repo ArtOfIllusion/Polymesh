@@ -16,17 +16,17 @@ package artofillusion.polymesh;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Polygon;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Iterator;
 
-import artofillusion.MeshEditorWindow;
+import java.util.ArrayList;
+
+
+
 import artofillusion.MeshViewer;
 import artofillusion.RenderingMesh;
 import artofillusion.TextureParameter;
-import artofillusion.TriMeshEditorWindow;
+
 import artofillusion.UndoRecord;
-import artofillusion.ViewerCanvas;
+
 import artofillusion.animation.SkeletonTool;
 import artofillusion.math.RGBColor;
 import artofillusion.math.Vec2;
@@ -37,7 +37,7 @@ import artofillusion.polymesh.PolyMesh.Wedge;
 import artofillusion.polymesh.PolyMesh.Wface;
 import artofillusion.polymesh.PolyMesh.Wvertex;
 import artofillusion.polymesh.QuadMesh.QuadEdge;
-import artofillusion.polymesh.QuadMesh.QuadVertex;
+
 import artofillusion.texture.FaceParameterValue;
 import artofillusion.ui.EditingTool;
 import artofillusion.ui.MeshEditController;
@@ -305,11 +305,7 @@ public class PolyMeshViewer extends MeshViewer
 
     /**
      * Draw the vertices of the control mesh.
-     * 
-     * @param unselectedColor
-     *            Color for unselected vertices
-     * @param selectedColor
-     *            Color for selected vertices
+     *
      */
 
     private void drawVertices()
@@ -321,7 +317,7 @@ public class PolyMeshViewer extends MeshViewer
         PolyMesh viewMesh = mesh;
         Color vertColor = mesh.getVertColor();
         Color selectedVertColor = vertColor;
-        int handleSize = mesh.getHandleSize();
+
         if (currentTool.hilightSelection())
             selectedVertColor = mesh.getSelectedVertColor();
         if (currentTool instanceof SkeletonTool)
@@ -351,6 +347,8 @@ public class PolyMeshViewer extends MeshViewer
         else
             sv = (MeshVertex[]) viewMesh.getVertices();
 
+
+        int handleSize = mesh.getHandleSize();
         for (int i = 0; i < screenVert.length; i++)
         {
             if(!visible[i]) continue;
@@ -375,10 +373,6 @@ public class PolyMeshViewer extends MeshViewer
      * 
      * @param p
      *            Description of the Parameter
-     * @param unselectedColor
-     *            Color for unselected vertices
-     * @param selectedColor
-     *            Color for selected vertices
      */
 
     private void drawEdges(Vec2[] p)
