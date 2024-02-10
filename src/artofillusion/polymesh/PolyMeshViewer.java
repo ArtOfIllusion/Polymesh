@@ -54,7 +54,6 @@ import artofillusion.view.VertexShader;
 import buoy.event.KeyPressedEvent;
 import buoy.event.MouseClickedEvent;
 import buoy.event.MouseMovedEvent;
-import buoy.event.WidgetEvent;
 import buoy.event.WidgetMouseEvent;
 import buoy.widget.RowContainer;
 
@@ -1117,7 +1116,8 @@ public class PolyMeshViewer extends MeshViewer
 
     /** Set the currently selected tool. */
 
-    public void setTool(EditingTool tool) 
+    @Override
+    public void setTool(EditingTool tool)
     {
         manipulators.clear();
         manipulatorArray = new Manipulator[0];
@@ -1434,6 +1434,7 @@ public class PolyMeshViewer extends MeshViewer
                 return;
     }
 
+    @Override
     public void setPerspective(boolean perspective)
     {
         for (int i = 0; i < manipulatorArray.length; i++)
