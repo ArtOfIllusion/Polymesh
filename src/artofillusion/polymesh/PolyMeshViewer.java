@@ -16,17 +16,17 @@ package artofillusion.polymesh;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Polygon;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Iterator;
 
-import artofillusion.MeshEditorWindow;
+import java.util.ArrayList;
+
+
+
 import artofillusion.MeshViewer;
 import artofillusion.RenderingMesh;
 import artofillusion.TextureParameter;
-import artofillusion.TriMeshEditorWindow;
+
 import artofillusion.UndoRecord;
-import artofillusion.ViewerCanvas;
+
 import artofillusion.animation.SkeletonTool;
 import artofillusion.math.RGBColor;
 import artofillusion.math.Vec2;
@@ -37,7 +37,7 @@ import artofillusion.polymesh.PolyMesh.Wedge;
 import artofillusion.polymesh.PolyMesh.Wface;
 import artofillusion.polymesh.PolyMesh.Wvertex;
 import artofillusion.polymesh.QuadMesh.QuadEdge;
-import artofillusion.polymesh.QuadMesh.QuadVertex;
+
 import artofillusion.texture.FaceParameterValue;
 import artofillusion.ui.EditingTool;
 import artofillusion.ui.MeshEditController;
@@ -54,7 +54,6 @@ import artofillusion.view.VertexShader;
 import buoy.event.KeyPressedEvent;
 import buoy.event.MouseClickedEvent;
 import buoy.event.MouseMovedEvent;
-import buoy.event.WidgetEvent;
 import buoy.event.WidgetMouseEvent;
 import buoy.widget.RowContainer;
 
@@ -305,11 +304,7 @@ public class PolyMeshViewer extends MeshViewer
 
     /**
      * Draw the vertices of the control mesh.
-     * 
-     * @param unselectedColor
-     *            Color for unselected vertices
-     * @param selectedColor
-     *            Color for selected vertices
+     *
      */
 
     private void drawVertices()
@@ -318,10 +313,9 @@ public class PolyMeshViewer extends MeshViewer
             return;
 
         PolyMesh mesh = (PolyMesh) getController().getObject().getObject();
-        PolyMesh viewMesh = mesh;
         Color vertColor = mesh.getVertColor();
         Color selectedVertColor = vertColor;
-        int handleSize = mesh.getHandleSize();
+
         if (currentTool.hilightSelection())
             selectedVertColor = mesh.getSelectedVertColor();
         if (currentTool instanceof SkeletonTool)
@@ -329,28 +323,15 @@ public class PolyMeshViewer extends MeshViewer
             selectedVertColor = disableColor(selectedVertColor);
             vertColor = disableColor(vertColor);
         }
-        // First, draw any unselected portions of the object.
+
         boolean selected[] = controller.getSelection();
         
         boolean mirror = false;
         int[] invVertTable = mesh.getInvMirroredVerts();
 
-        if (mesh.getMirrorState() != PolyMesh.NO_MIRROR)
-        {
-            mirror = true;
-            viewMesh = mesh.getMirroredMesh();
-        }
-        QuadMesh subMesh = null;
-        MeshVertex sv[];
-        boolean project = (controller instanceof PolyMeshEditorWindow && ((PolyMeshEditorWindow) controller).getProjectOntoSurface());
-        if (project && viewMesh.getSubdividedMesh() != null)
-        {
-            subMesh = viewMesh.getSubdividedMesh();
-            sv = (MeshVertex[]) subMesh.getVertices();
-        }
-        else
-            sv = (MeshVertex[]) viewMesh.getVertices();
+        if (mesh.getMirrorState() != PolyMesh.NO_MIRROR) mirror = true;
 
+        int handleSize = mesh.getHandleSize();
         for (int i = 0; i < screenVert.length; i++)
         {
             if(!visible[i]) continue;
@@ -375,10 +356,6 @@ public class PolyMeshViewer extends MeshViewer
      * 
      * @param p
      *            Description of the Parameter
-     * @param unselectedColor
-     *            Color for unselected vertices
-     * @param selectedColor
-     *            Color for selected vertices
      */
 
     private void drawEdges(Vec2[] p)
@@ -737,6 +714,7 @@ public class PolyMeshViewer extends MeshViewer
      *            Description of the Parameter
      */
 
+    @Override
     protected void mousePressed(WidgetMouseEvent e)
     {
         PolyMesh mesh = (PolyMesh) getController().getObject().getObject();
@@ -1138,7 +1116,8 @@ public class PolyMeshViewer extends MeshViewer
 
     /** Set the currently selected tool. */
 
-    public void setTool(EditingTool tool) 
+    @Override
+    public void setTool(EditingTool tool)
     {
         manipulators.clear();
         manipulatorArray = new Manipulator[0];
@@ -1455,6 +1434,7 @@ public class PolyMeshViewer extends MeshViewer
                 return;
     }
 
+    @Override
     public void setPerspective(boolean perspective)
     {
         for (int i = 0; i < manipulatorArray.length; i++)
