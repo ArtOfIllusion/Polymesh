@@ -5890,9 +5890,12 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
         int[][] newFaceVertIndexRef = null;
         int[] newToOldFaceIndex = null;
         int orFace;
-        if (oldParamVal != null) {
-            for (int i = 0; i < oldParamVal.length; i++) {
-                if (oldParamVal[i] instanceof FaceVertexParameterValue) {
+        if (oldParamVal != null)
+        {
+            for (int i = 0; i < oldParamVal.length; i++)
+            {
+                if (oldParamVal[i] instanceof FaceVertexParameterValue)
+                {
                     newToOldFaceIndex = new int[newFaces.length];
                     oldFaceVert = new int[faces.length][];
                     newFaceVert = new int[newFaces.length][];
@@ -5900,35 +5903,39 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     newFaceVertIndexRef = new int[newFaces.length][];
                     int[] fv;
                     orFace = 0;
-                    for (int j = 0; j < oldFaceVert.length; j++) {
+                    for (int j = 0; j < oldFaceVert.length; j++)
+                    {
                         fv = getFaceVertices(faces[j]);
-                        for (int k = 0; k < fv.length / 2; k++) {
+                        for (int k = 0; k < fv.length / 2; k++)
+                        {
                             newToOldFaceIndex[orFace++] = j;
                         }
                         oldFaceVert[j] = new int[fv.length];
                         System.arraycopy(fv, 0, oldFaceVert[j], 0, fv.length);
                     }
-                    for (int j = 0; j < newFaces.length; ++j) {
+                    for (int j = 0; j < newFaces.length; ++j)
+                    {
                         fv = getFaceVertices(j, newEdges, newFaces);
                         newFaceVert[j] = new int[fv.length];
                         newFaceVertFaceRef[j] = new int[fv.length];
                         newFaceVertIndexRef[j] = new int[fv.length];
                         orFace = newToOldFaceIndex[j];
-                        for (int k = 0; k < fv.length; k++) {
+                        for (int k = 0; k < fv.length; k++)
+                        {
                             newFaceVert[j][k] = fv[k];
-                            if (fv[k] < vertices.length) {
-                                boolean found = false;
-                                for (int l = 0; l < oldFaceVert[orFace].length; l++) {
-                                    if (oldFaceVert[orFace][l] == fv[k]) {
+                            if (fv[k] < vertices.length)
+                            {
+                                for (int l = 0; l < oldFaceVert[orFace].length; l++)
+                                {
+                                    if (oldFaceVert[orFace][l] == fv[k])
+                                    {
                                         newFaceVertFaceRef[j][k] = orFace;
                                         newFaceVertIndexRef[j][k] = l;
-                                        found = true;
                                     }
                                 }
-                                if (!found) {
-                                    System.out.println("Not found!!");
-                                }
-                            } else {
+                            }
+                            else
+                            {
                                 newFaceVertFaceRef[j][k] = -1;
                                 newFaceVertIndexRef[j][k] = -1;
                             }
@@ -5937,54 +5944,64 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                     break;
                 }
             }
-            for (int i = 0; i < oldParamVal.length; i++) {
-                if (oldParamVal[i] instanceof FaceParameterValue) {
+            for (int i = 0; i < oldParamVal.length; i++)
+            {
+                if (oldParamVal[i] instanceof FaceParameterValue)
+                {
                     double oldval[] = ((FaceParameterValue) oldParamVal[i]).getValue();
                     double newval[] = new double[newFaces.length];
                     for (int j = 0; j < newval.length; j++)
                         newval[j] = oldval[paramFaceTable[j]];
                     newParamVal[i] = new FaceParameterValue(newval);
-                } else if (oldParamVal[i] instanceof VertexParameterValue) {
+                }
+                else if (oldParamVal[i] instanceof VertexParameterValue)
+                {
                     double oldval[] = ((VertexParameterValue) oldParamVal[i]).getValue();
                     double newval[] = new double[newVert.length];
                     for (int j = 0; j < vertices.length; ++j)
                         newval[j] = oldval[j];
-                    for (int j = vertices.length; j < newVert.length; ++j) {
+                    for (int j = vertices.length; j < newVert.length; ++j)
+                    {
                         int[] vf = vertParamInfo[j - vertices.length].vert;
                         double[] coef = vertParamInfo[j - vertices.length].coef;
                         for (int k = 0; k < vf.length; ++k)
                             newval[j] += coef[k] * oldval[vf[k]];
                     }
                     newParamVal[i] = new VertexParameterValue(newval);
-                } else if (oldParamVal[i] instanceof FaceVertexParameterValue) {
+                }
+                else if (oldParamVal[i] instanceof FaceVertexParameterValue)
+                {
                     double val;
                     FaceVertexParameterValue fvpv = (FaceVertexParameterValue) oldParamVal[i];
                     double newval[][] = new double[newFaces.length][];
-                    for (int j = 0; j < newFaces.length; ++j) {
+                    for (int j = 0; j < newFaces.length; ++j)
+                    {
                         newval[j] = new double[newFaceVert[j].length];
-                        for (int k = 0; k < newval[j].length; k++) {
-                            if (newFaceVertFaceRef[j][k] != -1) {
+                        for (int k = 0; k < newval[j].length; k++)
+                        {
+                            if (newFaceVertFaceRef[j][k] != -1)
+                            {
                                 // old vertex
                                 newval[j][k] = fvpv.getValue(
                                         newFaceVertFaceRef[j][k],
                                         newFaceVertIndexRef[j][k]);
-                            } else {
+                            }
+                            else
+                            {
                                 // new vertex
                                 orFace = newToOldFaceIndex[j];
                                 val = 0;
                                 int[] vf = vertParamInfo[newFaceVert[j][k] - vertices.length].vert;
                                 double[] coef = vertParamInfo[newFaceVert[j][k] - vertices.length].coef;
-                                for (int l = 0; l < vf.length; ++l) {
-                                    boolean found = false;
-                                    for (int m = 0; m < oldFaceVert[orFace].length; m++) {
-                                        if (oldFaceVert[orFace][m] == vf[l]) {
+                                for (int l = 0; l < vf.length; ++l)
+                                {
+                                    for (int m = 0; m < oldFaceVert[orFace].length; m++)
+                                    {
+                                        if (oldFaceVert[orFace][m] == vf[l])
+                                        {
                                             val += coef[l] * fvpv.getValue(orFace, m);
-                                            found = true;
                                             break;
                                         }
-                                    }
-                                    if (!found) {
-                                        System.out.println("Not found!!");
                                     }
                                 }
                                 newval[j][k] = val;
@@ -5992,7 +6009,8 @@ public class PolyMesh extends Object3D implements Mesh, FacetedMesh {
                         }
                     }
                     newParamVal[i] = new FaceVertexParameterValue(newval);
-                } else
+                }
+                else
                     newParamVal[i] = oldParamVal[i].duplicate();
             }
             setParameterValues(newParamVal);
